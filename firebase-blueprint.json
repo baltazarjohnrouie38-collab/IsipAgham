@@ -1,0 +1,167 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private user profile and study preferences for IsipAgham (RA 10173 minimal PII: username, optional email, course, and study activity only).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "username": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "email": { "type": "string", "maxLength": 254 },
+        "nickname": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "course": { "type": "string", "enum": ["Physics 1", "Physics 2", "Physics 3"] },
+        "darkMode": { "type": "boolean" },
+        "pomodoroWorkMin": { "type": "integer" },
+        "pomodoroBreakMin": { "type": "integer" },
+        "dailyGoalMinutes": { "type": "integer" },
+        "notificationsEnabled": { "type": "boolean" },
+        "notificationTime": { "type": "string", "maxLength": 5, "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$" },
+        "fcmToken": { "type": "string", "maxLength": 512 },
+        "xp": { "type": "integer" },
+        "weeklyXp": { "type": "integer" },
+        "weekKey": { "type": "string", "maxLength": 12 },
+        "streakDays": { "type": "integer" },
+        "lastStudyDate": { "type": "string", "maxLength": 12 },
+        "todayStudyDate": { "type": "string", "maxLength": 12 },
+        "todayStudySeconds": { "type": "integer" },
+        "totalStudySeconds": { "type": "integer" },
+        "cardsReviewedCount": { "type": "integer" },
+        "aiQuestionsAsked": { "type": "integer" },
+        "lessonsCompleted": { "type": "array" },
+        "classCode": { "type": "string", "maxLength": 20 },
+        "visitedCourses": { "type": "array" },
+        "checklist": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "nickname", "darkMode", "xp", "createdAt", "updatedAt"]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Public leaderboard entry exposing only username/nickname, class code, and XP (no PII).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "nickname": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "xp": { "type": "integer" },
+        "weeklyXp": { "type": "integer" },
+        "weekKey": { "type": "string", "maxLength": 12 },
+        "classCode": { "type": "string", "maxLength": 20 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "nickname", "xp", "updatedAt"]
+    },
+    "StudyMaterial": {
+      "title": "StudyMaterial",
+      "description": "Extracted text from uploaded PDF, PPTX, DOCX, image OCR, pasted text, seed, or built-in lesson.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "course": { "type": "string", "enum": ["Physics 1", "Physics 2", "Physics 3"] },
+        "sourceType": { "type": "string", "enum": ["pdf", "pptx", "docx", "image", "text", "seed", "lesson"] },
+        "extractedText": { "type": "string", "minLength": 1, "maxLength": 100000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "course", "sourceType", "extractedText", "createdAt", "updatedAt"]
+    },
+    "StudySet": {
+      "title": "StudySet",
+      "description": "Saved flashcards (SM-2 scheduling), reviewer summary, and mixed quiz questions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "materialId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "lessonId": { "type": "string", "maxLength": 40 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "course": { "type": "string", "enum": ["Physics 1", "Physics 2", "Physics 3"] },
+        "reviewerSummary": { "type": "string", "minLength": 1, "maxLength": 30000 },
+        "flashcards": { "type": "array" },
+        "quizQuestions": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "materialId", "title", "course", "reviewerSummary", "flashcards", "quizQuestions", "createdAt", "updatedAt"]
+    },
+    "QuizAttempt": {
+      "title": "QuizAttempt",
+      "description": "Completed quiz result for progress tracking.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "studySetId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "studySetTitle": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "course": { "type": "string", "enum": ["Physics 1", "Physics 2", "Physics 3"] },
+        "score": { "type": "integer" },
+        "totalQuestions": { "type": "integer" },
+        "percentage": { "type": "integer" },
+        "xpEarned": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "studySetId", "studySetTitle", "course", "score", "totalQuestions", "percentage", "xpEarned", "createdAt"]
+    },
+    "StudySession": {
+      "title": "StudySession",
+      "description": "Logged Pomodoro timer or flashcard review session.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "type": { "type": "string", "enum": ["pomodoro", "flashcard_review"] },
+        "durationSeconds": { "type": "integer" },
+        "cardsReviewed": { "type": "integer" },
+        "xpEarned": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "type", "durationSeconds", "cardsReviewed", "xpEarned", "createdAt"]
+    },
+    "AiMessage": {
+      "title": "AiMessage",
+      "description": "User-scoped Physics AI tutor chat message.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "role": { "type": "string", "enum": ["user", "assistant"] },
+        "content": { "type": "string", "minLength": 1, "maxLength": 20000 },
+        "materialTitle": { "type": "string", "maxLength": 160 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "role", "content", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user profiles and preferences; strictly readable/writable only by the owner."
+    },
+    "/leaderboard/{userId}": {
+      "schema": { "$ref": "#/entities/LeaderboardEntry" },
+      "description": "Public leaderboard usernames, class codes, and XP; readable by authenticated users, writable only by owner."
+    },
+    "/materials/{materialId}": {
+      "schema": { "$ref": "#/entities/StudyMaterial" },
+      "description": "User-uploaded and seeded study materials."
+    },
+    "/studySets/{setId}": {
+      "schema": { "$ref": "#/entities/StudySet" },
+      "description": "Saved flashcards, reviewers, and quizzes per user."
+    },
+    "/quizAttempts/{attemptId}": {
+      "schema": { "$ref": "#/entities/QuizAttempt" },
+      "description": "Quiz attempt scores and timestamps per user."
+    },
+    "/studySessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/StudySession" },
+      "description": "Pomodoro and flashcard study sessions per user."
+    },
+    "/aiMessages/{messageId}": {
+      "schema": { "$ref": "#/entities/AiMessage" },
+      "description": "AI Physics assistant chat messages per user."
+    }
+  }
+}

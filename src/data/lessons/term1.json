@@ -1,0 +1,415 @@
+[
+  {
+    "id": "1.1",
+    "code": "1.1",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Physics in Society and Careers in Physics",
+    "objective": "Describe how physics shapes everyday Philippine society, technology, and STEM career paths.",
+    "keyFormula": "$$E = mc^2, \\quad v = \\frac{\\Delta x}{\\Delta t}$$",
+    "explanation": "Physics is the study of matter, energy, motion, and their interactions. In everyday Filipino life, physics explains how jeepney brakes stop safely, how typhoon winds transfer energy, and how PAGASA radars and solar microgrids work.\n\nCareers anchored in physics include civil and electrical engineering, medical physics (radiation therapy and MRI), meteorology, renewable energy engineering, data science, and physics education.\n\n[Teacher/Module Placeholder: Insert your school's career spotlight or local Philippine engineering example here.]",
+    "workedExample": {
+      "problem": "A solar panel system on a school roof in Luzon produces an average electrical power of $P = 1.5\\text{ kW}$ for $t = 4.0\\text{ hours}$. How much energy $E$ in megajoules ($\\text{MJ}$) does it deliver?",
+      "solutionSteps": [
+        "Convert power and time to SI units: $P = 1500\\text{ W}$ and $t = 4.0 \\times 3600\\text{ s} = 14400\\text{ s}$.",
+        "Apply $E = P \\cdot t = (1500\\text{ W})(14400\\text{ s}) = 2.16 \\times 10^7\\text{ J}$.",
+        "Convert joules to megajoules ($1\\text{ MJ} = 10^6\\text{ J}$)."
+      ],
+      "finalAnswer": "$E = 21.6\\text{ MJ}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.1-q1",
+        "prompt": "Which career directly applies physics principles to calibrate hospital X-ray and radiation therapy equipment?",
+        "choices": ["Medical Physicist", "Botanist", "Accountant", "Lexicographer"],
+        "correctIndex": 0,
+        "explanation": "Medical physicists apply nuclear, radiation, and wave physics to healthcare imaging and therapy."
+      },
+      {
+        "id": "1.1-q2",
+        "prompt": "Which SI unit measures electrical power in renewable energy engineering?",
+        "choices": ["Joule (J)", "Watt (W)", "Newton (N)", "Pascal (Pa)"],
+        "correctIndex": 1,
+        "explanation": "Power is energy per unit time, measured in watts ($1\\text{ W} = 1\\text{ J/s}$)."
+      }
+    ],
+    "suggestedSceneId": "p1-projectile"
+  },
+  {
+    "id": "1.2",
+    "code": "1.2",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Simple Experiments on Translational Motion in One and Two Dimensions",
+    "objective": "Design and interpret simple classroom experiments for 1D and 2D translational motion using accessible tools.",
+    "keyFormula": "$$v_{\\text{avg}} = \\frac{\\Delta x}{\\Delta t}, \\quad \\vec{r}(t) = x(t)\\hat{i} + y(t)\\hat{j}$$",
+    "explanation": "Translational motion occurs when every part of an object shifts through the same displacement over a time interval. In one dimension (1D), a toy cart rolling along a straight meterstick track moves along a single axis ($x$). In two dimensions (2D), a marble rolling off a table moves simultaneously along horizontal ($x$) and vertical ($y$) axes.\n\nIn simple school experiments, students measure position $x$ at equal time intervals $\\Delta t$ using a stopwatch, video tracker, or ticker-tape timer to observe whether speed is constant or changing.\n\n[Teacher/Module Placeholder: Add your class laboratory procedure, materials list, and data table template here.]",
+    "workedExample": {
+      "problem": "In a 1D hallway experiment, a student walks $12.0\\text{ m}$ forward in $4.0\\text{ s}$. What is their average velocity?",
+      "solutionSteps": [
+        "Identify displacement $\\Delta x = +12.0\\text{ m}$ and elapsed time $\\Delta t = 4.0\\text{ s}$.",
+        "Use $v_{\\text{avg}} = \\frac{\\Delta x}{\\Delta t} = \\frac{12.0\\text{ m}}{4.0\\text{ s}}$."
+      ],
+      "finalAnswer": "$v_{\\text{avg}} = +3.0\\text{ m/s}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.2-q1",
+        "prompt": "What distinguishes 2D translational motion from 1D translational motion?",
+        "choices": [
+          "2D motion requires two independent position coordinates like x and y",
+          "2D motion never experiences gravity",
+          "1D motion has no displacement",
+          "2D motion always has zero speed"
+        ],
+        "correctIndex": 0,
+        "explanation": "In 2D motion, position changes across a plane $(x, y)$, whereas 1D motion happens along a single line."
+      },
+      {
+        "id": "1.2-q2",
+        "prompt": "Which pair of instruments is best for a simple 1D speed experiment on a classroom floor?",
+        "choices": ["Meterstick and stopwatch", "Barometer and thermometer", "Ammeter and compass", "Calorimeter and balance"],
+        "correctIndex": 0,
+        "explanation": "Distance and time measured with a meterstick and stopwatch let you compute average speed $v = d/t$."
+      }
+    ],
+    "suggestedSceneId": "p1-freefall"
+  },
+  {
+    "id": "1.3",
+    "code": "1.3",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Fundamental Quantities and the Basis of Their SI Units",
+    "objective": "Identify the seven SI base quantities, their standard units, and how derived units are formed.",
+    "keyFormula": "$$[F] = \\text{kg}\\cdot\\text{m}\\cdot\\text{s}^{-2} = 1\\text{ N}$$",
+    "explanation": "Every physical measurement combines a number and a unit. The International System of Units (SI) is built on seven fundamental quantities: length (meter, $\\text{m}$), mass (kilogram, $\\text{kg}$), time (second, $\\text{s}$), electric current (ampere, $\\text{A}$), thermodynamic temperature (kelvin, $\\text{K}$), amount of substance (mole, $\\text{mol}$), and luminous intensity (candela, $\\text{cd}$).\n\nSince 2019, all SI base units are defined using fixed fundamental constants of nature—for example, the meter is defined by the speed of light $c = 299{,}792{,}458\\text{ m/s}$, and the kilogram by Planck's constant $h$. All other units (like $\\text{m/s}$, $\\text{N}$, and $\\text{J}$) are derived from these base units.\n\n[Teacher/Module Placeholder: Add dimensional analysis practice items assigned by your teacher.]",
+    "workedExample": {
+      "problem": "Convert a tricycle speed of $36\\text{ km/h}$ into SI base units ($\\text{m/s}$).",
+      "solutionSteps": [
+        "Multiply by conversion factors: $\\frac{1000\\text{ m}}{1\\text{ km}}$ and $\\frac{1\\text{ h}}{3600\\text{ s}}$.",
+        "Compute $36 \\times \\frac{1000}{3600} = 10\\text{ m/s}$."
+      ],
+      "finalAnswer": "$v = 10\\text{ m/s}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.3-q1",
+        "prompt": "Which of the following is a fundamental (base) SI unit rather than a derived unit?",
+        "choices": ["Kilogram (kg)", "Newton (N)", "Joule (J)", "Meter per second (m/s)"],
+        "correctIndex": 0,
+        "explanation": "Mass in kilograms ($\\text{kg}$) is one of the 7 SI base quantities; N, J, and m/s are derived."
+      },
+      {
+        "id": "1.3-q2",
+        "prompt": "What physical constant is used to define the SI unit of length (the meter)?",
+        "choices": ["Speed of light in vacuum (c)", "Acceleration due to gravity (g)", "Standard atmospheric pressure", "Boiling point of water"],
+        "correctIndex": 0,
+        "explanation": "The meter is defined using the fixed numerical value of the speed of light $c$ in a vacuum."
+      }
+    ],
+    "suggestedSceneId": "p1-freefall"
+  },
+  {
+    "id": "1.4",
+    "code": "1.4",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Precision, Accuracy, and Correct Expression of Measurements",
+    "objective": "Distinguish accuracy from precision and express measurements properly with uncertainty and significant figures.",
+    "keyFormula": "$$x = \\bar{x} \\pm \\Delta x, \\quad \\%\\text{error} = \\frac{|x_{\\text{measured}} - x_{\\text{true}}|}{x_{\\text{true}}} \\times 100\\%$$",
+    "explanation": "**Accuracy** describes how close a measurement is to the accepted or true value, often affected by systematic errors (such as a zero-error on a ruler). **Precision** describes how closely repeated measurements agree with each other, often limited by random errors.\n\nWhen reporting a measured quantity, include both the best estimate (such as the sample mean $\\bar{x}$), the uncertainty $\\Delta x$ rounded to 1 significant figure (or 2 if the leading digit is 1), and matching decimal places.\n\n[Teacher/Module Placeholder: Insert propagation of error or vernier caliper examples from your worksheet.]",
+    "workedExample": {
+      "problem": "Three stopwatch trials for a ball drop give $1.42\\text{ s}$, $1.44\\text{ s}$, and $1.40\\text{ s}$. Write the mean with half-range uncertainty.",
+      "solutionSteps": [
+        "Mean: $\\bar{t} = \\frac{1.42 + 1.44 + 1.40}{3} = 1.42\\text{ s}$.",
+        "Half-range uncertainty: $\\Delta t = \\frac{1.44 - 1.40}{2} = 0.02\\text{ s}$."
+      ],
+      "finalAnswer": "$t = (1.42 \\pm 0.02)\\text{ s}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.4-q1",
+        "prompt": "Four darts land tightly clustered together, but far away from the bullseye. How do you describe them?",
+        "choices": [
+          "High precision, low accuracy",
+          "High accuracy, low precision",
+          "Both high precision and high accuracy",
+          "Neither precise nor accurate"
+        ],
+        "correctIndex": 0,
+        "explanation": "Tight clustering means high precision (consistent), while being far from the target means low accuracy."
+      },
+      {
+        "id": "1.4-q2",
+        "prompt": "Which expression follows proper uncertainty formatting?",
+        "choices": ["(12.34 ± 0.05) cm", "(12.3456 ± 0.1) cm", "(12 ± 0.05) cm", "(12.3 ± 0.054) cm"],
+        "correctIndex": 0,
+        "explanation": "The last decimal place of the measurement should match the decimal place of the uncertainty."
+      }
+    ],
+    "suggestedSceneId": "p1-pendulum"
+  },
+  {
+    "id": "1.5",
+    "code": "1.5",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Displacement, Velocity, and Acceleration in One-Dimensional Motion",
+    "objective": "Differentiate scalar distance/speed from vector displacement/velocity and compute 1D acceleration.",
+    "keyFormula": "$$\\Delta x = x_f - x_i, \\quad v_{\\text{avg}} = \\frac{\\Delta x}{\\Delta t}, \\quad a_{\\text{avg}} = \\frac{\\Delta v}{\\Delta t}$$",
+    "explanation": "**Distance** is the total path length traveled (scalar, always $\\ge 0$), while **displacement** $\\Delta x = x_f - x_i$ is the straight-line change in position with direction ($+$ or $-$ in 1D).\n\nSimilarly, **average velocity** $v_{\\text{avg}} = \\Delta x / \\Delta t$ includes direction, and **acceleration** $a = \\Delta v / \\Delta t$ measures how quickly velocity changes in $\\text{m/s}^2$. An object slows down whenever velocity and acceleration point in opposite directions.\n\n[Teacher/Module Placeholder: Add directional sign-convention drills from your class.]",
+    "workedExample": {
+      "problem": "A bus speeds up along EDSA from $v_i = 4.0\\text{ m/s}$ to $v_f = 16.0\\text{ m/s}$ in $t = 6.0\\text{ s}$. Find its average acceleration.",
+      "solutionSteps": [
+        "Find change in velocity: $\\Delta v = 16.0 - 4.0 = +12.0\\text{ m/s}$.",
+        "Divide by time: $a = \\frac{12.0\\text{ m/s}}{6.0\\text{ s}} = 2.0\\text{ m/s}^2$."
+      ],
+      "finalAnswer": "$a = +2.0\\text{ m/s}^2$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.5-q1",
+        "prompt": "A runner completes one full $400\\text{ m}$ lap around a track and stops at the starting line. What is their net displacement?",
+        "choices": ["0 m", "400 m", "200 m", "800 m"],
+        "correctIndex": 0,
+        "explanation": "Because initial and final positions are identical ($x_f = x_i$), displacement $\\Delta x = 0\\text{ m}$."
+      },
+      {
+        "id": "1.5-q2",
+        "prompt": "What happens when a car has positive velocity ($+15\\text{ m/s}$) and negative acceleration ($-3\\text{ m/s}^2$)?",
+        "choices": ["It slows down while moving forward", "It speeds up forward", "It moves backward immediately", "Its velocity stays constant"],
+        "correctIndex": 0,
+        "explanation": "Opposite signs for velocity and acceleration mean the magnitude of velocity decreases (deceleration)."
+      }
+    ],
+    "suggestedSceneId": "p1-freefall"
+  },
+  {
+    "id": "1.6",
+    "code": "1.6",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Motion Graphs (Displacement-Time, Velocity-Time, Acceleration-Time)",
+    "objective": "Interpret slopes and areas under x-t, v-t, and a-t graphs to describe 1D motion.",
+    "keyFormula": "$$v = \\text{slope of } x\\text{-}t, \\quad a = \\text{slope of } v\\text{-}t, \\quad \\Delta x = \\text{area under } v\\text{-}t$$",
+    "explanation": "Motion graphs turn motion stories into clear geometry:\n- On a **displacement-time ($x$-$t$) graph**, the **slope** equals velocity. A straight diagonal line means constant velocity; a curved parabola means nonzero acceleration.\n- On a **velocity-time ($v$-$t$) graph**, the **slope** equals acceleration, and the **area under the curve** equals displacement $\\Delta x$.\n- On an **acceleration-time ($a$-$t$) graph**, the **area under the curve** equals the change in velocity $\\Delta v$.\n\n[Teacher/Module Placeholder: Attach your class graph-sketching worksheet scenarios here.]",
+    "workedExample": {
+      "problem": "On a $v$-$t$ graph, a cart's velocity increases linearly from $0\\text{ m/s}$ to $8.0\\text{ m/s}$ between $t = 0\\text{ s}$ and $t = 4.0\\text{ s}$. Find its acceleration and displacement.",
+      "solutionSteps": [
+        "Slope of $v$-$t$: $a = \\frac{8.0 - 0}{4.0 - 0} = 2.0\\text{ m/s}^2$.",
+        "Triangle area under $v$-$t$: $\\Delta x = \\frac{1}{2}(4.0\\text{ s})(8.0\\text{ m/s}) = 16.0\\text{ m}$."
+      ],
+      "finalAnswer": "$a = 2.0\\text{ m/s}^2$, $\\Delta x = 16.0\\text{ m}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.6-q1",
+        "prompt": "What does the area under a velocity-time ($v$-$t$) graph represent?",
+        "choices": ["Displacement ($\\Delta x$)", "Acceleration ($a$)", "Jerk", "Mass"],
+        "correctIndex": 0,
+        "explanation": "Since $\\Delta x = v \\cdot \\Delta t$, the area under the $v$-$t$ graph gives displacement."
+      },
+      {
+        "id": "1.6-q2",
+        "prompt": "A horizontal flat line at $x = 5\\text{ m}$ on a position-time ($x$-$t$) graph means:",
+        "choices": ["The object is at rest ($v = 0$)", "The object moves at $5\\text{ m/s}$", "The object accelerates at $5\\text{ m/s}^2$", "The object is falling"],
+        "correctIndex": 0,
+        "explanation": "Zero slope on an $x$-$t$ graph means position is not changing, so velocity is zero."
+      }
+    ],
+    "suggestedSceneId": "p1-freefall"
+  },
+  {
+    "id": "1.7",
+    "code": "1.7",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "The Four Kinematic Equations and Uniformly Accelerated Motion",
+    "objective": "Select and apply the four kinematic equations for constant-acceleration motion including free fall.",
+    "keyFormula": "$$v_f = v_i + at, \\quad \\Delta x = v_i t + \\frac{1}{2}at^2, \\quad v_f^2 = v_i^2 + 2a\\Delta x, \\quad \\Delta x = \\frac{v_i + v_f}{2}t$$",
+    "explanation": "When acceleration $a$ is constant (Uniformly Accelerated Motion, UAM), any two known variables plus $a$ allow you to solve for the rest using one of the four kinematic equations.\n\nA crucial case of UAM near Earth's surface (ignoring air resistance) is **free fall**, where $a_y = -g = -9.8\\text{ m/s}^2$ downward regardless of object mass.\n\n[Teacher/Module Placeholder: Add vertical toss and reaction-time problems from class.]",
+    "workedExample": {
+      "problem": "A stone is dropped from rest ($v_i = 0$) from a bridge $h = 19.6\\text{ m}$ above a river. Using $g = 9.8\\text{ m/s}^2$, how long does it take to hit the water?",
+      "solutionSteps": [
+        "Set downward positive or use $\\Delta y = -19.6\\text{ m}$ and $a = -9.8\\text{ m/s}^2$.",
+        "Use $\\Delta y = v_i t + \\frac{1}{2}at^2 \\Rightarrow -19.6 = 0 + \\frac{1}{2}(-9.8)t^2$.",
+        "Solve $t^2 = \\frac{19.6}{4.9} = 4.0$, so $t = 2.0\\text{ s}$."
+      ],
+      "finalAnswer": "$t = 2.0\\text{ s}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.7-q1",
+        "prompt": "Which kinematic equation is best when time $t$ is neither given nor asked?",
+        "choices": ["$v_f^2 = v_i^2 + 2a\\Delta x$", "$v_f = v_i + at$", "$\\Delta x = v_i t + \\frac{1}{2}at^2$", "$\\Delta x = \\frac{v_i+v_f}{2}t$"],
+        "correctIndex": 0,
+        "explanation": "$v_f^2 = v_i^2 + 2a\\Delta x$ relates velocity, acceleration, and displacement without needing time $t$."
+      },
+      {
+        "id": "1.7-q2",
+        "prompt": "A ball is thrown straight upward. At its highest point, what are its velocity and acceleration?",
+        "choices": [
+          "Velocity is $0\\text{ m/s}$; acceleration is $9.8\\text{ m/s}^2$ downward",
+          "Both velocity and acceleration are zero",
+          "Velocity is $9.8\\text{ m/s}$; acceleration is zero",
+          "Velocity is upward; acceleration is upward"
+        ],
+        "correctIndex": 0,
+        "explanation": "At the peak the ball pauses momentarily ($v = 0$), while gravity continues pulling downward at $9.8\\text{ m/s}^2$."
+      }
+    ],
+    "suggestedSceneId": "p1-freefall"
+  },
+  {
+    "id": "1.8",
+    "code": "1.8",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Two-Dimensional Projectile Motion",
+    "objective": "Analyze parabolic projectile motion by separating horizontal constant velocity and vertical free-fall motion.",
+    "keyFormula": "$$v_{ix} = v_0\\cos\\theta, \\quad v_{iy} = v_0\\sin\\theta, \\quad R = \\frac{v_0^2\\sin(2\\theta)}{g}, \\quad H_{\\max} = \\frac{(v_0\\sin\\theta)^2}{2g}$$",
+    "explanation": "A projectile moves in two dimensions under gravity alone (neglecting air drag). The key principle is **independence of axes**:\n- Horizontal motion ($x$): zero acceleration ($a_x = 0$), so $v_x = v_0\\cos\\theta$ stays constant and $x = v_x t$.\n- Vertical motion ($y$): constant downward acceleration $a_y = -g = -9.8\\text{ m/s}^2$, obeying the 1D free-fall equations.\n\nOn level ground, maximum horizontal range occurs at launch angle $\\theta = 45^\\circ$.\n\n[Teacher/Module Placeholder: Add sports or volleyball serve projectile examples.]",
+    "workedExample": {
+      "problem": "A sepak takraw ball is kicked from ground level at $v_0 = 14.0\\text{ m/s}$ at $\\theta = 30^\\circ$. Find its horizontal and vertical initial velocity components.",
+      "solutionSteps": [
+        "$v_{ix} = v_0\\cos 30^\\circ = 14.0 \\times 0.866 = 12.1\\text{ m/s}$.",
+        "$v_{iy} = v_0\\sin 30^\\circ = 14.0 \\times 0.500 = 7.0\\text{ m/s}$."
+      ],
+      "finalAnswer": "$v_{ix} = 12.1\\text{ m/s}$, $v_{iy} = 7.0\\text{ m/s}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.8-q1",
+        "prompt": "Neglecting air resistance, what is the horizontal acceleration $a_x$ of a projectile in flight?",
+        "choices": ["0 m/s²", "9.8 m/s²", "-9.8 m/s²", "Depends on launch angle"],
+        "correctIndex": 0,
+        "explanation": "Gravity acts purely vertically, so horizontal acceleration is zero and $v_x$ stays constant."
+      },
+      {
+        "id": "1.8-q2",
+        "prompt": "Which launch angle gives the largest horizontal range on flat ground (without air drag)?",
+        "choices": ["45°", "30°", "60°", "90°"],
+        "correctIndex": 0,
+        "explanation": "In $R = v_0^2\\sin(2\\theta)/g$, $\\sin(2\\theta)$ reaches its maximum value of $1$ at $2\\theta = 90^\\circ$, or $\\theta = 45^\\circ$."
+      }
+    ],
+    "suggestedSceneId": "p1-projectile"
+  },
+  {
+    "id": "1.9",
+    "code": "1.9",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Circular Motion",
+    "objective": "Describe uniform circular motion using period, frequency, tangential speed, and centripetal acceleration.",
+    "keyFormula": "$$v = \\frac{2\\pi r}{T}, \\quad a_c = \\frac{v^2}{r} = \\omega^2 r, \\quad F_c = \\frac{mv^2}{r}$$",
+    "explanation": "Even when an object travels around a circle at **constant speed**, its **velocity changes** continuously because its direction turns every instant. That change in direction produces **centripetal acceleration** $a_c = v^2 / r$, always pointing **toward the center** of the circle.\n\nPeriod $T$ is the time for one complete revolution ($\\text{s}$), and frequency $f = 1/T$ is revolutions per second ($\\text{Hz}$).\n\n[Teacher/Module Placeholder: Include ferris wheel or banked road curve questions here.]",
+    "workedExample": {
+      "problem": "A $0.50\\text{ kg}$ stopper whirls in a horizontal circle of radius $r = 0.80\\text{ m}$ at constant speed $v = 4.0\\text{ m/s}$. Find its centripetal acceleration and required centripetal force.",
+      "solutionSteps": [
+        "$a_c = \\frac{v^2}{r} = \\frac{(4.0\\text{ m/s})^2}{0.80\\text{ m}} = \\frac{16.0}{0.80} = 20.0\\text{ m/s}^2$.",
+        "$F_c = m a_c = (0.50\\text{ kg})(20.0\\text{ m/s}^2) = 10.0\\text{ N}$ inward."
+      ],
+      "finalAnswer": "$a_c = 20.0\\text{ m/s}^2$, $F_c = 10.0\\text{ N}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.9-q1",
+        "prompt": "In uniform circular motion, which direction does the centripetal acceleration vector point?",
+        "choices": ["Directly toward the center of the circle", "Tangent to the circle", "Outward away from center", "Zero everywhere"],
+        "correctIndex": 0,
+        "explanation": "'Centripetal' means center-seeking; $a_c$ always points radially inward."
+      },
+      {
+        "id": "1.9-q2",
+        "prompt": "If speed $v$ doubles while radius $r$ stays the same, how does centripetal acceleration $a_c$ change?",
+        "choices": ["It becomes 4 times larger", "It doubles", "It halves", "It stays the same"],
+        "correctIndex": 0,
+        "explanation": "Because $a_c = v^2 / r$, doubling $v$ multiplies $v^2$ and therefore $a_c$ by $2^2 = 4$."
+      }
+    ],
+    "suggestedSceneId": "p1-circular"
+  },
+  {
+    "id": "1.10",
+    "code": "1.10",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Moving Reference Frames and Relative Motion",
+    "objective": "Calculate relative velocity between objects and moving reference frames in 1D and 2D.",
+    "keyFormula": "$$\\vec{v}_{A/C} = \\vec{v}_{A/B} + \\vec{v}_{B/C}$$",
+    "explanation": "Velocity depends on the observer's **reference frame**. If object $A$ moves relative to frame $B$ with velocity $\\vec{v}_{A/B}$, and frame $B$ moves relative to the ground $C$ with velocity $\\vec{v}_{B/C}$, then $A$'s velocity relative to the ground is the vector sum $\\vec{v}_{A/C} = \\vec{v}_{A/B} + \\vec{v}_{B/C}$.\n\nCommon Filipino applications include walking forward inside a moving LRT train, or a banca crossing a flowing river where the water current pushes the boat downstream.\n\n[Teacher/Module Placeholder: Add Pasig River boat-crossing or wind-drift exercises.]",
+    "workedExample": {
+      "problem": "A passenger walks toward the front of an MRT train at $v_{P/T} = 1.5\\text{ m/s}$ while the train travels east at $v_{T/G} = 18.0\\text{ m/s}$ relative to the station. What is the passenger's speed relative to the station?",
+      "solutionSteps": [
+        "Both velocities point in the same direction (east).",
+        "$v_{P/G} = v_{P/T} + v_{T/G} = 1.5 + 18.0 = 19.5\\text{ m/s}$ east."
+      ],
+      "finalAnswer": "$v_{P/G} = 19.5\\text{ m/s}$ east"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.10-q1",
+        "prompt": "Car A drives north at $60\\text{ km/h}$ and Car B drives south at $40\\text{ km/h}$. How fast does Car A appear to approach Car B?",
+        "choices": ["100 km/h", "20 km/h", "60 km/h", "40 km/h"],
+        "correctIndex": 0,
+        "explanation": "Moving in opposite directions adds their speeds: $60 - (-40) = 100\\text{ km/h}$."
+      },
+      {
+        "id": "1.10-q2",
+        "prompt": "A boat aims straight north across a river at $4.0\\text{ m/s}$ while the current flows east at $3.0\\text{ m/s}$. What is its resultant speed relative to the riverbank?",
+        "choices": ["5.0 m/s", "7.0 m/s", "1.0 m/s", "3.5 m/s"],
+        "correctIndex": 0,
+        "explanation": "Perpendicular components combine via the Pythagorean theorem: $\\sqrt{4.0^2 + 3.0^2} = 5.0\\text{ m/s}$."
+      }
+    ],
+    "suggestedSceneId": "p1-projectile"
+  },
+  {
+    "id": "1.11",
+    "code": "1.11",
+    "term": 1,
+    "termTitle": "Term 1 (Physics 1): Measurements and Translational Kinematics",
+    "course": "Physics 1",
+    "title": "Solving Problems on Uniformly Accelerated, Projectile, Circular, and Relative Motion",
+    "objective": "Integrate Term 1 kinematics equations to solve multi-step word problems with proper units.",
+    "keyFormula": "$$\\Delta x = v_i t + \\frac{1}{2}at^2, \\quad R = \\frac{v_0^2\\sin(2\\theta)}{g}, \\quad a_c = \\frac{v^2}{r}$$",
+    "explanation": "A reliable 4-step strategy solves any Term 1 kinematics problem:\n1. **Draw & Choose Axes**: Sketch the scenario, mark $+x$ and $+y$, and list given values with SI units.\n2. **Identify the Motion Type**: Is it 1D UAM, 2D projectile ($a_x = 0, a_y = -g$), uniform circular ($a_c = v^2/r$), or relative velocity ($\\vec{v}_{AC} = \\vec{v}_{AB} + \\vec{v}_{BC}$)?\n3. **Solve Symbolically First**: Pick the formula connecting given values to the unknown.\n4. **Check Units & Sense**: Verify dimensions and significant figures.\n\n[Teacher/Module Placeholder: Add Term 1 summative review problem set here.]",
+    "workedExample": {
+      "problem": "A marble rolls horizontally off a $1.25\\text{ m}$ high lab table at $v_{ix} = 3.0\\text{ m/s}$. How far horizontally from the table base does it land? ($g = 9.8\\text{ m/s}^2$)",
+      "solutionSteps": [
+        "Find fall time from vertical motion ($v_{iy} = 0$): $t = \\sqrt{\\frac{2h}{g}} = \\sqrt{\\frac{2(1.25)}{9.8}} = \\sqrt{0.255} \\approx 0.505\\text{ s}$.",
+        "Multiply by constant horizontal speed: $x = v_{ix} t = (3.0\\text{ m/s})(0.505\\text{ s}) \\approx 1.5\\text{ m}$."
+      ],
+      "finalAnswer": "$x \\approx 1.5\\text{ m}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "1.11-q1",
+        "prompt": "A marble is launched horizontally off a cliff at the same moment an identical marble is dropped straight down from the same height. Ignoring air resistance, which hits the ground first?",
+        "choices": ["Both hit at the same time", "The dropped marble", "The horizontally launched marble", "Depends on their masses"],
+        "correctIndex": 0,
+        "explanation": "Both start with $v_{iy} = 0$ and share vertical acceleration $g$, so fall time $t = \\sqrt{2h/g}$ is identical."
+      },
+      {
+        "id": "1.11-q2",
+        "prompt": "A cyclist rides at $8.0\\text{ m/s}$ around a curve of radius $16.0\\text{ m}$. What is the cyclist's centripetal acceleration?",
+        "choices": ["4.0 m/s²", "0.5 m/s²", "2.0 m/s²", "128 m/s²"],
+        "correctIndex": 0,
+        "explanation": "$a_c = v^2 / r = 8.0^2 / 16.0 = 64 / 16 = 4.0\\text{ m/s}^2$."
+      }
+    ],
+    "suggestedSceneId": "p1-projectile"
+  }
+]

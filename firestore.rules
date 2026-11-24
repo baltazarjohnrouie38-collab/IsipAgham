@@ -1,0 +1,285 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Primitive Helpers ---
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidCourse(course) {
+      return course is string && course in ['Physics 1', 'Physics 2', 'Physics 3'];
+    }
+
+    // --- Entity Validation Blueprints ---
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'nickname', 'darkMode', 'xp', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'uid', 'username', 'email', 'nickname', 'course', 'darkMode',
+          'pomodoroWorkMin', 'pomodoroBreakMin', 'dailyGoalMinutes',
+          'notificationsEnabled', 'notificationTime', 'fcmToken',
+          'xp', 'weeklyXp', 'weekKey', 'streakDays', 'lastStudyDate',
+          'todayStudyDate', 'todayStudySeconds', 'totalStudySeconds',
+          'cardsReviewedCount', 'aiQuestionsAsked', 'lessonsCompleted',
+          'classCode', 'visitedCourses', 'checklist', 'createdAt', 'updatedAt'
+        ])
+        && data.uid is string && data.uid == request.auth.uid && isValidId(data.uid)
+        && (!('username' in data) || (data.username is string && data.username.size() >= 2 && data.username.size() <= 24))
+        && (!('email' in data) || (data.email is string && data.email.size() <= 254))
+        && data.nickname is string && data.nickname.size() >= 2 && data.nickname.size() <= 24
+        && (!('course' in data) || isValidCourse(data.course))
+        && data.darkMode is bool
+        && data.xp is int && data.xp >= 0 && data.xp <= 1000000
+        && (!('weeklyXp' in data) || (data.weeklyXp is int && data.weeklyXp >= 0 && data.weeklyXp <= 1000000))
+        && (!('weekKey' in data) || (data.weekKey is string && data.weekKey.size() <= 12))
+        && (!('streakDays' in data) || (data.streakDays is int && data.streakDays >= 0 && data.streakDays <= 5000))
+        && (!('lastStudyDate' in data) || (data.lastStudyDate is string && data.lastStudyDate.size() <= 12))
+        && (!('todayStudyDate' in data) || (data.todayStudyDate is string && data.todayStudyDate.size() <= 12))
+        && (!('todayStudySeconds' in data) || (data.todayStudySeconds is int && data.todayStudySeconds >= 0 && data.todayStudySeconds <= 864000))
+        && (!('pomodoroWorkMin' in data) || (data.pomodoroWorkMin is int && data.pomodoroWorkMin >= 1 && data.pomodoroWorkMin <= 120))
+        && (!('pomodoroBreakMin' in data) || (data.pomodoroBreakMin is int && data.pomodoroBreakMin >= 1 && data.pomodoroBreakMin <= 60))
+        && (!('dailyGoalMinutes' in data) || (data.dailyGoalMinutes is int && data.dailyGoalMinutes >= 5 && data.dailyGoalMinutes <= 240))
+        && (!('notificationsEnabled' in data) || data.notificationsEnabled is bool)
+        && (!('notificationTime' in data) || (data.notificationTime is string && data.notificationTime.size() == 5 && data.notificationTime.matches('^([01]\\d|2[0-3]):([0-5]\\d)$')))
+        && (!('fcmToken' in data) || (data.fcmToken is string && data.fcmToken.size() <= 512))
+        && (!('totalStudySeconds' in data) || (data.totalStudySeconds is int && data.totalStudySeconds >= 0 && data.totalStudySeconds <= 100000000))
+        && (!('cardsReviewedCount' in data) || (data.cardsReviewedCount is int && data.cardsReviewedCount >= 0 && data.cardsReviewedCount <= 10000000))
+        && (!('aiQuestionsAsked' in data) || (data.aiQuestionsAsked is int && data.aiQuestionsAsked >= 0 && data.aiQuestionsAsked <= 1000000))
+        && (!('lessonsCompleted' in data) || (data.lessonsCompleted is list && data.lessonsCompleted.size() <= 60 && (data.lessonsCompleted.size() == 0 || (data.lessonsCompleted[0] is string && data.lessonsCompleted[0].size() <= 20))))
+        && (!('classCode' in data) || (data.classCode is string && data.classCode.size() <= 20))
+        && (!('visitedCourses' in data) || (data.visitedCourses is list && data.visitedCourses.size() <= 3 && (data.visitedCourses.size() == 0 || isValidCourse(data.visitedCourses[0]))))
+        && (!('checklist' in data) || (data.checklist is map && data.checklist.size() <= 20))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidLeaderboardEntry(data) {
+      return data.keys().hasAll(['uid', 'nickname', 'xp', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'nickname', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt'])
+        && data.uid is string && data.uid == request.auth.uid && isValidId(data.uid)
+        && data.nickname is string && data.nickname.size() >= 2 && data.nickname.size() <= 24
+        && data.xp is int && data.xp >= 0 && data.xp <= 1000000
+        && (!('weeklyXp' in data) || (data.weeklyXp is int && data.weeklyXp >= 0 && data.weeklyXp <= 1000000))
+        && (!('weekKey' in data) || (data.weekKey is string && data.weekKey.size() <= 12))
+        && (!('classCode' in data) || (data.classCode is string && data.classCode.size() <= 20))
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidStudyMaterial(data) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'course', 'sourceType', 'extractedText', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['id', 'userId', 'title', 'course', 'sourceType', 'extractedText', 'createdAt', 'updatedAt'])
+        && isValidId(data.id)
+        && data.userId is string && data.userId == request.auth.uid && isValidId(data.userId)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 160
+        && isValidCourse(data.course)
+        && data.sourceType is string && data.sourceType in ['pdf', 'pptx', 'docx', 'image', 'text', 'seed', 'lesson']
+        && data.extractedText is string && data.extractedText.size() >= 1 && data.extractedText.size() <= 100000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidStudySet(data) {
+      return data.keys().hasAll(['id', 'userId', 'materialId', 'title', 'course', 'reviewerSummary', 'flashcards', 'quizQuestions', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['id', 'userId', 'materialId', 'lessonId', 'title', 'course', 'reviewerSummary', 'flashcards', 'quizQuestions', 'createdAt', 'updatedAt'])
+        && isValidId(data.id)
+        && data.userId is string && data.userId == request.auth.uid && isValidId(data.userId)
+        && isValidId(data.materialId)
+        && (!('lessonId' in data) || (data.lessonId is string && data.lessonId.size() <= 40))
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 160
+        && isValidCourse(data.course)
+        && data.reviewerSummary is string && data.reviewerSummary.size() >= 1 && data.reviewerSummary.size() <= 30000
+        && data.flashcards is list && data.flashcards.size() <= 30 && (data.flashcards.size() == 0 || data.flashcards[0] is map)
+        && data.quizQuestions is list && data.quizQuestions.size() <= 20 && (data.quizQuestions.size() == 0 || data.quizQuestions[0] is map)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidQuizAttempt(data) {
+      return data.keys().hasAll(['id', 'userId', 'studySetId', 'studySetTitle', 'course', 'score', 'totalQuestions', 'percentage', 'xpEarned', 'createdAt'])
+        && data.keys().hasOnly(['id', 'userId', 'studySetId', 'studySetTitle', 'course', 'score', 'totalQuestions', 'percentage', 'xpEarned', 'createdAt'])
+        && isValidId(data.id)
+        && data.userId is string && data.userId == request.auth.uid && isValidId(data.userId)
+        && isValidId(data.studySetId)
+        && data.studySetTitle is string && data.studySetTitle.size() >= 1 && data.studySetTitle.size() <= 160
+        && isValidCourse(data.course)
+        && data.score is int && data.score >= 0 && data.score <= 100
+        && data.totalQuestions is int && data.totalQuestions >= 1 && data.totalQuestions <= 100
+        && data.percentage is int && data.percentage >= 0 && data.percentage <= 100
+        && data.xpEarned is int && data.xpEarned >= 0 && data.xpEarned <= 5000
+        && data.createdAt is timestamp;
+    }
+
+    function isValidStudySession(data) {
+      return data.keys().hasAll(['id', 'userId', 'type', 'durationSeconds', 'cardsReviewed', 'xpEarned', 'createdAt'])
+        && data.keys().hasOnly(['id', 'userId', 'type', 'durationSeconds', 'cardsReviewed', 'xpEarned', 'createdAt'])
+        && isValidId(data.id)
+        && data.userId is string && data.userId == request.auth.uid && isValidId(data.userId)
+        && data.type is string && data.type in ['pomodoro', 'flashcard_review']
+        && data.durationSeconds is int && data.durationSeconds >= 0 && data.durationSeconds <= 86400
+        && data.cardsReviewed is int && data.cardsReviewed >= 0 && data.cardsReviewed <= 1000
+        && data.xpEarned is int && data.xpEarned >= 0 && data.xpEarned <= 5000
+        && data.createdAt is timestamp;
+    }
+
+    function isValidAiMessage(data) {
+      return data.keys().hasAll(['id', 'userId', 'role', 'content', 'createdAt'])
+        && data.keys().hasOnly(['id', 'userId', 'role', 'content', 'materialTitle', 'createdAt'])
+        && isValidId(data.id)
+        && data.userId is string && data.userId == request.auth.uid && isValidId(data.userId)
+        && data.role is string && data.role in ['user', 'assistant']
+        && data.content is string && data.content.size() >= 1 && data.content.size() <= 20000
+        && (!('materialTitle' in data) || (data.materialTitle is string && data.materialTitle.size() <= 160))
+        && data.createdAt is timestamp;
+    }
+
+    // --- Collection Rules ---
+
+    // Private User Profile (PII isolated to owner only; no list allowed)
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isOwner(userId);
+      allow list: if false;
+      allow create: if isValidId(userId)
+        && isOwner(userId)
+        && isValidUserProfile(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId)
+        && isOwner(userId)
+        && isValidUserProfile(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'username', 'nickname', 'course', 'darkMode', 'pomodoroWorkMin',
+          'pomodoroBreakMin', 'dailyGoalMinutes', 'notificationsEnabled',
+          'notificationTime', 'fcmToken', 'xp', 'weeklyXp', 'weekKey',
+          'streakDays', 'lastStudyDate', 'todayStudyDate', 'todayStudySeconds',
+          'totalStudySeconds', 'cardsReviewedCount', 'aiQuestionsAsked',
+          'lessonsCompleted', 'classCode', 'visitedCourses', 'checklist', 'updatedAt'
+        ]);
+      allow delete: if isValidId(userId) && isOwner(userId);
+    }
+
+    // Public Leaderboard (strictly nickname + classCode + XP only, zero PII)
+    match /leaderboard/{userId} {
+      allow get: if isValidId(userId) && isSignedIn();
+      allow list: if isSignedIn() && resource.data.keys().hasOnly(['uid', 'nickname', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt']);
+      allow create: if isValidId(userId)
+        && isOwner(userId)
+        && isValidLeaderboardEntry(incoming())
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId)
+        && isOwner(userId)
+        && isValidLeaderboardEntry(incoming())
+        && incoming().uid == existing().uid
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['nickname', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt']);
+      allow delete: if isValidId(userId) && isOwner(userId);
+    }
+
+    // Study Materials
+    match /materials/{materialId} {
+      allow get: if isValidId(materialId) && isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isValidId(materialId)
+        && isSignedIn()
+        && isValidStudyMaterial(incoming())
+        && incoming().id == materialId
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(materialId)
+        && isSignedIn()
+        && existing().userId == request.auth.uid
+        && isValidStudyMaterial(incoming())
+        && incoming().id == existing().id
+        && incoming().userId == existing().userId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'course', 'extractedText', 'updatedAt']);
+      allow delete: if isValidId(materialId) && isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // Saved Study Sets (Flashcards, Reviewers, Quizzes)
+    match /studySets/{setId} {
+      allow get: if isValidId(setId) && isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isValidId(setId)
+        && isSignedIn()
+        && isValidStudySet(incoming())
+        && incoming().id == setId
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(setId)
+        && isSignedIn()
+        && existing().userId == request.auth.uid
+        && isValidStudySet(incoming())
+        && incoming().id == existing().id
+        && incoming().userId == existing().userId
+        && incoming().materialId == existing().materialId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'reviewerSummary', 'flashcards', 'quizQuestions', 'updatedAt']);
+      allow delete: if isValidId(setId) && isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // Quiz Attempts
+    match /quizAttempts/{attemptId} {
+      allow get: if isValidId(attemptId) && isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isValidId(attemptId)
+        && isSignedIn()
+        && isValidQuizAttempt(incoming())
+        && incoming().id == attemptId
+        && incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isValidId(attemptId) && isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // Study Sessions
+    match /studySessions/{sessionId} {
+      allow get: if isValidId(sessionId) && isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isValidId(sessionId)
+        && isSignedIn()
+        && isValidStudySession(incoming())
+        && incoming().id == sessionId
+        && incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isValidId(sessionId) && isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // AI Assistant Messages
+    match /aiMessages/{messageId} {
+      allow get: if isValidId(messageId) && isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isValidId(messageId)
+        && isSignedIn()
+        && isValidAiMessage(incoming())
+        && incoming().id == messageId
+        && incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isValidId(messageId) && isSignedIn() && existing().userId == request.auth.uid;
+    }
+  }
+}

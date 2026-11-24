@@ -1,0 +1,514 @@
+[
+  {
+    "id": "2.1",
+    "code": "2.1",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Simple Experiments on Forces",
+    "objective": "Observe how pushes, pulls, and balanced or unbalanced forces change an object's motion using spring scales.",
+    "keyFormula": "$$\\vec{F}_{\\text{net}} = \\sum \\vec{F}_i$$",
+    "explanation": "A **force** is a push or pull arising from an interaction between two objects, measured in newtons ($\\text{N}$). In simple experiments with spring scales, rubber bands, or pulley weights, you can observe **static equilibrium** (when balanced forces cancel, $\\sum \\vec{F} = 0$, and velocity stays constant) versus **unbalanced forces** ($\\sum \\vec{F} \\neq 0$, which accelerates the object).\n\n[Teacher/Module Placeholder: Add spring-scale pulley activity steps and student observation prompts here.]",
+    "workedExample": {
+      "problem": "Two students pull a box in opposite directions with spring scales reading $18\\text{ N}$ east and $12\\text{ N}$ west. What is the net horizontal force?",
+      "solutionSteps": [
+        "Take east as positive ($+$) and west as negative ($-$).",
+        "$F_{\\text{net}} = +18\\text{ N} + (-12\\text{ N}) = +6\\text{ N}$."
+      ],
+      "finalAnswer": "$F_{\\text{net}} = 6\\text{ N}$ east"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.1-q1",
+        "prompt": "If all forces acting on a sliding puck cancel out ($\\vec{F}_{\\text{net}} = 0$), what happens to its motion?",
+        "choices": ["It keeps moving at constant velocity or stays at rest", "It must immediately stop", "It accelerates steadily", "Its mass increases"],
+        "correctIndex": 0,
+        "explanation": "Balanced forces produce zero acceleration, so velocity does not change."
+      },
+      {
+        "id": "2.1-q2",
+        "prompt": "What SI unit is used on a calibrated classroom spring balance to measure force?",
+        "choices": ["Newton (N)", "Kilogram (kg)", "Meter (m)", "Joule (J)"],
+        "correctIndex": 0,
+        "explanation": "Force is measured in newtons ($1\\text{ N} = 1\\text{ kg}\\cdot\\text{m/s}^2$)."
+      }
+    ],
+    "suggestedSceneId": "p1-incline"
+  },
+  {
+    "id": "2.2",
+    "code": "2.2",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Types of Forces",
+    "objective": "Identify contact and non-contact forces (weight, normal, tension, friction, spring) and draw free-body diagrams.",
+    "keyFormula": "$$W = mg, \\quad f_k = \\mu_k N, \\quad f_{s,\\max} = \\mu_s N$$",
+    "explanation": "Mechanics distinguishes **non-contact (field) forces** such as gravitational weight ($\\vec{W} = m\\vec{g}$ downward) from **contact forces**:\n- **Normal force ($\\vec{N}$)**: perpendicular support force from a surface.\n- **Tension ($\\vec{T}$)**: pulling force transmitted along a taut rope or cable.\n- **Friction ($\\vec{f}$)**: parallel surface force opposing sliding ($f_k = \\mu_k N$) or preventing slipping ($f_s \\le \\mu_s N$).\n- **Elastic spring force ($F_s = -kx$)**: Hooke's law restoring force.\n\n[Teacher/Module Placeholder: Insert free-body diagram (FBD) drawing checklist here.]",
+    "workedExample": {
+      "problem": "A $5.0\\text{ kg}$ crate rests on a flat concrete floor where $\\mu_k = 0.30$. Find the normal force $N$ and kinetic friction $f_k$ while sliding ($g = 9.8\\text{ m/s}^2$).",
+      "solutionSteps": [
+        "On a horizontal floor with no vertical acceleration: $N = W = mg = (5.0)(9.8) = 49.0\\text{ N}$.",
+        "Kinetic friction: $f_k = \\mu_k N = (0.30)(49.0\\text{ N}) = 14.7\\text{ N}$."
+      ],
+      "finalAnswer": "$N = 49.0\\text{ N}$, $f_k = 14.7\\text{ N}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.2-q1",
+        "prompt": "Which direction does the normal force $\\vec{N}$ always act relative to a ramp surface?",
+        "choices": ["Perpendicular to the surface, pushing outward", "Straight down toward Earth's center", "Parallel along the ramp downward", "Along the rope tension"],
+        "correctIndex": 0,
+        "explanation": "'Normal' in geometry means perpendicular to the contact surface."
+      },
+      {
+        "id": "2.2-q2",
+        "prompt": "Which is an example of a non-contact force?",
+        "choices": ["Gravitational pull on a falling mango", "Friction under a shoe", "Normal force from a chair", "Tension in a tug-of-war rope"],
+        "correctIndex": 0,
+        "explanation": "Gravity acts across empty space without physical contact."
+      }
+    ],
+    "suggestedSceneId": "p1-incline"
+  },
+  {
+    "id": "2.3",
+    "code": "2.3",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Resultant of One- and Two-Dimensional Vectors",
+    "objective": "Add 1D and 2D force or displacement vectors using rectangular x-y components.",
+    "keyFormula": "$$R_x = \\sum F_x, \\quad R_y = \\sum F_y, \\quad R = \\sqrt{R_x^2 + R_y^2}, \\quad \\theta = \\tan^{-1}\\left(\\frac{R_y}{R_x}\\right)$$",
+    "explanation": "Forces and velocities are **vectors**—they have both magnitude and direction. To combine multiple 2D vectors accurately, resolve each vector $\\vec{F}$ into horizontal ($F_x = F\\cos\\theta$) and vertical ($F_y = F\\sin\\theta$) components, sum all $x$-components to get $R_x$ and all $y$-components to get $R_y$, and recombine with the Pythagorean theorem.\n\n[Teacher/Module Placeholder: Add polygon/parallelogram graphical method practice here.]",
+    "workedExample": {
+      "problem": "Two tugboats pull a barge: $\\vec{F}_1 = 300\\text{ N}$ due east ($0^\\circ$) and $\\vec{F}_2 = 400\\text{ N}$ due north ($90^\\circ$). Find the resultant force magnitude.",
+      "solutionSteps": [
+        "Sum components: $R_x = 300\\text{ N}$, $R_y = 400\\text{ N}$.",
+        "$R = \\sqrt{300^2 + 400^2} = \\sqrt{90{,}000 + 160{,}000} = 500\\text{ N}$."
+      ],
+      "finalAnswer": "$R = 500\\text{ N}$ at $53.1^\\circ$ north of east"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.3-q1",
+        "prompt": "A vector of magnitude $20\\text{ N}$ points at $60^\\circ$ above the $+x$ axis. What is its $x$-component?",
+        "choices": ["10 N", "17.3 N", "20 N", "0 N"],
+        "correctIndex": 0,
+        "explanation": "$F_x = F\\cos 60^\\circ = 20 \\times 0.5 = 10\\text{ N}$."
+      },
+      {
+        "id": "2.3-q2",
+        "prompt": "If $R_x = 0$ and $R_y = -15\\text{ N}$, which direction does the resultant vector point?",
+        "choices": ["Straight downward ($-y$)", "Straight upward ($+y$)", "To the right ($+x$)", "At $45^\\circ$"],
+        "correctIndex": 0,
+        "explanation": "Zero $x$-component and negative $y$-component points straight along $-y$."
+      }
+    ],
+    "suggestedSceneId": "p1-incline"
+  },
+  {
+    "id": "2.4",
+    "code": "2.4",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Newton's Laws of Motion and Their Applications",
+    "objective": "Apply Newton's First, Second, and Third Laws to blocks, ramps, and pulley systems.",
+    "keyFormula": "$$\\sum \\vec{F} = m\\vec{a}, \\quad \\vec{F}_{A\\text{ on }B} = -\\vec{F}_{B\\text{ on }A}$$",
+    "explanation": "1. **First Law (Inertia)**: An object remains at rest or in uniform straight-line motion unless acted upon by a net external force.\n2. **Second Law**: Acceleration is directly proportional to net force and inversely proportional to mass: $\\sum \\vec{F} = m\\vec{a}$.\n3. **Third Law (Action–Reaction)**: Whenever object A exerts a force on object B, B simultaneously exerts an equal-magnitude, opposite-direction force on A (acting on different objects!).\n\n[Teacher/Module Placeholder: Include Atwood machine or elevator apparent-weight examples.]",
+    "workedExample": {
+      "problem": "A $4.0\\text{ kg}$ crate is pushed across a frictionless floor by a net force of $12.0\\text{ N}$. Find its acceleration.",
+      "solutionSteps": [
+        "Apply Newton's Second Law: $a = \\frac{F_{\\text{net}}}{m} = \\frac{12.0\\text{ N}}{4.0\\text{ kg}} = 3.0\\text{ m/s}^2$."
+      ],
+      "finalAnswer": "$a = 3.0\\text{ m/s}^2$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.4-q1",
+        "prompt": "Why don't Newton's Third Law action-reaction forces cancel each other out?",
+        "choices": [
+          "They act on two different objects",
+          "One is always larger than the other",
+          "They act at different times",
+          "They always point in the same direction"
+        ],
+        "correctIndex": 0,
+        "explanation": "Force pairs act on separate objects ($A$ on $B$, and $B$ on $A$), so only the forces acting on a single object determine its acceleration."
+      },
+      {
+        "id": "2.4-q2",
+        "prompt": "A $10\\text{ kg}$ box accelerates at $2.5\\text{ m/s}^2$. What net force acts on it?",
+        "choices": ["25 N", "4 N", "12.5 N", "0.25 N"],
+        "correctIndex": 0,
+        "explanation": "$F_{\\text{net}} = m a = 10\\text{ kg} \\times 2.5\\text{ m/s}^2 = 25\\text{ N}$."
+      }
+    ],
+    "suggestedSceneId": "p1-incline"
+  },
+  {
+    "id": "2.5",
+    "code": "2.5",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Work Done by an Applied Force and Power",
+    "objective": "Calculate mechanical work done by a force at an angle and average mechanical power.",
+    "keyFormula": "$$W = Fd\\cos\\theta, \\quad P = \\frac{W}{t} = Fv\\cos\\theta$$",
+    "explanation": "In physics, mechanical **work** $W$ is energy transferred by a force acting across a displacement: $W = Fd\\cos\\theta$, measured in joules ($1\\text{ J} = 1\\text{ N}\\cdot\\text{m}$). Forces perpendicular to motion ($\\theta = 90^\\circ$, like the normal force on a level floor) do **zero** work.\n\n**Power** $P = W/t$ is the rate at which work is done, measured in watts ($1\\text{ W} = 1\\text{ J/s}$).\n\n[Teacher/Module Placeholder: Add stair-climbing power lab instructions here.]",
+    "workedExample": {
+      "problem": "A student pulls a $50\\text{ N}$ suitcase $10.0\\text{ m}$ across a flat terminal floor with a handle force of $30.0\\text{ N}$ at $60^\\circ$ above horizontal in $5.0\\text{ s}$. Find work and power.",
+      "solutionSteps": [
+        "$W = F d \\cos 60^\\circ = (30.0\\text{ N})(10.0\\text{ m})(0.50) = 150\\text{ J}$.",
+        "$P = \\frac{W}{t} = \\frac{150\\text{ J}}{5.0\\text{ s}} = 30.0\\text{ W}$."
+      ],
+      "finalAnswer": "$W = 150\\text{ J}$, $P = 30.0\\text{ W}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.5-q1",
+        "prompt": "You hold a heavy $20\\text{ kg}$ bag completely still for $30\\text{ seconds}$. How much mechanical work do you do on the bag?",
+        "choices": ["0 J", "600 J", "196 J", "5880 J"],
+        "correctIndex": 0,
+        "explanation": "Displacement $d = 0$, so $W = Fd\\cos\\theta = 0\\text{ J}$."
+      },
+      {
+        "id": "2.5-q2",
+        "prompt": "When is work done by a force negative?",
+        "choices": ["When the force has a component opposite to displacement ($\\theta > 90^\\circ$)", "When force is vertical", "Whenever speed increases", "When displacement is zero"],
+        "correctIndex": 0,
+        "explanation": "For $90^\\circ < \\theta \\le 180^\\circ$ (like friction opposing motion), $\\cos\\theta < 0$, so $W < 0$."
+      }
+    ],
+    "suggestedSceneId": "p1-incline"
+  },
+  {
+    "id": "2.6",
+    "code": "2.6",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Energy and the Conservation of Energy",
+    "objective": "Use kinetic energy, gravitational potential energy, and mechanical energy conservation to solve motion problems.",
+    "keyFormula": "$$K = \\frac{1}{2}mv^2, \\quad U_g = mgh, \\quad K_i + U_i + W_{\\text{nc}} = K_f + U_f$$",
+    "explanation": "**Kinetic energy** ($K = \\frac{1}{2}mv^2$) is energy of motion, and **gravitational potential energy** ($U_g = mgh$) is stored energy of height. When only conservative forces like gravity or springs do work ($W_{\\text{nc}} = 0$), total mechanical energy $E = K + U$ stays constant!\n\nWhen friction acts, $W_f = -f_k d$ converts mechanical energy into thermal energy.\n\n[Teacher/Module Placeholder: Add roller-coaster loop or spring-launcher problems.]",
+    "workedExample": {
+      "problem": "A $2.0\\text{ kg}$ coconut falls from a $5.0\\text{ m}$ tall tree from rest (neglect air drag, $g = 9.8\\text{ m/s}^2$). What is its speed just before hitting the ground?",
+      "solutionSteps": [
+        "Conserve mechanical energy: $mgh_i = \\frac{1}{2}mv_f^2$.",
+        "Mass $m$ cancels: $v_f = \\sqrt{2gh_i} = \\sqrt{2(9.8)(5.0)} = \\sqrt{98} \\approx 9.9\\text{ m/s}$."
+      ],
+      "finalAnswer": "$v_f \\approx 9.9\\text{ m/s}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.6-q1",
+        "prompt": "If an object's speed triples while its mass stays constant, its kinetic energy:",
+        "choices": ["Becomes 9 times larger", "Triples", "Becomes 6 times larger", "Halves"],
+        "correctIndex": 0,
+        "explanation": "Since $K = \\frac{1}{2}mv^2$, multiplying $v$ by $3$ multiplies $K$ by $3^2 = 9$."
+      },
+      {
+        "id": "2.6-q2",
+        "prompt": "As a frictionless pendulum swings downward toward the lowest point, energy transforms from:",
+        "choices": ["Potential energy to kinetic energy", "Kinetic energy to potential energy", "Thermal energy to mass", "Momentum to mass"],
+        "correctIndex": 0,
+        "explanation": "Height decreases ($U_g$ drops) while speed increases ($K$ rises), keeping $K + U_g$ constant."
+      }
+    ],
+    "suggestedSceneId": "p1-pendulum"
+  },
+  {
+    "id": "2.7",
+    "code": "2.7",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Momentum, Impulse, and Conservation of Linear Momentum",
+    "objective": "Apply the impulse-momentum theorem and conserve linear momentum in elastic and inelastic collisions.",
+    "keyFormula": "$$\\vec{p} = m\\vec{v}, \\quad \\vec{J} = \\vec{F}_{\\text{avg}}\\Delta t = \\Delta\\vec{p}, \\quad \\sum \\vec{p}_i = \\sum \\vec{p}_f$$",
+    "explanation": "**Linear momentum** $\\vec{p} = m\\vec{v}$ ($\\text{kg}\\cdot\\text{m/s}$) measures how hard it is to stop a moving object. **Impulse** $\\vec{J} = \\vec{F}_{\\text{avg}}\\Delta t$ equals the change in momentum $\\Delta \\vec{p}$. Airbags and padded helmets lengthen collision time $\\Delta t$ to reduce peak impact force!\n\nIn an isolated system with zero net external force, total momentum is conserved in all collisions—both **elastic** (kinetic energy also conserved) and **inelastic** (objects may stick together).\n\n[Teacher/Module Placeholder: Add 1D billiard or jeepney bumper collision exercises.]",
+    "workedExample": {
+      "problem": "A $2.0\\text{ kg}$ cart moving at $+4.0\\text{ m/s}$ collides and sticks to a stationary $2.0\\text{ kg}$ cart. Find their combined final velocity.",
+      "solutionSteps": [
+        "Conserve momentum: $m_1 v_1 + m_2 v_2 = (m_1 + m_2) v_f$.",
+        "$(2.0)(4.0) + (2.0)(0) = (4.0) v_f \\Rightarrow v_f = \\frac{8.0}{4.0} = +2.0\\text{ m/s}$."
+      ],
+      "finalAnswer": "$v_f = +2.0\\text{ m/s}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.7-q1",
+        "prompt": "How does a car airbag protect passengers during a crash?",
+        "choices": [
+          "It increases collision duration $\\Delta t$ to reduce average impact force",
+          "It decreases the car's mass",
+          "It increases the change in momentum $\\Delta p$",
+          "It eliminates gravity"
+        ],
+        "correctIndex": 0,
+        "explanation": "For a fixed $\\Delta p = F_{\\text{avg}}\\Delta t$, a longer stopping time $\\Delta t$ lowers peak force $F_{\\text{avg}}$."
+      },
+      {
+        "id": "2.7-q2",
+        "prompt": "What quantity is conserved in BOTH elastic and perfectly inelastic collisions (with zero external force)?",
+        "choices": ["Total linear momentum", "Total kinetic energy", "Individual speeds", "Mechanical work"],
+        "correctIndex": 0,
+        "explanation": "Total momentum is conserved in every isolated collision; kinetic energy is conserved only in elastic collisions."
+      }
+    ],
+    "suggestedSceneId": "p1-collisions"
+  },
+  {
+    "id": "2.8",
+    "code": "2.8",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Rotational Motion",
+    "objective": "Relate angular displacement, angular velocity, and angular acceleration to linear motion along a rotating rim.",
+    "keyFormula": "$$\\omega = \\frac{\\Delta\\theta}{\\Delta t}, \\quad \\alpha = \\frac{\\Delta\\omega}{\\Delta t}, \\quad v = r\\omega, \\quad a_t = r\\alpha$$",
+    "explanation": "Rotational kinematics mirrors 1D linear kinematics using radians ($1\\text{ rev} = 2\\pi\\text{ rad}$):\n- Angular position $\\theta$ (rad), angular velocity $\\omega$ (rad/s), angular acceleration $\\alpha$ (rad/s²).\n- Every point on a spinning wheel shares the same $\\omega$ and $\\alpha$, while its tangential speed $v = r\\omega$ grows with radius $r$.\n\n[Teacher/Module Placeholder: Include ceiling fan or bicycle wheel rotational kinematics drills.]",
+    "workedExample": {
+      "problem": "An electric fan blade speeds up uniformly from rest to $\\omega_f = 20.0\\text{ rad/s}$ in $t = 4.0\\text{ s}$. What is its angular acceleration $\\alpha$ and total angle $\\theta$ turned?",
+      "solutionSteps": [
+        "$\\alpha = \\frac{\\omega_f - \\omega_i}{t} = \\frac{20.0 - 0}{4.0} = 5.0\\text{ rad/s}^2$.",
+        "$\\theta = \\omega_i t + \\frac{1}{2}\\alpha t^2 = 0 + \\frac{1}{2}(5.0)(4.0)^2 = 40.0\\text{ rad}$."
+      ],
+      "finalAnswer": "$\\alpha = 5.0\\text{ rad/s}^2$, $\\theta = 40.0\\text{ rad}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.8-q1",
+        "prompt": "One complete revolution ($360^\\circ$) equals how many radians?",
+        "choices": ["$2\\pi$ rad", "$\\pi$ rad", "$\\pi/2$ rad", "$1$ rad"],
+        "correctIndex": 0,
+        "explanation": "Circumference $2\\pi r$ divided by radius $r$ gives $2\\pi$ radians per full revolution."
+      },
+      {
+        "id": "2.8-q2",
+        "prompt": "Two ants sit on a spinning vinyl record: Ant A near the center ($r=4\\text{ cm}$) and Ant B near the edge ($r=12\\text{ cm}$). Which ant has greater linear speed $v$?",
+        "choices": ["Ant B near the edge", "Ant A near the center", "Both have equal linear speed", "Neither moves"],
+        "correctIndex": 0,
+        "explanation": "Both have the same $\\omega$, and since $v = r\\omega$, larger radius $r$ gives higher linear speed."
+      }
+    ],
+    "suggestedSceneId": "p1-torque"
+  },
+  {
+    "id": "2.9",
+    "code": "2.9",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Force and Torque",
+    "objective": "Compute torque from force, lever arm, and angle, and apply rotational equilibrium conditions.",
+    "keyFormula": "$$\\tau = r F \\sin\\theta, \\quad \\sum \\tau = 0 \\text{ (rotational equilibrium)}$$",
+    "explanation": "**Torque** ($\\tau$, in $\\text{N}\\cdot\\text{m}$) measures how effectively a force twists or rotates an object around a pivot axis. It depends on distance from the pivot $r$, force magnitude $F$, and the angle $\\theta$ between $\\vec{r}$ and $\\vec{F}$ ($\\tau = rF\\sin\\theta$). Pushing at the doorknob ($r$ large, $\\theta = 90^\\circ$) maximizes torque!\n\n[Teacher/Module Placeholder: Add seesaw balance or wrench torque problems.]",
+    "workedExample": {
+      "problem": "A mechanic pushes perpendicular ($\\theta = 90^\\circ$) on a $0.35\\text{ m}$ wrench with a force of $40.0\\text{ N}$. Find the torque applied.",
+      "solutionSteps": [
+        "$\\tau = r F \\sin 90^\\circ = (0.35\\text{ m})(40.0\\text{ N})(1) = 14.0\\text{ N}\\cdot\\text{m}$."
+      ],
+      "finalAnswer": "$\\tau = 14.0\\text{ N}\\cdot\\text{m}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.9-q1",
+        "prompt": "When you push directly toward the hinges of a door ($\\theta = 180^\\circ$), how much torque do you produce?",
+        "choices": ["Zero", "Maximum possible torque", "Equal to your weight", "Negative infinite torque"],
+        "correctIndex": 0,
+        "explanation": "Because $\\sin 180^\\circ = 0$, a force aimed straight through the pivot creates zero torque."
+      },
+      {
+        "id": "2.9-q2",
+        "prompt": "Why are door handles placed near the outer edge opposite the hinges?",
+        "choices": ["To maximize lever arm $r$ for a given push force", "To decrease friction at the hinges", "To increase door mass", "To eliminate angular velocity"],
+        "correctIndex": 0,
+        "explanation": "Larger distance $r$ from the hinge pivot produces greater torque $\\tau = rF\\sin\\theta$ with less effort."
+      }
+    ],
+    "suggestedSceneId": "p1-torque"
+  },
+  {
+    "id": "2.10",
+    "code": "2.10",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Mass and Moment of Inertia",
+    "objective": "Calculate rotational inertia for point masses and common rigid shapes, and relate net torque to angular acceleration.",
+    "keyFormula": "$$I = \\sum m_i r_i^2, \\quad I_{\\text{disk}} = \\frac{1}{2}MR^2, \\quad \\sum\\tau = I\\alpha$$",
+    "explanation": "Just as mass $m$ resists linear acceleration, **moment of inertia** $I$ (in $\\text{kg}\\cdot\\text{m}^2$) resists rotational acceleration. Crucially, $I$ depends on **how far mass sits from the rotation axis** ($r^2$): a hollow hoop ($I = MR^2$) is harder to spin up than a solid disk ($I = \\frac{1}{2}MR^2$) of the exact same mass and radius.\n\nNewton's Second Law for rotation is $\\sum \\tau = I\\alpha$.\n\n[Teacher/Module Placeholder: Insert rolling race (hoop vs sphere) discussion prompts.]",
+    "workedExample": {
+      "problem": "A solid flywheel disk of mass $M = 4.0\\text{ kg}$ and radius $R = 0.50\\text{ m}$ experiences a net torque of $3.0\\text{ N}\\cdot\\text{m}$. Find its moment of inertia and angular acceleration.",
+      "solutionSteps": [
+        "$I = \\frac{1}{2}MR^2 = \\frac{1}{2}(4.0\\text{ kg})(0.50\\text{ m})^2 = 0.50\\text{ kg}\\cdot\\text{m}^2$.",
+        "$\\alpha = \\frac{\\tau}{I} = \\frac{3.0}{0.50} = 6.0\\text{ rad/s}^2$."
+      ],
+      "finalAnswer": "$I = 0.50\\text{ kg}\\cdot\\text{m}^2$, $\\alpha = 6.0\\text{ rad/s}^2$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.10-q1",
+        "prompt": "A solid cylinder and a thin hoop of equal mass $M$ and radius $R$ roll from rest down the same ramp. Which reaches the bottom first?",
+        "choices": ["The solid cylinder (smaller $I$)", "The thin hoop", "Both tie", "Neither rolls"],
+        "correctIndex": 0,
+        "explanation": "The solid cylinder has smaller moment of inertia ($\\frac{1}{2}MR^2 < MR^2$), so less energy goes into spinning and more into forward speed."
+      },
+      {
+        "id": "2.10-q2",
+        "prompt": "What are the SI units of moment of inertia $I$?",
+        "choices": ["$\\text{kg}\\cdot\\text{m}^2$", "$\\text{kg}\\cdot\\text{m/s}$", "$\\text{N}\\cdot\\text{m}$", "$\\text{rad/s}^2$"],
+        "correctIndex": 0,
+        "explanation": "From $I = \\sum m r^2$, the SI units are $\\text{kg}\\cdot\\text{m}^2$."
+      }
+    ],
+    "suggestedSceneId": "p1-torque"
+  },
+  {
+    "id": "2.11",
+    "code": "2.11",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Angular Momentum",
+    "objective": "Calculate angular momentum and explain conservation of angular momentum in spinning systems.",
+    "keyFormula": "$$L = I\\omega, \\quad \\tau_{\\text{net}} = \\frac{\\Delta L}{\\Delta t}, \\quad I_i\\omega_i = I_f\\omega_f$$",
+    "explanation": "**Angular momentum** $L = I\\omega$ ($\\text{kg}\\cdot\\text{m}^2/\\text{s}$) is the rotational counterpart of linear momentum. When net external torque is zero ($\\sum \\tau_{\\text{ext}} = 0$), total angular momentum is conserved: $I_i\\omega_i = I_f\\omega_f$.\n\nWhen a figure skater or diver pulls their arms inward, their moment of inertia $I$ drops, so angular velocity $\\omega$ automatically increases to keep $L$ constant.\n\n[Teacher/Module Placeholder: Add rotating stool classroom demo questions here.]",
+    "workedExample": {
+      "problem": "A diver in mid-air has $I_i = 6.0\\text{ kg}\\cdot\\text{m}^2$ while spinning at $\\omega_i = 2.0\\text{ rad/s}$. She tucks into a ball reducing $I_f = 2.4\\text{ kg}\\cdot\\text{m}^2$. Find her new angular speed $\\omega_f$.",
+      "solutionSteps": [
+        "Conserve angular momentum: $I_i\\omega_i = I_f\\omega_f$.",
+        "$(6.0)(2.0) = (2.4)\\omega_f \\Rightarrow \\omega_f = \\frac{12.0}{2.4} = 5.0\\text{ rad/s}$."
+      ],
+      "finalAnswer": "$\\omega_f = 5.0\\text{ rad/s}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.11-q1",
+        "prompt": "A spinning ice skater extends her arms outward. Assuming negligible ice friction, her spin rate $\\omega$ will:",
+        "choices": ["Decrease", "Increase", "Stay identical", "Reverse direction"],
+        "correctIndex": 0,
+        "explanation": "Extending arms increases moment of inertia $I$; to conserve $L = I\\omega$, $\\omega$ must decrease."
+      },
+      {
+        "id": "2.11-q2",
+        "prompt": "Under what condition is a system's total angular momentum conserved?",
+        "choices": ["Net external torque is zero", "Net force is nonzero", "Moment of inertia is constant", "Speed is zero"],
+        "correctIndex": 0,
+        "explanation": "Since $\\tau_{\\text{ext}} = \\Delta L/\\Delta t$, $L$ stays constant when $\\tau_{\\text{ext}} = 0$."
+      }
+    ],
+    "suggestedSceneId": "p1-torque"
+  },
+  {
+    "id": "2.12",
+    "code": "2.12",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Oscillations",
+    "objective": "Define periodic motion, amplitude, period, frequency, and damping in everyday oscillating systems.",
+    "keyFormula": "$$f = \\frac{1}{T}, \\quad \\omega = 2\\pi f = \\frac{2\\pi}{T}$$",
+    "explanation": "**Oscillation** is repetitive back-and-forth motion around a stable equilibrium position—like a guitar string, a playground swing, or a swaying tall building during wind gusts.\n- **Amplitude ($A$)**: maximum displacement from equilibrium.\n- **Period ($T$)**: time for one complete cycle ($\\text{s}$).\n- **Frequency ($f$)**: cycles per second ($\\text{Hz} = \\text{s}^{-1}$), where $f = 1/T$.\n\nReal oscillations gradually lose mechanical energy to friction or air drag (**damping**), while periodic pushes at the natural frequency cause **resonance**.\n\n[Teacher/Module Placeholder: Add local bridge or musical instrument resonance notes.]",
+    "workedExample": {
+      "problem": "A pendulum makes $20$ complete swings in $25.0\\text{ s}$. Find its period $T$ and frequency $f$.",
+      "solutionSteps": [
+        "$T = \\frac{\\text{total time}}{\\text{cycles}} = \\frac{25.0\\text{ s}}{20} = 1.25\\text{ s}$.",
+        "$f = \\frac{1}{T} = \\frac{1}{1.25\\text{ s}} = 0.80\\text{ Hz}$."
+      ],
+      "finalAnswer": "$T = 1.25\\text{ s}$, $f = 0.80\\text{ Hz}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.12-q1",
+        "prompt": "If a vibrating ruler has a frequency of $4.0\\text{ Hz}$, what is its period $T$?",
+        "choices": ["0.25 s", "4.0 s", "0.40 s", "2.0 s"],
+        "correctIndex": 0,
+        "explanation": "$T = 1/f = 1/4.0 = 0.25\\text{ s}$."
+      },
+      {
+        "id": "2.12-q2",
+        "prompt": "What causes a swing to gradually stop moving when no one pushes it?",
+        "choices": ["Damping from air resistance and pivot friction", "Conservation of energy increasing amplitude", "Resonance", "Centripetal force"],
+        "correctIndex": 0,
+        "explanation": "Damping dissipates mechanical energy into thermal energy."
+      }
+    ],
+    "suggestedSceneId": "p1-pendulum"
+  },
+  {
+    "id": "2.13",
+    "code": "2.13",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Simple Harmonic Motion",
+    "objective": "Identify the restoring-force condition for SHM and calculate period for mass-spring and simple pendulum systems.",
+    "keyFormula": "$$F_s = -kx, \\quad T_{\\text{spring}} = 2\\pi\\sqrt{\\frac{m}{k}}, \\quad T_{\\text{pendulum}} = 2\\pi\\sqrt{\\frac{L}{g}}$$",
+    "explanation": "**Simple Harmonic Motion (SHM)** occurs whenever the restoring force is directly proportional to displacement from equilibrium and points back toward equilibrium: $F = -kx$.\n- For a **mass on a spring**: $T = 2\\pi\\sqrt{m/k}$ (depends on mass $m$ and spring constant $k$, NOT amplitude!).\n- For a **simple pendulum** at small angles ($\\theta < 15^\\circ$): $T = 2\\pi\\sqrt{L/g}$ (depends on length $L$ and $g$, NOT bob mass!).\n\n[Teacher/Module Placeholder: Insert small-angle pendulum lab data analysis guide.]",
+    "workedExample": {
+      "problem": "How long should a simple pendulum be to have a period of $T = 2.00\\text{ s}$ where $g = 9.80\\text{ m/s}^2$?",
+      "solutionSteps": [
+        "Square $T = 2\\pi\\sqrt{L/g}$ to solve for $L = \\frac{g T^2}{4\\pi^2}$.",
+        "$L = \\frac{9.80 \\times (2.00)^2}{4\\pi^2} = \\frac{39.2}{39.48} \\approx 0.993\\text{ m}$."
+      ],
+      "finalAnswer": "$L \\approx 0.99\\text{ m}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.13-q1",
+        "prompt": "If you replace a pendulum's metal bob with one twice as heavy (keeping length $L$ fixed), its period $T$:",
+        "choices": ["Stays the same", "Doubles", "Halves", "Increases by $\\sqrt{2}$"],
+        "correctIndex": 0,
+        "explanation": "In $T = 2\\pi\\sqrt{L/g}$, pendulum mass cancels out and does not affect the period."
+      },
+      {
+        "id": "2.13-q2",
+        "prompt": "How can you double the period of a mass-spring oscillator?",
+        "choices": ["Make the mass 4 times larger", "Double the mass", "Double the amplitude", "Double the spring constant $k$"],
+        "correctIndex": 0,
+        "explanation": "Because $T \\propto \\sqrt{m}$, multiplying $m$ by $4$ multiplies $T$ by $\\sqrt{4} = 2$."
+      }
+    ],
+    "suggestedSceneId": "p1-pendulum"
+  },
+  {
+    "id": "2.14",
+    "code": "2.14",
+    "term": 2,
+    "termTitle": "Term 2 (Physics 1): Dynamics",
+    "course": "Physics 1",
+    "title": "Displacement, Velocity, and Acceleration in Simple Harmonic Motion",
+    "objective": "Use sinusoidal equations to find position, velocity, and acceleration at any instant in SHM.",
+    "keyFormula": "$$x(t) = A\\cos(\\omega t), \\quad v(t) = -\\omega A\\sin(\\omega t), \\quad a(t) = -\\omega^2 x(t)$$",
+    "explanation": "In SHM, position, velocity, and acceleration vary smoothly as sine and cosine waves with angular frequency $\\omega = 2\\pi f$:\n- **At the turning points ($x = \\pm A$)**: speed is momentarily **zero** ($v = 0$), while restoring force and acceleration reach their **maximum magnitude** ($a_{\\max} = \\omega^2 A$).\n- **At equilibrium ($x = 0$)**: acceleration is **zero** ($a = 0$), while speed reaches its **maximum** ($v_{\\max} = \\omega A$).\n\n[Teacher/Module Placeholder: Add phase-constant $\\phi$ graphing exercises if covered in class.]",
+    "workedExample": {
+      "problem": "A spring oscillator moves in SHM with amplitude $A = 0.10\\text{ m}$ and angular frequency $\\omega = 6.0\\text{ rad/s}$. Find its maximum speed $v_{\\max}$ and maximum acceleration $a_{\\max}$.",
+      "solutionSteps": [
+        "$v_{\\max} = \\omega A = (6.0\\text{ rad/s})(0.10\\text{ m}) = 0.60\\text{ m/s}$.",
+        "$a_{\\max} = \\omega^2 A = (6.0)^2(0.10) = 3.6\\text{ m/s}^2$."
+      ],
+      "finalAnswer": "$v_{\\max} = 0.60\\text{ m/s}$, $a_{\\max} = 3.6\\text{ m/s}^2$"
+    },
+    "checkQuestions": [
+      {
+        "id": "2.14-q1",
+        "prompt": "Where in SHM does the oscillating mass reach its maximum speed?",
+        "choices": ["As it passes through equilibrium ($x = 0$)", "At the maximum positive displacement ($+A$)", "At the minimum displacement ($-A$)", "Speed is constant everywhere"],
+        "correctIndex": 0,
+        "explanation": "At $x = 0$, all potential energy has converted to kinetic energy, giving $v_{\\max} = \\omega A$."
+      },
+      {
+        "id": "2.14-q2",
+        "prompt": "Where does the oscillating mass experience its largest acceleration magnitude?",
+        "choices": ["At the endpoints ($x = \\pm A$)", "At equilibrium ($x = 0$)", "Only halfway to the endpoint", "Acceleration is zero everywhere"],
+        "correctIndex": 0,
+        "explanation": "Because $a = -\\omega^2 x$, acceleration magnitude is largest where $|x| = A$ is largest."
+      }
+    ],
+    "suggestedSceneId": "p1-pendulum"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "name": "IsipAgham",
+  "description": "Aral Physics, libre para sa lahat. Free Grade 12 DepEd Physics 1, 2, and 3 study companion with flashcards, quizzes, 3D visualizers, and AI physics tutoring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
