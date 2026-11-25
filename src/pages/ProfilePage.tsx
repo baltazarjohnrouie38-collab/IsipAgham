@@ -68,6 +68,7 @@ export const ProfilePage: React.FC = () => {
     setVoice,
     speaking: previewSpeaking,
     loading: previewLoading,
+    speechError: previewError,
     speak: previewSpeak,
     stop: previewStop,
   } = useSpeech();
@@ -678,6 +679,11 @@ export const ProfilePage: React.FC = () => {
                   </Button>
                 </div>
               </div>
+              {previewError && (
+                <p className="text-xs font-medium text-red-600 dark:text-red-400">
+                  {previewError}
+                </p>
+              )}
 
               <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
                 IsipAgham can be added to your Android or iPhone home screen for full-screen app launch. An active internet connection is required (no offline mode).

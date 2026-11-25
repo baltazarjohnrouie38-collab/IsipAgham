@@ -222,8 +222,27 @@ function renderBoldText(text: string): React.ReactNode[] {
         </strong>
       );
     }
-    return <React.Fragment key={idx}>{part}</React.Fragment>;
+    // Clean up stray unmatched bold markers when **...** spans across a $math$ segment
+    return <React.Fragment key={idx}>{part.replace(/\*\*/g, '')}</React.Fragment>;
   });
+}
+
+function preprocessMarkdownMath(raw: string): string {
+  return raw
+    // Convert \[ ... \] (even multi-line) into single-line $$ ... $$ blocks
+    .replace(/\\\[([\s\S]*?)\\\]/g, (_m, inner: string) => {
+      const compact = inner.replace(/\s*\n\s*/g, ' ').trim();
+      return `\n$$${compact}$$\n`;
+    })
+    // Collapse multi-line $$ ... $$ blocks into single-line $$ ... $$ so line splitting never breaks them
+    .replace(/\$\$([\s\S]*?)\$\$/g, (_m, inner: string) => {
+      const compact = inner.replace(/\s*\n\s*/g, ' ').trim();
+      return `\n$$${compact}$$\n`;
+    })
+    // Unwrap bold ** around inline or block math like **$F = ma$**
+    .replace(/\*\*(\$\$?[^$]+\$\$?)\*\*/g, '$1')
+    // Strip stray backticks around LaTeX formulas
+    .replace(/`(\$[^`]+\$)`/g, '$1');
 }
 
 interface MathTextProps {
@@ -232,7 +251,8 @@ interface MathTextProps {
 }
 
 export const MathText: React.FC<MathTextProps> = ({ text, className = '' }) => {
-  const lines = text.split('\n');
+  const prepared = preprocessMarkdownMath(text);
+  const lines = prepared.split('\n');
 
   return (
     <div className={`space-y-2 break-words ${className}`}>
@@ -240,6 +260,32 @@ export const MathText: React.FC<MathTextProps> = ({ text, className = '' }) => {
         const trimmed = rawLine.trim();
         if (!trimmed) {
           return <div key={lineIdx} className="h-1.5" />;
+        }
+
+        if (/^-{3,}$/.test(trimmed)) {
+          return <hr key={lineIdx} className="border-stone-200 dark:border-neutral-700 my-2" />;
+        }
+
+        const headingMatch = trimmed.match(/^#{1,4}\s+(.+)$/);
+        if (headingMatch) {
+          const headingSegments = splitMathSegments(headingMatch[1]);
+          return (
+            <h3
+              key={lineIdx}
+              className="font-display text-base sm:text-lg font-bold text-slate-950 dark:text-white pt-1.5"
+            >
+              {headingSegments.map((seg, segIdx) => {
+                if (seg.kind === 'inline-math' || seg.kind === 'block-math') {
+                  return <KatexNode key={segIdx} expr={seg.value} />;
+                }
+                return (
+                  <React.Fragment key={segIdx}>
+                    {renderBoldText(seg.value)}
+                  </React.Fragment>
+                );
+              })}
+            </h3>
+          );
         }
 
         const segments = splitMathSegments(rawLine);

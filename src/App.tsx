@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
@@ -110,6 +110,10 @@ const AppRoutes: React.FC = () => {
 
 export default function App() {
   useGlobalClickSound();
+
+  useEffect(() => {
+    document.title = 'IsipAgham';
+  }, []);
 
   return (
     <ErrorBoundary>

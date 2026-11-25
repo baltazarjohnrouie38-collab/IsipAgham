@@ -15,8 +15,8 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { ALL_LESSONS, buildLessonStudyText, getLessonById } from '../data/lessons';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
-import { useSpeech } from '../hooks/useSpeech';
-import { askPhysicsTutorApi } from '../lib/api';
+import { NATURAL_VOICE_OPTIONS, useSpeech } from '../hooks/useSpeech';
+import { askPhysicsTutorApi, type NaturalVoiceName } from '../lib/api';
 import {
   clearAiMessages,
   saveAiMessage,
@@ -53,7 +53,16 @@ const STARTER_PROMPTS = [
 export const AiTutorPage: React.FC = () => {
   const { user, profile, awardXp, toggleChecklistItem } = useAuth();
   const isOnline = useOnlineStatus();
-  const { supported: ttsSupported, speaking, loading: ttsLoading, speak, stop } = useSpeech();
+  const {
+    supported: ttsSupported,
+    speaking,
+    loading: ttsLoading,
+    speechError,
+    voice,
+    setVoice,
+    speak,
+    stop,
+  } = useSpeech();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [materials, setMaterials] = useState<StudyMaterial[]>([]);
@@ -170,7 +179,13 @@ export const AiTutorPage: React.FC = () => {
     }
 
     const useSimple = forceSimpleMode !== undefined ? forceSimpleMode : simpleMode;
-    const recentHistory = messages.slice(-6).map((m) => ({
+    const historySource =
+      skipSaveUserMessage &&
+      messages.length > 0 &&
+      messages[messages.length - 1].role === 'user'
+        ? messages.slice(0, -1)
+        : messages;
+    const recentHistory = historySource.slice(-6).map((m) => ({
       role: m.role,
       content: m.content,
     }));
@@ -291,6 +306,21 @@ export const AiTutorPage: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {ttsSupported && (
+              <select
+                aria-label="Tutor reading voice"
+                value={voice}
+                onChange={(e) => setVoice(e.target.value as NaturalVoiceName)}
+                className="min-h-[44px] rounded-xl border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 text-xs sm:text-sm font-semibold text-slate-700 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              >
+                {NATURAL_VOICE_OPTIONS.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    Voice: {v.label}
+                  </option>
+                ))}
+              </select>
+            )}
+
             <button
               type="button"
               onClick={() => setSimpleMode((v) => !v)}
@@ -351,18 +381,20 @@ export const AiTutorPage: React.FC = () => {
         )}
       </Card>
 
-      {error && (
+      {(error || speechError) && (
         <AlertBanner
-          tone={/traffic|limit|moment|busy/i.test(error) ? 'warning' : 'error'}
+          tone={/traffic|limit|moment|busy/i.test(error || speechError || '') ? 'warning' : 'error'}
           title={
-            /traffic|limit|moment|busy/i.test(error)
+            speechError && !error
+              ? 'Voice Playback Issue'
+              : /traffic|limit|moment|busy/i.test(error || '')
               ? 'AI Tutor Temporarily Busy'
               : 'Assistant Error'
           }
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <span>{error}</span>
-            {failedRetry && isOnline && (
+            <span>{error || speechError}</span>
+            {error && failedRetry && isOnline && (
               <Button
                 type="button"
                 variant="outline"

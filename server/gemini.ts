@@ -436,17 +436,21 @@ export async function askPhysicsTutor(params: {
     : '';
 
   const simpleInstruction = params.simpleMode
-    ? '\n7. EXPLAIN LIKE I AM 12 MODE IS ON: Use everyday, warm, relatable analogies (like riding a jeepney, basketball, or boiling water), very short sentences, zero jargon without explaining it first, and still show the formula clearly in $...$.'
+    ? '\n8. EXPLAIN LIKE I AM 12 MODE IS ON: Use everyday, warm, relatable analogies (like riding a jeepney, basketball, or boiling water), very short sentences, zero jargon without explaining it first, and still show the formula clearly in $...$.'
     : '';
 
   const systemInstruction = `You are IsipAgham's Physics Study Assistant for Grade 12 Academic Track students in the Philippines.
 Rules you MUST follow strictly:
-1. Answer ONLY topics within DepEd Senior High School General Physics 1, Physics 2, and Physics 3 (mechanics, vectors, kinematics, Newton's laws, work/energy, momentum, rotational motion, gravitation, fluids, thermodynamics, waves/optics, electrostatics, DC circuits, magnetism, electromagnetic induction). If a question is outside Physics 1–3, politely explain that you only assist with Grade 12 Physics 1 to 3 topics.
-2. Use simple, encouraging language suitable for Grade 12 students. Break explanations into easy numbered steps.
-3. Always show relevant physics formulas wrapped in KaTeX $...$ or $$...$$ with explicit SI units (e.g., $F = ma$ in $\\text{N}$, $v = d/t$ in $\\text{m/s}$).
-4. When a Selected Lesson or Student Study Material is provided, prefer and reference that material first when it is relevant to the question.
-5. If you are unsure or the material does not cover a specific class detail, state clearly that you are unsure and advise confirming with their Physics teacher.
-6. Never ask for or repeat personal information.${simpleInstruction}`;
+1. Answer topics within DepEd Senior High School General Physics 1, Physics 2, and Physics 3 (measurement, units, vectors, kinematics, Newton's laws, work/energy, momentum, rotational motion, gravitation, fluids, thermodynamics, waves/optics, electrostatics, DC circuits, magnetism, electromagnetic induction, and foundational physics math). If a question is completely outside physics/science, warmly explain that you specialize in Grade 12 Physics 1–3 and invite a physics question.
+2. Give accurate, clear, encouraging, step-by-step answers tailored for Grade 12 students. For numerical/problem-solving questions, organize neatly with **Given:**, **Formula:**, **Step-by-step Solution:**, and **Final Answer:** (with the exact numerical value rounded cleanly and explicit SI units). Double-check degree vs. radian trig and arithmetic before writing the final value.
+3. FORMATTING RULES FOR CLEAN RENDERING:
+   - Wrap inline variables, units, and short equations in single-dollar KaTeX $...$ (e.g., $F = ma$, $v_0 = 20\\text{ m/s}$, $\\theta = 35^\\circ$).
+   - Put standalone display equations on their own single line using $$...$$ (NEVER split $$ across multiple lines, NEVER use \\[...\\], NEVER use \\begin{aligned}, and NEVER wrap bold **...** around $...$).
+   - Do NOT use markdown headings (#, ##, ###) or markdown tables (|---|). Use **bold labels** and clean numbered steps instead.
+4. Keep explanations focused, conversational, and easy to follow—avoid repeating filler warnings.
+5. When a Selected Lesson or Student Study Material is provided, prefer and reference that material first when it is relevant to the question.
+6. If a specific class policy or missing lab value is not provided, state clearly what assumption is used (e.g., $g = 9.8\\text{ m/s}^2$) and advise confirming with their Physics teacher.
+7. Never ask for or repeat personal information.${simpleInstruction}`;
 
   const promptParts: string[] = [];
   if (recentHistory) {
@@ -462,7 +466,7 @@ Rules you MUST follow strictly:
     config: {
       systemInstruction,
       ...(model === PRIMARY_MODEL
-        ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } }
+        ? { thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } }
         : {}),
     },
   }));
@@ -478,17 +482,71 @@ Rules you MUST follow strictly:
   return answer.slice(0, 18000);
 }
 
-const TTS_MODEL = 'gemini-3.8-flash-lite-tts';
+const TTS_PRIMARY_MODEL = 'gemini-3.8-flash-lite-tts';
+const TTS_FALLBACK_MODEL = 'gemini-3.8-flash-tts';
 const ALLOWED_TTS_VOICES = new Set(['Zephyr', 'Kore', 'Puck', 'Charon', 'Fenrir']);
+const ELEVENLABS_TO_GEMINI_VOICE: Record<string, string> = {
+  Aria: 'Zephyr',
+  Sarah: 'Kore',
+  Liam: 'Puck',
+  Brian: 'Charon',
+  George: 'Fenrir',
+};
+
+function wrapRawPcmAsWav(rawBytes: Buffer, mimeType: string): { buffer: Buffer; mimeType: string } {
+  const isAlreadyWav =
+    rawBytes.length >= 12 &&
+    rawBytes.subarray(0, 4).toString('ascii') === 'RIFF' &&
+    rawBytes.subarray(8, 12).toString('ascii') === 'WAVE';
+
+  if (isAlreadyWav || /audio\/(mpeg|mp3|ogg|webm|mp4|aac)/i.test(mimeType)) {
+    return { buffer: rawBytes, mimeType: mimeType || 'audio/wav' };
+  }
+
+  const rateMatch = mimeType.match(/rate=(\d+)/i);
+  const sampleRate = rateMatch ? Number(rateMatch[1]) : 24000;
+  const numChannels = 1;
+  const bitsPerSample = 16;
+  const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+  const blockAlign = numChannels * (bitsPerSample / 8);
+
+  const header = Buffer.alloc(44);
+  header.write('RIFF', 0, 'ascii');
+  header.writeUInt32LE(36 + rawBytes.length, 4);
+  header.write('WAVE', 8, 'ascii');
+  header.write('fmt ', 12, 'ascii');
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20);
+  header.writeUInt16LE(numChannels, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(byteRate, 28);
+  header.writeUInt16LE(blockAlign, 32);
+  header.writeUInt16LE(bitsPerSample, 34);
+  header.write('data', 36, 'ascii');
+  header.writeUInt32LE(rawBytes.length, 40);
+
+  return {
+    buffer: Buffer.concat([header, rawBytes]),
+    mimeType: 'audio/wav',
+  };
+}
 
 export function formatPhysicsTextForSpeech(raw: string): string {
   return raw
     .replace(/\$\$/g, ' ')
     .replace(/\$/g, '')
+    .replace(/\\(?:left|right|displaystyle|quad|qquad|,|;)\b/g, ' ')
     .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1 over $2')
     .replace(/\\sqrt\{([^}]+)\}/g, 'square root of $1')
     .replace(/\\vec\{([^}]+)\}/g, 'vector $1')
     .replace(/\\text\{([^}]+)\}/g, '$1')
+    .replace(/\^\{\\circ\}|\\circ|°/g, ' degrees')
+    .replace(/\\sin\b/g, 'sine ')
+    .replace(/\\cos\b/g, 'cosine ')
+    .replace(/\\tan\b/g, 'tangent ')
+    .replace(/\bsin\(/g, 'sine of (')
+    .replace(/\bcos\(/g, 'cosine of (')
+    .replace(/\btan\(/g, 'tangent of (')
     .replace(/\\Delta/g, 'delta ')
     .replace(/\\theta/g, 'theta ')
     .replace(/\\omega/g, 'omega ')
@@ -501,15 +559,33 @@ export function formatPhysicsTextForSpeech(raw: string): string {
     .replace(/\\rho/g, 'rho ')
     .replace(/\\sigma/g, 'sigma ')
     .replace(/\\tau/g, 'tau ')
-    .replace(/\\Phi/g, 'phi ')
-    .replace(/\\times/g, ' times ')
-    .replace(/\\cdot/g, ' times ')
-    .replace(/\\approx/g, ' is approximately ')
-    .replace(/\\leq/g, ' is less than or equal to ')
-    .replace(/\\geq/g, ' is greater than or equal to ')
-    .replace(/\^2\b/g, ' squared')
-    .replace(/\^3\b/g, ' cubed')
-    .replace(/[*#_`~]/g, ' ')
+    .replace(/\\Phi|\\phi/g, 'phi ')
+    .replace(/\\varepsilon/g, 'epsilon ')
+    .replace(/\\Omega/g, 'ohms ')
+    .replace(/\\times|×/g, ' times ')
+    .replace(/\\cdot|·/g, ' times ')
+    .replace(/\\approx|≈/g, ' is approximately ')
+    .replace(/\\leq|≤/g, ' is less than or equal to ')
+    .replace(/\\geq|≥/g, ' is greater than or equal to ')
+    .replace(/\\neq|≠/g, ' is not equal to ')
+    .replace(/→|=>/g, ' gives ')
+    .replace(/\bm\/s\^\{?2\}?|\bm\/s²/gi, 'meters per second squared')
+    .replace(/\bm\/s\b/gi, 'meters per second')
+    .replace(/\bkm\/h\b/gi, 'kilometers per hour')
+    .replace(/\brad\/s\^\{?2\}?/gi, 'radians per second squared')
+    .replace(/\brad\/s\b/gi, 'radians per second')
+    .replace(/\^\{?2\}?/g, ' squared')
+    .replace(/\^\{?3\}?/g, ' cubed')
+    .replace(/\^\{(-?\d+)\}/g, ' to the power of $1')
+    .replace(/\^(-?\d+)/g, ' to the power of $1')
+    .replace(/([A-Za-z])_\{([^}]+)\}/g, '$1 $2')
+    .replace(/([A-Za-z])_([A-Za-z0-9]+)/g, '$1 $2')
+    .replace(/\s*=\s*/g, ' equals ')
+    .replace(/\s*\+\s*/g, ' plus ')
+    .replace(/(\d)\s*-\s*(\d)/g, '$1 minus $2')
+    .replace(/\s*\/\s*/g, ' divided by ')
+    .replace(/[{}]/g, ' ')
+    .replace(/[*#_`~|]/g, ' ')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/\s+/g, ' ')
     .trim()
@@ -519,36 +595,49 @@ export function formatPhysicsTextForSpeech(raw: string): string {
 export async function synthesizeSpeechTts(params: {
   text: string;
   voiceName?: string;
-}): Promise<{ audioBase64: string; mimeType: string }> {
+}): Promise<{ audioBase64: string; mimeType: string; provider: 'gemini' }> {
   const ai = getAiClient();
   const cleanText = formatPhysicsTextForSpeech(redactPotentialPii(params.text));
   if (!cleanText) {
     throw new GeminiServiceError('There is no readable text to speak.', 400, false);
   }
 
+  const mappedVoice =
+    params.voiceName && ELEVENLABS_TO_GEMINI_VOICE[params.voiceName]
+      ? ELEVENLABS_TO_GEMINI_VOICE[params.voiceName]
+      : params.voiceName;
   const safeVoice =
-    params.voiceName && ALLOWED_TTS_VOICES.has(params.voiceName) ? params.voiceName : 'Zephyr';
+    mappedVoice && ALLOWED_TTS_VOICES.has(mappedVoice) ? mappedVoice : 'Zephyr';
+
+  const attempts: Array<{ model: string; withMetadata: boolean; delayMs: number }> = [
+    { model: TTS_PRIMARY_MODEL, withMetadata: true, delayMs: 0 },
+    { model: TTS_PRIMARY_MODEL, withMetadata: false, delayMs: 450 },
+    { model: TTS_FALLBACK_MODEL, withMetadata: false, delayMs: 750 },
+  ];
 
   let lastError: unknown = null;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    if (attempt > 0) {
-      await sleep(650);
+  for (let i = 0; i < attempts.length; i += 1) {
+    const attempt = attempts[i];
+    if (attempt.delayMs > 0) {
+      await sleep(attempt.delayMs);
     }
     try {
+      const partPayload = attempt.withMetadata
+        ? ({
+            text: cleanText,
+            speechMetadata: {
+              style:
+                'Warm, natural, friendly human Physics tutor speaking clearly at a steady conversational pace with natural intonation and pauses',
+            },
+          } as unknown as { text: string })
+        : { text: cleanText };
+
       const response = await ai.models.generateContent({
-        model: TTS_MODEL,
+        model: attempt.model,
         contents: [
           {
             role: 'user',
-            parts: [
-              {
-                text: cleanText,
-                speechMetadata: {
-                  style:
-                    'Warm, natural, encouraging senior high school Physics tutor speaking clearly at a steady conversational pace',
-                },
-              } as unknown as { text: string },
-            ],
+            parts: [partPayload],
           },
         ],
         config: {
@@ -563,18 +652,23 @@ export async function synthesizeSpeechTts(params: {
         },
       });
 
-      const inlineData = response.candidates?.[0]?.content?.parts?.[0]?.inlineData;
-      if (inlineData?.data) {
+      const parts = response.candidates?.[0]?.content?.parts || [];
+      const audioPart = parts.find((p) => Boolean(p.inlineData?.data));
+      if (audioPart?.inlineData?.data) {
+        const rawBuf = Buffer.from(audioPart.inlineData.data, 'base64');
+        const wav = wrapRawPcmAsWav(rawBuf, audioPart.inlineData.mimeType || 'audio/wav');
         return {
-          audioBase64: inlineData.data,
-          mimeType: inlineData.mimeType || 'audio/wav',
+          audioBase64: wav.buffer.toString('base64'),
+          mimeType: wav.mimeType,
+          provider: 'gemini',
         };
       }
       throw new GeminiServiceError('Voice synthesis returned no audio data.', 502, true);
     } catch (err) {
       lastError = err;
       const details = extractApiErrorDetails(err);
-      if (attempt === 0 && isRetryableError(details)) {
+      const isLast = i === attempts.length - 1;
+      if (!isLast && (isRetryableError(details) || details.code === 400 || details.code === 404)) {
         continue;
       }
       throw toFriendlyGeminiError(err);

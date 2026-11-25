@@ -12,6 +12,11 @@ import {
   redactPotentialPii,
   synthesizeSpeechTts,
 } from './server/gemini.ts';
+import {
+  ElevenLabsServiceError,
+  isElevenLabsConfigured,
+  synthesizeElevenLabsTts,
+} from './server/elevenlabs.ts';
 
 const app = express();
 const PORT = 3000;
@@ -47,7 +52,7 @@ function sendRouteError(
   fallbackMessage: string,
   defaultStatus = 500
 ) {
-  if (err instanceof GeminiServiceError) {
+  if (err instanceof GeminiServiceError || err instanceof ElevenLabsServiceError) {
     res.status(err.statusCode).json({ error: err.message, retryable: err.retryable });
     return;
   }
@@ -195,11 +200,22 @@ app.post('/api/tts', requireAuth, ttsLimiter, async (req: AuthenticatedRequest, 
       return;
     }
 
-    const result = await synthesizeSpeechTts({
+    const safeVoiceName = typeof voiceName === 'string' ? voiceName : undefined;
+
+    if (isElevenLabsConfigured()) {
+      const result = await synthesizeElevenLabsTts({
+        text,
+        voiceName: safeVoiceName,
+      });
+      res.json(result);
+      return;
+    }
+
+    const fallbackResult = await synthesizeSpeechTts({
       text,
-      voiceName: typeof voiceName === 'string' ? voiceName : undefined,
+      voiceName: safeVoiceName,
     });
-    res.json(result);
+    res.json(fallbackResult);
   } catch (err) {
     sendRouteError(res, err, 'Could not synthesize natural speech right now.', 500);
   }
