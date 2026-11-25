@@ -14,8 +14,8 @@ self.addEventListener('push', (event) => {
     'You have Physics study reminders waiting. Tap to read in your notification bell.';
   const notifId = payload?.data?.notifId || '';
   const targetUrl = notifId
-    ? `/?openBell=1&notif=${encodeURIComponent(notifId)}`
-    : '/?openBell=1';
+    ? `/notifications?notif=${encodeURIComponent(notifId)}`
+    : '/notifications';
 
   event.waitUntil(
     self.registration.showNotification(title, {

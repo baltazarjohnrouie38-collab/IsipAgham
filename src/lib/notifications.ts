@@ -83,8 +83,8 @@ export async function showDueCardsNotification(
       ? `You have ${dueCount} physics flashcard${dueCount === 1 ? '' : 's'} due for spaced-repetition review today.`
       : 'Time for your daily Grade 12 Physics study session!');
   const targetUrl = notifId
-    ? `/?openBell=1&notif=${encodeURIComponent(notifId)}`
-    : '/?openBell=1';
+    ? `/notifications?notif=${encodeURIComponent(notifId)}`
+    : '/notifications';
 
   try {
     if ('serviceWorker' in navigator) {

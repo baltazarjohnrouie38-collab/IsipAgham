@@ -17,6 +17,7 @@ const VisualizerPage = lazy(() => import('./pages/VisualizerPage'));
 const AiTutorPage = lazy(() => import('./pages/AiTutorPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const ChecklistPage = lazy(() => import('./pages/ChecklistPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 
 const AppRoutes: React.FC = () => {
   const { user, loading } = useAuth();
@@ -98,6 +99,14 @@ const AppRoutes: React.FC = () => {
           element={
             <Suspense fallback={<PageSkeleton />}>
               <ChecklistPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <Suspense fallback={<PageSkeleton />}>
+              <NotificationsPage />
             </Suspense>
           }
         />

@@ -222,11 +222,13 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Home Screen Unread Notification Banner -> Opens Notification Bell & Message */}
+      {/* Home Screen Unread Notification Banner -> Opens Notifications Tab */}
       {latestUnread && unreadCount > 0 && (
         <button
           type="button"
-          onClick={() => openBellWithNotification(latestUnread.id)}
+          onClick={() => {
+            openBellWithNotification(latestUnread.id);
+          }}
           className="w-full text-left rounded-2xl bg-white dark:bg-[#141416] border border-blue-200 dark:border-blue-900/70 p-3.5 sm:px-5 shadow-[0_2px_10px_rgba(37,99,235,0.06)] hover:border-blue-400 dark:hover:border-blue-700 hover:-translate-y-0.5 transition-[transform,border-color,box-shadow] duration-150 flex items-center justify-between gap-3 cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0">
@@ -238,7 +240,7 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-blue-700 dark:text-blue-400">
-                {unreadCount} New Notification{unreadCount === 1 ? '' : 's'} · Tap to read in notification bell
+                {unreadCount} New Notification{unreadCount === 1 ? '' : 's'} · Tap to view in Notifications
               </p>
               <p className="text-sm font-bold text-slate-900 dark:text-neutral-100 truncate">
                 {latestUnread.title}
@@ -249,7 +251,7 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
           <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-blue-700 text-white dark:bg-blue-600 text-xs font-semibold shrink-0">
-            <span className="hidden sm:inline">Read message</span>
+            <span className="hidden sm:inline">View all</span>
             <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
         </button>

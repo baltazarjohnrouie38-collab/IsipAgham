@@ -1,14 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft,
   Bell,
-  BellOff,
-  CheckCheck,
   CheckSquare,
   ChevronDown,
-  ChevronRight,
-  Clock,
   Flame,
   Layers,
   LogOut,
@@ -24,10 +19,6 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import {
-  registerStudyNotifications,
-  showDueCardsNotification,
-} from '../../lib/notifications';
 import type { PhysicsCourse } from '../../types';
 import { Logo } from '../ui/Logo';
 import { OfflineBanner } from '../ui/OfflineBanner';
@@ -77,15 +68,11 @@ export const AppShell: React.FC = () => {
   const {
     studySets,
     dueTodayCount,
-    notifications,
     unreadCount,
     bellOpen,
     setBellOpen,
     selectedNotifId,
     selectNotification,
-    openBellWithNotification,
-    markAllAsRead,
-    pushCustomNotification,
   } = useNotifications();
   const { darkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
@@ -94,66 +81,43 @@ export const AppShell: React.FC = () => {
   const [showDeckSearch, setShowDeckSearch] = useState(false);
   const [deckQuery, setDeckQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [reminderTimeInput, setReminderTimeInput] = useState(profile?.notificationTime || '19:00');
-  const [reminderFeedback, setReminderFeedback] = useState<string | null>(null);
-  const [reminderBusy, setReminderBusy] = useState(false);
 
   const menuContainerRef = useRef<HTMLDivElement | null>(null);
-  const desktopBellRef = useRef<HTMLDivElement | null>(null);
-  const mobileBellRef = useRef<HTMLDivElement | null>(null);
-  const desktopBellBtnRef = useRef<HTMLButtonElement | null>(null);
-  const mobileBellBtnRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    if (profile?.notificationTime) {
-      setReminderTimeInput(profile.notificationTime);
-    }
-  }, [profile?.notificationTime]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('openBell') === '1') {
-      const notifParam = params.get('notif') || undefined;
-      openBellWithNotification(notifParam);
-      params.delete('openBell');
-      params.delete('notif');
-      const nextSearch = params.toString();
+      const notifParam = params.get('notif');
       navigate(
-        {
-          pathname: location.pathname,
-          search: nextSearch ? `?${nextSearch}` : '',
-        },
+        notifParam
+          ? `/notifications?notif=${encodeURIComponent(notifParam)}`
+          : '/notifications',
         { replace: true }
       );
     }
-  }, [location.pathname, location.search, navigate, openBellWithNotification]);
+  }, [location.search, navigate]);
 
   useEffect(() => {
     if (!bellOpen) return;
-    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
-    const btn = isDesktop ? desktopBellBtnRef.current : mobileBellBtnRef.current;
-    btn?.focus({ preventScroll: true });
-  }, [bellOpen]);
+    setBellOpen(false);
+    navigate(
+      selectedNotifId
+        ? `/notifications?notif=${encodeURIComponent(selectedNotifId)}`
+        : '/notifications'
+    );
+  }, [bellOpen, selectedNotifId, setBellOpen, navigate]);
 
   useEffect(() => {
-    if (!menuOpen && !bellOpen) return;
+    if (!menuOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
       if (menuOpen && menuContainerRef.current && !menuContainerRef.current.contains(target)) {
         setMenuOpen(false);
       }
-      if (
-        bellOpen &&
-        !(desktopBellRef.current && desktopBellRef.current.contains(target)) &&
-        !(mobileBellRef.current && mobileBellRef.current.contains(target))
-      ) {
-        setBellOpen(false);
-      }
     };
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setMenuOpen(false);
-        setBellOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -162,7 +126,7 @@ export const AppShell: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKey);
     };
-  }, [menuOpen, bellOpen]);
+  }, [menuOpen]);
 
   const filteredSets = useMemo(() => {
     const q = deckQuery.trim().toLowerCase();
@@ -182,318 +146,24 @@ export const AppShell: React.FC = () => {
     }
   };
 
-  const handleToggleReminder = async () => {
-    if (!profile) return;
-    setReminderBusy(true);
-    setReminderFeedback(null);
-    try {
-      const nextEnabled = !profile.notificationsEnabled;
-      if (nextEnabled) {
-        const res = await registerStudyNotifications();
-        await updateUserProfile({
-          notificationsEnabled: true,
-          notificationTime: reminderTimeInput || '19:00',
-          ...(res.fcmToken ? { fcmToken: res.fcmToken } : {}),
-        });
-        void toggleChecklistItem('enable_notifications', true);
-        setReminderFeedback(
-          res.granted
-            ? `Daily reminders turned on for ${reminderTimeInput || '19:00'}.`
-            : `In-app reminders turned on for ${reminderTimeInput || '19:00'}. (${res.note})`
-        );
-      } else {
-        await updateUserProfile({
-          notificationsEnabled: false,
-          notificationTime: reminderTimeInput || '19:00',
-        });
-        setReminderFeedback('Daily study reminders paused.');
-      }
-    } catch (err) {
-      setReminderFeedback(
-        err instanceof Error ? err.message : 'Could not update reminder settings.'
-      );
-    } finally {
-      setReminderBusy(false);
-    }
-  };
-
-  const handleSaveReminderTime = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!profile) return;
-    setReminderBusy(true);
-    setReminderFeedback(null);
-    try {
-      await updateUserProfile({
-        notificationTime: reminderTimeInput || '19:00',
-        notificationsEnabled: true,
-      });
-      void toggleChecklistItem('enable_notifications', true);
-      setReminderFeedback(`Reminder time updated to ${reminderTimeInput || '19:00'}.`);
-    } catch (err) {
-      setReminderFeedback(
-        err instanceof Error ? err.message : 'Could not save reminder time.'
-      );
-    } finally {
-      setReminderBusy(false);
-    }
-  };
-
-  const handleSendTestReminder = async () => {
-    setReminderBusy(true);
-    setReminderFeedback(null);
-    try {
-      const title = 'Study Reminder Alert';
-      const body =
-        dueTodayCount > 0
-          ? `You have ${dueTodayCount} flashcard${dueTodayCount === 1 ? '' : 's'} due today. Quick spaced-repetition rounds build lasting Physics mastery!`
-          : `Ready for your daily Grade 12 ${profile?.course || 'Physics 1'} session! Kaya mo 'yan!`;
-      const newId = pushCustomNotification({
-        title,
-        message: body,
-        category: 'reminder',
-        actionLabel: dueTodayCount > 0 ? 'Review Due Cards' : 'Open Study Hub',
-        actionTo: dueTodayCount > 0 ? '/study?tab=flashcards' : '/study?tab=timer',
-      });
-      const res = await showDueCardsNotification(dueTodayCount, title, body, newId);
-      setReminderFeedback(res.message);
-    } finally {
-      setReminderBusy(false);
-    }
-  };
-
   const displayName = profile?.nickname || profile?.username || 'Student';
   const streakDays = profile?.streakDays ?? 0;
   const remindersEnabled = Boolean(profile?.notificationsEnabled);
-  const selectedNotif = selectedNotifId
-    ? notifications.find((n) => n.id === selectedNotifId) || null
-    : null;
+  const isNotificationsPage = location.pathname === '/notifications';
 
-  const formatNotifAge = (ts: number) => {
-    const mins = Math.max(0, Math.round((Date.now() - ts) / 60000));
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
-    const hrs = Math.round(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    return `${Math.round(hrs / 24)}d ago`;
+  const handleOpenNotificationsTab = () => {
+    setMenuOpen(false);
+    selectNotification(null);
+    if (isNotificationsPage) {
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate('/');
+      }
+      return;
+    }
+    navigate('/notifications');
   };
-
-  const renderReminderPopover = () => (
-    <div
-      role="dialog"
-      aria-label="Notifications and Study Reminders"
-      className="animate-pop origin-top-right absolute right-0 mt-2 w-88 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white dark:bg-[#141416] border border-stone-200 dark:border-neutral-800 shadow-xl overflow-hidden z-40"
-    >
-      <div className="px-4 py-3 border-b border-stone-100 dark:border-neutral-800 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Bell className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" aria-hidden="true" />
-          <p className="text-sm font-bold text-slate-900 dark:text-neutral-100">
-            Notifications
-          </p>
-          {unreadCount > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold tabular-nums">
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </span>
-          )}
-        </div>
-        {unreadCount > 0 ? (
-          <button
-            type="button"
-            onClick={markAllAsRead}
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
-          >
-            <CheckCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Mark all read</span>
-          </button>
-        ) : (
-          <span
-            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-              remindersEnabled
-                ? 'bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300'
-                : 'bg-stone-100 text-slate-600 dark:bg-neutral-800 dark:text-neutral-400'
-            }`}
-          >
-            {remindersEnabled ? `Daily ${profile?.notificationTime || '19:00'}` : 'All caught up'}
-          </span>
-        )}
-      </div>
-
-      <div className="p-3.5 space-y-3">
-        {selectedNotif ? (
-          <div className="rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/70 p-3.5 space-y-2.5">
-            <div className="flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => selectNotification(null)}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>All notifications</span>
-              </button>
-              <span className="text-[11px] text-slate-500 dark:text-neutral-400">
-                {formatNotifAge(selectedNotif.createdAt)}
-              </span>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-slate-950 dark:text-neutral-100">
-                {selectedNotif.title}
-              </p>
-              <p className="text-xs leading-relaxed text-slate-700 dark:text-neutral-200">
-                {selectedNotif.message}
-              </p>
-            </div>
-            {selectedNotif.actionTo && (
-              <Link
-                to={selectedNotif.actionTo}
-                onClick={() => {
-                  selectNotification(null);
-                  setBellOpen(false);
-                }}
-                className="inline-flex items-center justify-center w-full min-h-[36px] px-3 rounded-lg bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-xs font-semibold transition-colors"
-              >
-                {selectedNotif.actionLabel || 'Open'}
-              </Link>
-            )}
-          </div>
-        ) : notifications.length === 0 ? (
-          <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-900 border border-stone-200/80 dark:border-neutral-800 p-3 text-center space-y-1">
-            <p className="text-xs font-bold text-slate-900 dark:text-neutral-100">
-              No notifications yet
-            </p>
-            <p className="text-[11px] text-slate-500 dark:text-neutral-400">
-              Due flashcards, daily study reminders, and next lessons will appear here.
-            </p>
-          </div>
-        ) : (
-          <div className="max-h-60 overflow-y-auto space-y-1.5 pr-0.5">
-            {notifications.map((notif) => (
-              <button
-                key={notif.id}
-                type="button"
-                onClick={() => selectNotification(notif.id)}
-                className={`w-full text-left rounded-xl p-2.5 border transition-colors cursor-pointer flex items-start gap-2.5 ${
-                  notif.unread
-                    ? 'bg-blue-50/75 dark:bg-blue-950/30 border-blue-200/80 dark:border-blue-900/60 hover:bg-blue-50 dark:hover:bg-blue-950/50'
-                    : 'bg-[#FAF9F6] dark:bg-neutral-900/70 border-stone-200/70 dark:border-neutral-800 hover:bg-stone-100/70 dark:hover:bg-neutral-800/80'
-                }`}
-              >
-                <span
-                  className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${
-                    notif.unread ? 'bg-blue-600 dark:bg-blue-400' : 'bg-stone-300 dark:bg-neutral-700'
-                  }`}
-                  aria-hidden="true"
-                />
-                <div className="min-w-0 flex-1 space-y-0.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <p
-                      className={`text-xs truncate ${
-                        notif.unread
-                          ? 'font-bold text-slate-950 dark:text-neutral-100'
-                          : 'font-semibold text-slate-700 dark:text-neutral-300'
-                      }`}
-                    >
-                      {notif.title}
-                    </p>
-                    <span className="text-[10px] text-slate-400 dark:text-neutral-500 shrink-0">
-                      {formatNotifAge(notif.createdAt)}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 dark:text-neutral-400 line-clamp-2 leading-snug">
-                    {notif.message}
-                  </p>
-                </div>
-                <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-1" aria-hidden="true" />
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="pt-2 border-t border-stone-100 dark:border-neutral-800 space-y-2.5">
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 dark:text-neutral-100">
-                Daily Reminder
-              </p>
-              <p className="text-[11px] text-slate-500 dark:text-neutral-400">
-                Prompts you at your study time
-              </p>
-            </div>
-            <button
-              type="button"
-              disabled={reminderBusy}
-              onClick={() => void handleToggleReminder()}
-              className={`min-h-[32px] px-3 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-60 ${
-                remindersEnabled
-                  ? 'bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500'
-                  : 'bg-stone-100 text-slate-700 hover:bg-stone-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700'
-              }`}
-            >
-              {remindersEnabled ? (
-                <>
-                  <Bell className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>On</span>
-                </>
-              ) : (
-                <>
-                  <BellOff className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>Enable</span>
-                </>
-              )}
-            </button>
-          </div>
-
-          <form onSubmit={handleSaveReminderTime} className="flex items-center gap-2">
-            <label className="sr-only" htmlFor="bell-reminder-time">
-              Reminder Time
-            </label>
-            <div className="relative flex-1">
-              <Clock
-                className="h-3.5 w-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                aria-hidden="true"
-              />
-              <input
-                id="bell-reminder-time"
-                type="time"
-                value={reminderTimeInput}
-                onChange={(e) => setReminderTimeInput(e.target.value)}
-                className="w-full h-9 pl-8 pr-2 rounded-lg border border-stone-200 dark:border-neutral-700 bg-[#FAF9F6] dark:bg-neutral-900 text-xs font-semibold text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={reminderBusy}
-              className="h-9 px-3 rounded-lg border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-xs font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer disabled:opacity-60"
-            >
-              Save
-            </button>
-          </form>
-
-          <div className="flex items-center justify-between gap-2 pt-0.5">
-            <button
-              type="button"
-              disabled={reminderBusy}
-              onClick={() => void handleSendTestReminder()}
-              className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer disabled:opacity-60"
-            >
-              Send Test Reminder
-            </button>
-            <Link
-              to="/profile?tab=reminders"
-              onClick={() => setBellOpen(false)}
-              className="text-xs font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100"
-            >
-              All settings
-            </Link>
-          </div>
-
-          {reminderFeedback && (
-            <p className="text-[11px] leading-snug rounded-lg bg-stone-100 dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 px-2.5 py-2">
-              {reminderFeedback}
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] dark:bg-[#0B0B0C] text-slate-900 dark:text-neutral-100 flex flex-col lg:flex-row">
@@ -682,30 +352,25 @@ export const AppShell: React.FC = () => {
             <span>{profile?.xp ?? 0}</span>
           </Link>
           <PWAInstallButton compact />
-          <div className="relative" ref={mobileBellRef}>
-            <button
-              ref={mobileBellBtnRef}
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                selectNotification(null);
-                setBellOpen((o) => !o);
-              }}
-              aria-expanded={bellOpen}
-              aria-label={`Notifications (${unreadCount} unread)`}
-              className="relative min-h-[38px] min-w-[38px] inline-flex items-center justify-center rounded-xl text-slate-700 dark:text-neutral-200 hover:bg-stone-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-            >
-              <Bell className="h-4.5 w-4.5" aria-hidden="true" />
-              {unreadCount > 0 ? (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-red-600 text-white text-[9px] font-bold flex items-center justify-center tabular-nums shadow-xs">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              ) : remindersEnabled ? (
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-              ) : null}
-            </button>
-            {bellOpen && renderReminderPopover()}
-          </div>
+          <button
+            type="button"
+            onClick={handleOpenNotificationsTab}
+            aria-label={`Notifications (${unreadCount} unread)`}
+            className={`relative min-h-[38px] min-w-[38px] inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+              isNotificationsPage
+                ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                : 'text-slate-700 dark:text-neutral-200 hover:bg-stone-100 dark:hover:bg-neutral-800'
+            }`}
+          >
+            <Bell className="h-4.5 w-4.5" aria-hidden="true" />
+            {unreadCount > 0 ? (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-red-600 text-white text-[9px] font-bold flex items-center justify-center tabular-nums shadow-xs">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            ) : remindersEnabled ? (
+              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+            ) : null}
+          </button>
           <button
             type="button"
             onClick={handleToggleTheme}
@@ -753,35 +418,30 @@ export const AppShell: React.FC = () => {
             <span>{profile?.xp ?? 0} XP</span>
           </Link>
 
-          <div className="relative" ref={desktopBellRef}>
-            <button
-              ref={desktopBellBtnRef}
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                selectNotification(null);
-                setBellOpen((o) => !o);
-              }}
-              aria-expanded={bellOpen}
-              aria-label={`Notifications (${unreadCount} unread)`}
-              title={
-                unreadCount > 0
-                  ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'} — click to read`
-                  : 'Notifications & study reminders'
-              }
-              className="relative h-10 w-10 rounded-full bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] inline-flex items-center justify-center text-slate-700 dark:text-neutral-200 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-            >
-              <Bell className="h-4 w-4" aria-hidden="true" />
-              {unreadCount > 0 ? (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center tabular-nums shadow-xs">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              ) : remindersEnabled ? (
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-              ) : null}
-            </button>
-            {bellOpen && renderReminderPopover()}
-          </div>
+          <button
+            type="button"
+            onClick={handleOpenNotificationsTab}
+            aria-label={`Notifications (${unreadCount} unread)`}
+            title={
+              unreadCount > 0
+                ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'} — open Notifications`
+                : 'Open Notifications & study reminders'
+            }
+            className={`relative h-10 w-10 rounded-full border shadow-[0_1px_2px_rgba(15,23,42,0.03)] inline-flex items-center justify-center transition-colors cursor-pointer ${
+              isNotificationsPage
+                ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950/60 dark:border-blue-800 dark:text-blue-300'
+                : 'bg-white dark:bg-[#141416] border-stone-200/90 dark:border-neutral-800 text-slate-700 dark:text-neutral-200 hover:bg-stone-50 dark:hover:bg-neutral-800'
+            }`}
+          >
+            <Bell className="h-4 w-4" aria-hidden="true" />
+            {unreadCount > 0 ? (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center tabular-nums shadow-xs">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            ) : remindersEnabled ? (
+              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+            ) : null}
+          </button>
 
           {/* User Avatar & Profile Dropdown */}
           <div className="relative" ref={menuContainerRef}>
