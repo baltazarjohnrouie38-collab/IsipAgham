@@ -1,5 +1,5 @@
 import React from 'react';
-import logoUrl from '../../assets/logo.svg';
+import logoUrl from '../../assets/images/regenerated_image_1795533932091.jpg';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
@@ -25,7 +25,7 @@ export const Logo: React.FC<LogoProps> = ({
       <img
         src={src || logoUrl}
         alt="IsipAgham mascot logo"
-        className={`${SIZE_CLASSES[size]} rounded-xl ${src ? 'object-cover' : 'object-contain'} shrink-0`}
+        className={`${SIZE_CLASSES[size]} rounded-xl object-cover shrink-0`}
         referrerPolicy="no-referrer"
       />
       {showText && (
