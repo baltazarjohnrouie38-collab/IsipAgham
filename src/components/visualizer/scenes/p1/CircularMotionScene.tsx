@@ -4,7 +4,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -44,11 +44,10 @@ const CircularContent: React.FC<{
     if (rotorRef.current) {
       rotorRef.current.rotation.y = angleRef.current;
     }
-    if (pinRef.current) {
-      pinRef.current.textContent = `a_c=${ac.toFixed(2)} m/s²\nF_c=${fc.toFixed(
-        1
-      )} N  ω=${omega.toFixed(2)} rad/s`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `a_c=${ac.toFixed(2)} m/s^2\nF_c=${fc.toFixed(1)} N  ω=${omega.toFixed(2)} rad/s`
+    );
   });
 
   return (
@@ -93,9 +92,9 @@ const CircularContent: React.FC<{
 
           <PhysicsPin
             position={[0, 0.75, 0]}
-            title="$F_c = \frac{mv^2}{r}$"
+            title="$F_c = \\frac{mv^2}{r}$"
             textRef={pinRef}
-            valueText={`a_c=${ac.toFixed(2)} m/s²`}
+            valueText={`a_c=${ac.toFixed(2)} m/s^2`}
             accentClass="border-red-400"
           />
         </group>
@@ -173,7 +172,7 @@ export const CircularMotionScene: React.FC<SceneComponentProps> = () => {
           </div>
           <div className="col-span-2 rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Revolution Period (<MathInline text="$T = 2\pi r / v$" />)
+              Revolution Period (<MathInline text="$T = 2\\pi r / v$" />)
             </p>
             <p className="text-base font-bold text-emerald-700 dark:text-emerald-400">
               {period.toFixed(2)} s

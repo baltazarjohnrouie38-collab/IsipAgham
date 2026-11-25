@@ -22,6 +22,7 @@ import { AlertBanner } from '../ui/AlertBanner';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Input, Select, Textarea } from '../ui/Input';
+import { MathText } from '../ui/MathText';
 
 interface MaterialsTabProps {
   materials: StudyMaterial[];
@@ -442,9 +443,9 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
                   </div>
 
                   {isExpanded && (
-                    <pre className="whitespace-pre-wrap text-sm text-slate-700 dark:text-neutral-300 bg-[#FAF9F6] dark:bg-neutral-950 border border-stone-200 dark:border-neutral-800 rounded-xl p-4 max-h-64 overflow-y-auto font-sans leading-relaxed">
-                      {mat.extractedText}
-                    </pre>
+                    <div className="text-sm text-slate-700 dark:text-neutral-300 bg-[#FAF9F6] dark:bg-neutral-950 border border-stone-200 dark:border-neutral-800 rounded-xl p-4 max-h-64 overflow-y-auto leading-relaxed">
+                      <MathText text={mat.extractedText} />
+                    </div>
                   )}
                 </Card>
               );

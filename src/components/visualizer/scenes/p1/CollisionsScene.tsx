@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -91,16 +91,14 @@ const CollisionsContent: React.FC<{
       cart2Ref.current.position.set(st.x2, size2 / 2 + 0.14, 0);
     }
 
-    if (pin1Ref.current) {
-      pin1Ref.current.textContent = `m₁=${m1}kg  v₁=${st.v1.toFixed(2)}m/s\np₁=${(
-        m1 * st.v1
-      ).toFixed(1)} kg·m/s`;
-    }
-    if (pin2Ref.current) {
-      pin2Ref.current.textContent = `m₂=${m2}kg  v₂=${st.v2.toFixed(2)}m/s\np₂=${(
-        m2 * st.v2
-      ).toFixed(1)} kg·m/s`;
-    }
+    setPinDisplay(
+      pin1Ref.current,
+      `m_1=${m1} kg  v_1=${st.v1.toFixed(2)} m/s\np_1=${(m1 * st.v1).toFixed(1)} kg·m/s`
+    );
+    setPinDisplay(
+      pin2Ref.current,
+      `m_2=${m2} kg  v_2=${st.v2.toFixed(2)} m/s\np_2=${(m2 * st.v2).toFixed(1)} kg·m/s`
+    );
   });
 
   return (
@@ -126,7 +124,7 @@ const CollisionsContent: React.FC<{
           position={[0, size1 + 0.55, 0]}
           title="Cart 1: $p_1 = m_1 v_1$"
           textRef={pin1Ref}
-          valueText={`p₁=${(m1 * v1Init).toFixed(1)}`}
+          valueText={`p_1=${(m1 * v1Init).toFixed(1)}`}
           accentClass="border-blue-400"
         />
       </group>
@@ -146,7 +144,7 @@ const CollisionsContent: React.FC<{
           position={[0, size2 + 0.55, 0]}
           title="Cart 2: $p_2 = m_2 v_2$"
           textRef={pin2Ref}
-          valueText={`p₂=${(m2 * v2Init).toFixed(1)}`}
+          valueText={`p_2=${(m2 * v2Init).toFixed(1)}`}
           accentClass="border-orange-400"
         />
       </group>
@@ -267,7 +265,7 @@ export const CollisionsScene: React.FC<SceneComponentProps> = () => {
         <div className="grid grid-cols-2 gap-3 text-xs tabular-nums">
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Total Momentum (<MathInline text="$p_{\text{total}}$" />)
+              Total Momentum (<MathInline text="$p_{\\text{total}}$" />)
             </p>
             <p className="text-base font-bold text-slate-900 dark:text-neutral-100">
               {totalP.toFixed(1)} kg·m/s

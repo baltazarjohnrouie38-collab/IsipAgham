@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -56,11 +56,10 @@ const ThermalContent: React.FC<{
       tipGroupRef.current.position.set(leftX + totalVisualLen, 1.4, 0);
     }
 
-    if (pinRef.current) {
-      pinRef.current.textContent = `ΔL=${deltaLMm.toFixed(2)} mm  (ΔT=${currentDT.toFixed(
-        0
-      )}°C)\nH = kAΔT/L = ${heatRate.toFixed(1)} W`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `ΔL=${deltaLMm.toFixed(2)} mm  (ΔT=${currentDT.toFixed(0)}°C)\nH = kAΔT/L = ${heatRate.toFixed(1)} W`
+    );
   });
 
   return (
@@ -97,7 +96,7 @@ const ThermalContent: React.FC<{
         </mesh>
         <PhysicsPin
           position={[0.2, 0.85, 0]}
-          title="$\Delta L = \alpha L_0 \Delta T$"
+          title="$\\Delta L = \\alpha L_0 \\Delta T$"
           textRef={pinRef}
           valueText={`ΔT=${deltaT}°C`}
           accentClass="border-orange-400"
@@ -128,7 +127,7 @@ export const ThermalExpansionScene: React.FC<SceneComponentProps> = () => {
       controls={
         <>
           <SliderControl
-            label="Temp Change ($\Delta T$)"
+            label="Temp Change ($\\Delta T$)"
             value={deltaT}
             min={0}
             max={400}
@@ -149,7 +148,7 @@ export const ThermalExpansionScene: React.FC<SceneComponentProps> = () => {
             onChange={setL0}
           />
           <SliderControl
-            label="Coeff ($\alpha \times 10^{-6}$)"
+            label="Coeff ($\\alpha \\times 10^{-6}$)"
             value={alphaMicro}
             min={11}
             max={24}
@@ -163,7 +162,7 @@ export const ThermalExpansionScene: React.FC<SceneComponentProps> = () => {
         <div className="grid grid-cols-2 gap-3 text-xs tabular-nums">
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Expansion (<MathInline text="$\Delta L$" />)
+              Expansion (<MathInline text="$\\Delta L$" />)
             </p>
             <p className="text-base font-bold text-orange-600 dark:text-orange-400">
               {deltaLMm.toFixed(2)} mm

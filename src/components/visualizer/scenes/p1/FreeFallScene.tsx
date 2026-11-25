@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
 const FreeFallContent: React.FC<{
@@ -44,11 +44,12 @@ const FreeFallContent: React.FC<{
       ballRef.current.position.set(0, y * scale + 0.28, 0);
     }
 
-    if (pinRef.current) {
-      pinRef.current.textContent = `y=${y.toFixed(2)} m  t=${t.toFixed(2)} s\nv=${v.toFixed(
-        2
-      )} m/s  KE=${ke.toFixed(0)} J  PE=${pe.toFixed(0)} J`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `y=${y.toFixed(2)} m  t=${t.toFixed(2)} s\nv=${v.toFixed(2)} m/s  KE=${ke.toFixed(
+        0
+      )} J  PE=${pe.toFixed(0)} J`
+    );
   });
 
   const poleH = height * scale + 0.3;
@@ -84,7 +85,7 @@ const FreeFallContent: React.FC<{
         />
         <PhysicsPin
           position={[0.8, 0.35, 0]}
-          title="$y = h_0 - \tfrac{1}{2}gt^2$"
+          title="$y = h_0 - \\tfrac{1}{2}gt^2$"
           textRef={pinRef}
           valueText={`y=${height.toFixed(2)} m`}
           accentClass="border-blue-400"

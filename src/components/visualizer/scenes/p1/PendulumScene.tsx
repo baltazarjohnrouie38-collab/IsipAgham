@@ -4,7 +4,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -90,14 +90,13 @@ const PendulumContent: React.FC<{
       peBarRef.current.position.y = 0.14 + h / 2;
     }
 
-    if (pinRef.current) {
-      const degNow = (theta * 180) / Math.PI;
-      pinRef.current.textContent = `θ=${degNow.toFixed(1)}°  v=${speed.toFixed(
-        2
-      )} m/s\nT=${period.toFixed(2)} s  K=${(keFrac * 100).toFixed(0)}%  U=${(
-        peFrac * 100
-      ).toFixed(0)}%`;
-    }
+    const degNow = (theta * 180) / Math.PI;
+    setPinDisplay(
+      pinRef.current,
+      `θ=${degNow.toFixed(1)}°  v=${speed.toFixed(2)} m/s\nT=${period.toFixed(2)} s  K=${(
+        keFrac * 100
+      ).toFixed(0)}%  U=${(peFrac * 100).toFixed(0)}%`
+    );
   });
 
   return (
@@ -188,7 +187,7 @@ const PendulumContent: React.FC<{
 
           <PhysicsPin
             position={[0, -0.78, 0]}
-            title="$T = 2\pi\sqrt{L/g}$"
+            title="$T = 2\\pi\\sqrt{L/g}$"
             textRef={pinRef}
             valueText={`T=${period.toFixed(2)} s`}
             accentClass="border-blue-400"
@@ -229,7 +228,7 @@ export const PendulumScene: React.FC<SceneComponentProps> = () => {
             onChange={setLength}
           />
           <SliderControl
-            label="Release Angle ($\theta_0$)"
+            label="Release Angle ($\\theta_0$)"
             value={angle}
             min={5}
             max={45}
@@ -272,7 +271,7 @@ export const PendulumScene: React.FC<SceneComponentProps> = () => {
           <div className="col-span-2 rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800 flex items-center justify-between gap-2">
             <div>
               <p className="text-slate-500 dark:text-neutral-400">
-                Angular Frequency (<MathInline text="$\omega = \sqrt{g/L}$" />)
+                Angular Frequency (<MathInline text="$\\omega = \\sqrt{g/L}$" />)
               </p>
               <p className="text-base font-bold text-blue-700 dark:text-blue-400">
                 {omega.toFixed(2)} rad/s

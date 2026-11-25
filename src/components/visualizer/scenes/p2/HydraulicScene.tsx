@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -44,11 +44,10 @@ const HydraulicContent: React.FC<{
       rightPistonRef.current.position.y = 1.6 + d2;
     }
 
-    if (pinRef.current) {
-      pinRef.current.textContent = `P=${(pressurePa / 1000).toFixed(1)} kPa\nF₂=${f2.toFixed(
-        0
-      )} N (${(a2 / a1).toFixed(1)}× gain)`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `P=${(pressurePa / 1000).toFixed(1)} kPa\nF_2=${f2.toFixed(0)} N (${(a2 / a1).toFixed(1)}× gain)`
+    );
   });
 
   return (
@@ -95,7 +94,7 @@ const HydraulicContent: React.FC<{
           position={[0, 1.65, 0]}
           title="$F_2 = F_1(A_2 / A_1)$"
           textRef={pinRef}
-          valueText={`F₂=${f2.toFixed(0)} N`}
+          valueText={`F_2=${f2.toFixed(0)} N`}
           accentClass="border-emerald-400"
         />
       </group>

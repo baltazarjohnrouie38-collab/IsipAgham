@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Grid, OrbitControls } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import {
   Play,
   Pause,
@@ -28,6 +28,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { MathInline } from '../ui/MathText';
+import { setPinDisplay } from './PhysicsPin';
 
 export type CameraPreset = 'iso' | 'front' | 'top';
 
@@ -123,13 +124,14 @@ function checkWebGLSupport(): boolean {
   }
 }
 
-const StudioEnvironment: React.FC = () => {
+const StudioEnvironment: React.FC<{ isSoftwareGl: boolean }> = ({ isSoftwareGl }) => {
   const { gl, scene } = useThree();
 
   useEffect(() => {
+    if (isSoftwareGl) return;
     const pmrem = new THREE.PMREMGenerator(gl);
     const roomEnv = new RoomEnvironment();
-    const renderTarget = pmrem.fromScene(roomEnv, 0.04);
+    const renderTarget = pmrem.fromScene(roomEnv);
     const prevEnv = scene.environment;
     scene.environment = renderTarget.texture;
     if ('environmentIntensity' in scene) {
@@ -142,7 +144,51 @@ const StudioEnvironment: React.FC = () => {
       roomEnv.dispose();
       pmrem.dispose();
     };
-  }, [gl, scene]);
+  }, [gl, scene, isSoftwareGl]);
+
+  return null;
+};
+
+/**
+ * Demand-driven render loop:
+ * - Pauses completely (0% GPU/CPU) when `playing === false` and camera is stationary.
+ * - Runs smooth hardware animation when `playing === true`.
+ * - Paces software WebGL (~16 fps) so CPU rasterizers never lag the UI thread.
+ */
+const FrameLoopDriver: React.FC<{
+  playing: boolean;
+  isSoftwareGl: boolean;
+  sceneChildren: React.ReactNode;
+}> = ({ playing, isSoftwareGl, sceneChildren }) => {
+  const { invalidate } = useThree();
+  const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    invalidate();
+  }, [playing, sceneChildren, invalidate]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  useFrame(() => {
+    if (!playing) return;
+    if (isSoftwareGl) {
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+      }
+      timerRef.current = window.setTimeout(() => {
+        timerRef.current = null;
+        invalidate();
+      }, 60);
+    } else {
+      invalidate();
+    }
+  });
 
   return null;
 };
@@ -160,6 +206,7 @@ const CameraRig: React.FC<CameraRigProps> = ({
   command,
   enableDamping,
 }) => {
+  const { invalidate } = useThree();
   const orbitRef = useRef<OrbitControlsImpl | null>(null);
   const glideRef = useRef<{
     pos: THREE.Vector3;
@@ -189,7 +236,8 @@ const CameraRig: React.FC<CameraRigProps> = ({
       pos: new THREE.Vector3(...nextPos),
       target: new THREE.Vector3(tx, ty, tz),
     };
-  }, [command, basePosition, baseTarget]);
+    invalidate();
+  }, [command, basePosition, baseTarget, invalidate]);
 
   useFrame((_, delta) => {
     const glide = glideRef.current;
@@ -215,6 +263,8 @@ const CameraRig: React.FC<CameraRigProps> = ({
       orbit.target.copy(glide.target);
       orbit.update();
       glideRef.current = null;
+    } else {
+      invalidate();
     }
   });
 
@@ -226,6 +276,7 @@ const CameraRig: React.FC<CameraRigProps> = ({
       dampingFactor={0.08}
       minDistance={2.2}
       maxDistance={32}
+      onChange={() => invalidate()}
       onStart={() => {
         glideRef.current = null;
       }}
@@ -263,7 +314,8 @@ export const SliderControl: React.FC<SliderControlProps> = ({
           <MathInline text={label} />
         </label>
         <span className="text-xs font-bold text-blue-700 dark:text-blue-400 tabular-nums shrink-0">
-          {Number.isInteger(step) ? value : value.toFixed(2)} {unit}
+          {Number.isInteger(step) ? value : value.toFixed(2)}{' '}
+          {unit && <MathInline text={unit} />}
         </span>
       </div>
       <input
@@ -278,10 +330,10 @@ export const SliderControl: React.FC<SliderControlProps> = ({
       />
       <div className="flex justify-between text-[10px] text-slate-500 dark:text-neutral-400 tabular-nums">
         <span>
-          {min} {unit}
+          {min} {unit && <MathInline text={unit} />}
         </span>
         <span>
-          {max} {unit}
+          {max} {unit && <MathInline text={unit} />}
         </span>
       </div>
     </div>
@@ -339,6 +391,11 @@ export const SceneStage: React.FC<SceneStageProps> = ({
     setPins((prev) => prev.filter((p) => p.id !== id));
   }, []);
 
+  const overlayValue = useMemo(
+    () => ({ registerPin, unregisterPin }),
+    [registerPin, unregisterPin]
+  );
+
   const triggerPreset = (preset: CameraPreset) => {
     setActivePreset(preset);
     setCamCommand((prev) => ({ preset, seq: (prev?.seq ?? 0) + 1 }));
@@ -367,10 +424,11 @@ export const SceneStage: React.FC<SceneStageProps> = ({
               </p>
             </div>
           ) : (
-            <PinOverlayContext.Provider value={{ registerPin, unregisterPin }}>
+            <PinOverlayContext.Provider value={overlayValue}>
               <CanvasErrorBoundary>
                 <Canvas
-                  dpr={isSoftwareGl ? 1 : [1, 2]}
+                  frameloop="demand"
+                  dpr={isSoftwareGl ? 1 : [1, 1.5]}
                   shadows={!isSoftwareGl}
                   gl={{
                     antialias: !isSoftwareGl,
@@ -378,18 +436,23 @@ export const SceneStage: React.FC<SceneStageProps> = ({
                     toneMapping: THREE.ACESFilmicToneMapping,
                     toneMappingExposure: 1.08,
                   }}
-                  camera={{ position: cameraPosition, fov: 45, near: 0.1, far: 200 }}
+                  camera={{ position: cameraPosition, fov: 45, near: 0.1, far: 160 }}
                 >
                   <color attach="background" args={[bgHex]} />
                   <fog attach="fog" args={[bgHex, 20, 48]} />
-                  <StudioEnvironment />
+                  <StudioEnvironment isSoftwareGl={isSoftwareGl} />
+                  <FrameLoopDriver
+                    playing={playing}
+                    isSoftwareGl={isSoftwareGl}
+                    sceneChildren={children}
+                  />
 
                   {/* Balanced 3-point warm/cool studio rig */}
                   <hemisphereLight
                     args={[
                       darkMode ? '#e5e5e5' : '#e0f2fe',
                       darkMode ? '#1c1c1e' : '#d6d3d1',
-                      darkMode ? 0.55 : 0.72,
+                      darkMode ? 0.72 : 0.82,
                     ]}
                   />
                   <directionalLight
@@ -397,10 +460,10 @@ export const SceneStage: React.FC<SceneStageProps> = ({
                     intensity={1.35}
                     color="#fff7ed"
                     castShadow={!isSoftwareGl}
-                    shadow-mapSize-width={1024}
-                    shadow-mapSize-height={1024}
+                    shadow-mapSize-width={512}
+                    shadow-mapSize-height={512}
                     shadow-camera-near={1}
-                    shadow-camera-far={40}
+                    shadow-camera-far={36}
                     shadow-camera-left={-9}
                     shadow-camera-right={9}
                     shadow-camera-top={9}
@@ -419,22 +482,19 @@ export const SceneStage: React.FC<SceneStageProps> = ({
                       <mesh
                         rotation={[-Math.PI / 2, 0, 0]}
                         position={[0, -0.008, 0]}
-                        receiveShadow
+                        receiveShadow={!isSoftwareGl}
                       >
-                        <planeGeometry args={[48, 48]} />
-                        <shadowMaterial transparent opacity={darkMode ? 0.28 : 0.14} />
+                        <planeGeometry args={[32, 32]} />
+                        <shadowMaterial transparent opacity={darkMode ? 0.25 : 0.12} />
                       </mesh>
-                      <Grid
-                        position={[0, 0, 0]}
-                        args={[24, 24]}
-                        cellSize={1}
-                        cellThickness={0.6}
-                        cellColor={darkMode ? '#222226' : '#cbd5e1'}
-                        sectionSize={5}
-                        sectionThickness={1}
-                        sectionColor={darkMode ? '#38383e' : '#94a3b8'}
-                        fadeDistance={28}
-                        infiniteGrid
+                      <gridHelper
+                        args={[
+                          24,
+                          24,
+                          darkMode ? '#3f3f46' : '#94a3b8',
+                          darkMode ? '#222226' : '#cbd5e1',
+                        ]}
+                        position={[0, 0.002, 0]}
                       />
                     </>
                   )}
@@ -450,7 +510,7 @@ export const SceneStage: React.FC<SceneStageProps> = ({
                 </Canvas>
               </CanvasErrorBoundary>
 
-              {/* React-native 2D overlay layer for KaTeX-rendered pinned equations (avoids @react-three/drei Html createRoot/unmount conflicts in React 19) */}
+              {/* React-native 2D overlay layer for KaTeX-rendered pinned equations */}
               <div
                 className={`pointer-events-none absolute inset-0 overflow-hidden z-10 transition-opacity duration-200 ${
                   showPins ? 'opacity-100' : 'opacity-0'
@@ -472,12 +532,24 @@ export const SceneStage: React.FC<SceneStageProps> = ({
                     <div className="text-[11px] font-semibold text-blue-300 leading-tight mb-0.5">
                       <MathInline text={pin.title} />
                     </div>
-                    <div
-                      ref={pin.textRef}
-                      className="text-[11px] font-semibold text-white tabular-nums leading-snug whitespace-pre"
-                    >
-                      {pin.valueText}
-                    </div>
+                    {pin.textRef ? (
+                      <div
+                        ref={(node) => {
+                          if (pin.textRef) {
+                            (pin.textRef as React.MutableRefObject<HTMLDivElement | null>).current =
+                              node;
+                          }
+                          if (node && pin.valueText && !node.hasChildNodes()) {
+                            setPinDisplay(node, pin.valueText, true);
+                          }
+                        }}
+                        className="text-[11px] font-semibold text-white tabular-nums leading-snug whitespace-pre"
+                      />
+                    ) : (
+                      <div className="text-[11px] font-semibold text-white tabular-nums leading-snug whitespace-pre">
+                        <MathInline text={pin.valueText} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

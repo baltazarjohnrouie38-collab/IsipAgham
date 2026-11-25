@@ -1,9 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -43,6 +43,8 @@ const InclineContent: React.FC<{
     geo.translate(0, 0, -1.1);
     return geo;
   }, [rad]);
+
+  useEffect(() => () => wedgeGeo.dispose(), [wedgeGeo]);
 
   const base = rampLen * Math.cos(rad);
   const height = rampLen * Math.sin(rad);
@@ -85,16 +87,14 @@ const InclineContent: React.FC<{
       crateRef.current.rotation.z = -rad;
     }
 
-    if (pinRef.current) {
-      pinRef.current.textContent =
-        accel > 0
-          ? `a=${accel.toFixed(2)} m/s²  v=${vRef.current.toFixed(2)} m/s\nf_k=${fFrictionMax.toFixed(
-              1
-            )} N  N=${normal.toFixed(1)} N`
-          : `Static (f_s holds crate)\nF_∥=${fParallel.toFixed(1)} N ≤ μN=${fFrictionMax.toFixed(
-              1
-            )} N`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      accel > 0
+        ? `a=${accel.toFixed(2)} m/s^2  v=${vRef.current.toFixed(2)} m/s\nf_k=${fFrictionMax.toFixed(
+            1
+          )} N  N=${normal.toFixed(1)} N`
+        : `Static (f_s holds crate)\nF_∥=${fParallel.toFixed(1)} N ≤ μN=${fFrictionMax.toFixed(1)} N`
+    );
   });
 
   return (
@@ -135,9 +135,9 @@ const InclineContent: React.FC<{
 
         <PhysicsPin
           position={[0, 0.95, 0]}
-          title="$a = g(\sin\theta - \mu_k\cos\theta)$"
+          title="$a = g(\\sin\\theta - \\mu_k\\cos\\theta)$"
           textRef={pinRef}
-          valueText={`a=${accel.toFixed(2)} m/s²`}
+          valueText={`a=${accel.toFixed(2)} m/s^2`}
           accentClass="border-amber-400"
         />
       </group>
@@ -168,7 +168,7 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
       controls={
         <>
           <SliderControl
-            label="Ramp Angle ($\theta$)"
+            label="Ramp Angle ($\\theta$)"
             value={angle}
             min={10}
             max={50}
@@ -180,7 +180,7 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
             }}
           />
           <SliderControl
-            label="Friction Coeff ($\mu_k$)"
+            label="Friction Coeff ($\\mu_k$)"
             value={mu}
             min={0}
             max={0.8}
@@ -206,7 +206,7 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
         <div className="grid grid-cols-2 gap-3 text-xs tabular-nums">
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Parallel (<MathInline text="$mg\sin\theta$" />)
+              Parallel (<MathInline text="$mg\\sin\\theta$" />)
             </p>
             <p className="text-base font-bold text-blue-700 dark:text-blue-400">
               {fParallel.toFixed(1)} N
@@ -222,7 +222,7 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
           </div>
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Max Friction (<MathInline text="$\mu_k N$" />)
+              Max Friction (<MathInline text="$\\mu_k N$" />)
             </p>
             <p className="text-base font-bold text-red-600 dark:text-red-400">
               {friction.toFixed(1)} N

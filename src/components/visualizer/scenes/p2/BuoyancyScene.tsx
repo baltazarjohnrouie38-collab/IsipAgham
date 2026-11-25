@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -64,11 +64,12 @@ const BuoyancyContent: React.FC<{
     const fracNow = submergedHeight / cubeSide;
     const fbNow = fluidDensity * (volume * fracNow) * G;
 
-    if (pinRef.current) {
-      pinRef.current.textContent = `F_B=${fbNow.toFixed(0)} N  W=${weight.toFixed(0)} N\n${
+    setPinDisplay(
+      pinRef.current,
+      `F_B=${fbNow.toFixed(0)} N  W=${weight.toFixed(0)} N\n${
         floats ? `Floats (${(subFrac * 100).toFixed(0)}% submerged)` : 'Sinks (W > F_B,max)'
-      }`;
-    }
+      }`
+    );
   });
 
   return (
@@ -112,7 +113,7 @@ const BuoyancyContent: React.FC<{
 
         <PhysicsPin
           position={[0, cubeSide / 2 + 0.65, 0]}
-          title="$F_B = \rho_{\text{fluid}} V_{\text{sub}} g$"
+          title="$F_B = \\rho_{\\text{fluid}} V_{\\text{sub}} g$"
           textRef={pinRef}
           valueText={`W=${weight.toFixed(0)} N`}
           accentClass="border-cyan-400"
@@ -144,7 +145,7 @@ export const BuoyancyScene: React.FC<SceneComponentProps> = () => {
       controls={
         <>
           <SliderControl
-            label="Object Density ($\rho_{\text{obj}}$)"
+            label="Object Density ($\\rho_{\\text{obj}}$)"
             value={objDensity}
             min={200}
             max={2200}
@@ -153,7 +154,7 @@ export const BuoyancyScene: React.FC<SceneComponentProps> = () => {
             onChange={setObjDensity}
           />
           <SliderControl
-            label="Fluid Density ($\rho_{\text{fluid}}$)"
+            label="Fluid Density ($\\rho_{\\text{fluid}}$)"
             value={fluidDensity}
             min={700}
             max={1500}
@@ -176,7 +177,7 @@ export const BuoyancyScene: React.FC<SceneComponentProps> = () => {
         <div className="grid grid-cols-2 gap-3 text-xs tabular-nums">
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Weight (<MathInline text="$W = \rho_{\text{obj}}Vg$" />)
+              Weight (<MathInline text="$W = \\rho_{\\text{obj}}Vg$" />)
             </p>
             <p className="text-base font-bold text-red-600 dark:text-red-400">
               {weight.toFixed(0)} N

@@ -37,6 +37,7 @@ import type { PhysicsCourse } from '../../types';
 import { Logo } from '../ui/Logo';
 import { OfflineBanner } from '../ui/OfflineBanner';
 import { PWAInstallButton } from '../ui/PWAInstallButton';
+import { UserAvatar } from '../ui/UserAvatar';
 import sidebarLogoUrl from '../../assets/images/regenerated_image_1795533932091.jpg';
 
 interface NavItem {
@@ -257,7 +258,6 @@ export const AppShell: React.FC = () => {
   };
 
   const displayName = profile?.nickname || profile?.username || 'Student';
-  const nicknameInitial = displayName.charAt(0).toUpperCase();
   const streakDays = profile?.streakDays ?? 0;
   const remindersEnabled = Boolean(profile?.notificationsEnabled);
   const selectedNotif = selectedNotifId
@@ -711,9 +711,9 @@ export const AppShell: React.FC = () => {
           <Link
             to="/profile"
             aria-label="Open Profile & Settings"
-            className="h-9 w-9 rounded-full bg-blue-700 dark:bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0"
+            className="rounded-full shrink-0"
           >
-            {nicknameInitial}
+            <UserAvatar name={displayName} avatarUrl={profile?.avatarUrl} size="sm" />
           </Link>
         </div>
       </header>
@@ -790,9 +790,7 @@ export const AppShell: React.FC = () => {
               aria-label="Account menu"
               className="h-10 pl-1.5 pr-2.5 rounded-full bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] inline-flex items-center gap-1.5 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
             >
-              <span className="h-7 w-7 rounded-full bg-blue-700 dark:bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
-                {nicknameInitial}
-              </span>
+              <UserAvatar name={displayName} avatarUrl={profile?.avatarUrl} size="xs" />
               <ChevronDown className="h-3.5 w-3.5 text-slate-500 dark:text-neutral-400" aria-hidden="true" />
             </button>
 

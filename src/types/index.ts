@@ -21,6 +21,7 @@ export interface UserProfile {
   username: string;
   email?: string;
   nickname: string;
+  avatarUrl?: string;
   course: PhysicsCourse;
   darkMode: boolean;
   pomodoroWorkMin: number;
@@ -49,6 +50,7 @@ export interface UserProfile {
 export interface LeaderboardEntry {
   uid: string;
   nickname: string;
+  avatarUrl?: string;
   xp: number;
   weeklyXp?: number;
   weekKey?: string;
@@ -80,6 +82,10 @@ export interface FlashcardItem {
   intervalDays?: number;
   /** SM-2 consecutive successful repetitions */
   repetitions?: number;
+  /** Number of times the card was rated Again (lapsed) */
+  lapses?: number;
+  /** Most recent SM-2 rating */
+  lastRating?: SM2Rating;
   /** Epoch ms for next due review */
   nextReviewAt: number;
   /** Epoch ms of last review */

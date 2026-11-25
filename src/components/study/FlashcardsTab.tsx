@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
+  AlertCircle,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -8,6 +9,7 @@ import {
   Pencil,
   Plus,
   RotateCw,
+  Sparkles,
   Square,
   Trash2,
   Volume2,
@@ -19,8 +21,10 @@ import {
   computeNextSM2Review,
   deleteStudySet,
   formatSM2IntervalLabel,
+  isStrugglingCard,
   renameStudySet,
   saveStudySession,
+  sortFlashcardsBySM2Priority,
   updateStudySetFlashcards,
 } from '../../lib/studyService';
 import type { FlashcardItem, SM2Rating, StudySet } from '../../types';
@@ -39,10 +43,15 @@ interface FlashcardsTabProps {
 }
 
 interface CrossDeckCard {
+  key: string;
   setId: string;
   setTitle: string;
   course: string;
   card: FlashcardItem;
+}
+
+function makeCardKey(setId: string, cardId: string): string {
+  return `${setId}::${cardId}`;
 }
 
 const COURSE_BANNER: Record<string, string> = {
@@ -87,6 +96,52 @@ const SM2_BUTTONS: Array<{
   },
 ];
 
+function getCardDifficultyBadge(card: FlashcardItem): {
+  label: string;
+  className: string;
+  struggling: boolean;
+} {
+  const lapses = card.lapses ?? 0;
+  const reps = card.repetitions ?? Math.max(0, (card.box || 1) - 1);
+  if (card.lastRating === 'again' || (lapses > 0 && reps === 0)) {
+    return {
+      label: lapses > 1 ? `Struggling · Lapsed ×${lapses}` : 'Struggling · Needs Retry',
+      className: 'text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 border-red-200 dark:border-red-900',
+      struggling: true,
+    };
+  }
+  if (isStrugglingCard(card)) {
+    return {
+      label: `Priority Review · EF ${(card.easeFactor || 2.5).toFixed(2)}`,
+      className:
+        'text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-900',
+      struggling: true,
+    };
+  }
+  if (!card.lastReviewedAt) {
+    return {
+      label: 'New Card',
+      className:
+        'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-900',
+      struggling: false,
+    };
+  }
+  if (card.nextReviewAt <= Date.now()) {
+    return {
+      label: 'Due Now',
+      className:
+        'text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/50 border-sky-200 dark:border-sky-900',
+      struggling: false,
+    };
+  }
+  return {
+    label: `Mastered · Reps ${reps}`,
+    className:
+      'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-900',
+    struggling: false,
+  };
+}
+
 export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
   studySets,
   selectedSetId,
@@ -102,6 +157,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     searchParams.get('view') === 'sets' ? 'sets' : 'flashcards'
   );
   const [reviewAllDueMode, setReviewAllDueMode] = useState(false);
+  const [smartPrioritySort, setSmartPrioritySort] = useState(true);
 
   useEffect(() => {
     if (searchParams.get('view') === 'sets') {
@@ -110,12 +166,14 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     }
   }, [searchParams]);
 
+  const [sessionQueueKeys, setSessionQueueKeys] = useState<string[]>([]);
   const [cardIndex, setCardIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [dueOnlyInSet, setDueOnlyInSet] = useState(false);
   const [showAllSets, setShowAllSets] = useState(false);
   const [savingCard, setSavingCard] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [sessionReviewed, setSessionReviewed] = useState(0);
 
   // Set rename state
   const [renamingSet, setRenamingSet] = useState(false);
@@ -138,8 +196,9 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     const list: CrossDeckCard[] = [];
     for (const set of studySets) {
       for (const card of set.flashcards) {
-        if (card.nextReviewAt <= endOfTodayMs) {
+        if (card.nextReviewAt <= endOfTodayMs || isStrugglingCard(card)) {
           list.push({
+            key: makeCardKey(set.id, card.id),
             setId: set.id,
             setTitle: set.title,
             course: set.course,
@@ -148,17 +207,106 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
         }
       }
     }
-    return list;
+    return sortFlashcardsBySM2Priority(list, Date.now(), endOfTodayMs);
   }, [studySets, endOfTodayMs]);
 
+  const allStrugglingCount = useMemo(() => {
+    let count = 0;
+    for (const set of studySets) {
+      for (const card of set.flashcards) {
+        if (isStrugglingCard(card)) count += 1;
+      }
+    }
+    return count;
+  }, [studySets]);
+
+  // Pool of candidate cards for the current mode
+  const candidatePool: CrossDeckCard[] = useMemo(() => {
+    if (!activeSet) return [];
+    if (reviewAllDueMode) return allDueTodayCards;
+
+    const base = (
+      dueOnlyInSet
+        ? activeSet.flashcards.filter(
+            (c) => c.nextReviewAt <= endOfTodayMs || isStrugglingCard(c)
+          )
+        : activeSet.flashcards
+    ).map((card) => ({
+      key: makeCardKey(activeSet.id, card.id),
+      setId: activeSet.id,
+      setTitle: activeSet.title,
+      course: activeSet.course,
+      card,
+    }));
+
+    return smartPrioritySort
+      ? sortFlashcardsBySM2Priority(base, Date.now(), endOfTodayMs)
+      : base;
+  }, [activeSet, reviewAllDueMode, allDueTodayCards, dueOnlyInSet, endOfTodayMs, smartPrioritySort]);
+
+  const candidateByKey = useMemo(() => {
+    const map = new Map<string, CrossDeckCard>();
+    for (const item of candidatePool) {
+      map.set(item.key, item);
+    }
+    // Also index all cards across studySets so a rated card stays visible in sessionQueueKeys
+    for (const set of studySets) {
+      for (const card of set.flashcards) {
+        const key = makeCardKey(set.id, card.id);
+        if (!map.has(key)) {
+          map.set(key, {
+            key,
+            setId: set.id,
+            setTitle: set.title,
+            course: set.course,
+            card,
+          });
+        }
+      }
+    }
+    return map;
+  }, [candidatePool, studySets]);
+
+  const queueSignature = `${activeSet?.id || ''}|${reviewAllDueMode}|${dueOnlyInSet}|${smartPrioritySort}`;
+  const lastSignatureRef = useRef<string>('');
+  const candidatePoolRef = useRef<CrossDeckCard[]>(candidatePool);
+  candidatePoolRef.current = candidatePool;
+
+  // Rebuild priority-sorted session queue ONLY when context/mode/sort changes
   useEffect(() => {
-    setCardIndex(0);
-    setFlipped(false);
-    setFeedback(null);
-    setRenamingSet(false);
-    setEditingCardMode('none');
-    stop();
-  }, [activeSet?.id, dueOnlyInSet, reviewAllDueMode]);
+    if (lastSignatureRef.current !== queueSignature) {
+      lastSignatureRef.current = queueSignature;
+      setSessionQueueKeys(candidatePoolRef.current.map((c) => c.key));
+      setCardIndex(0);
+      setFlipped(false);
+      setFeedback(null);
+      setSessionReviewed(0);
+      setRenamingSet(false);
+      setEditingCardMode('none');
+      stop();
+    }
+  }, [queueSignature, stop]);
+
+  // Keep sessionQueueKeys synced if cards are added/deleted in Firestore without resetting position
+  useEffect(() => {
+    const poolKeys = candidatePool.map((c) => c.key);
+    setSessionQueueKeys((prev) => {
+      if (prev.length === 0 && poolKeys.length > 0) {
+        return poolKeys;
+      }
+      const existingAllKeys = new Set<string>();
+      for (const set of studySets) {
+        for (const card of set.flashcards) {
+          existingAllKeys.add(makeCardKey(set.id, card.id));
+        }
+      }
+      const filtered = prev.filter((k) => existingAllKeys.has(k));
+      const seen = new Set(filtered);
+      const added = poolKeys.filter((k) => !seen.has(k));
+      if (added.length === 0 && filtered.length === prev.length) return prev;
+      return [...filtered, ...added];
+    });
+  }, [candidatePool, studySets]);
 
   if (!activeSet) {
     return (
@@ -176,22 +324,17 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     );
   }
 
-  const visibleCrossCards: CrossDeckCard[] = reviewAllDueMode
-    ? allDueTodayCards
-    : (dueOnlyInSet
-        ? activeSet.flashcards.filter((c) => c.nextReviewAt <= endOfTodayMs)
-        : activeSet.flashcards
-      ).map((card) => ({
-        setId: activeSet.id,
-        setTitle: activeSet.title,
-        course: activeSet.course,
-        card,
-      }));
+  const orderedSessionCards: CrossDeckCard[] = sessionQueueKeys
+    .map((k) => candidateByKey.get(k))
+    .filter((item): item is CrossDeckCard => Boolean(item));
 
   const safeIndex =
-    visibleCrossCards.length > 0 ? Math.min(cardIndex, visibleCrossCards.length - 1) : 0;
-  const activeItem = visibleCrossCards[safeIndex];
-  const dueInActiveSet = activeSet.flashcards.filter((c) => c.nextReviewAt <= endOfTodayMs).length;
+    orderedSessionCards.length > 0 ? Math.min(cardIndex, orderedSessionCards.length - 1) : 0;
+  const activeItem = orderedSessionCards[safeIndex];
+  const dueInActiveSet = activeSet.flashcards.filter(
+    (c) => c.nextReviewAt <= endOfTodayMs || isStrugglingCard(c)
+  ).length;
+  const strugglingInActiveSet = activeSet.flashcards.filter((c) => isStrugglingCard(c)).length;
 
   const handleListen = (text: string) => {
     if (speaking) {
@@ -223,6 +366,8 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
               easeFactor: sm2.easeFactor,
               intervalDays: sm2.intervalDays,
               repetitions: sm2.repetitions,
+              lapses: sm2.lapses,
+              lastRating: sm2.lastRating,
               nextReviewAt: sm2.nextReviewAt,
               lastReviewedAt: Date.now(),
             }
@@ -239,13 +384,50 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
         xpEarned: btnMeta.xp,
       });
 
-      setFeedback(`Rated ${btnMeta.label} — next review in ${labelStr} · +${btnMeta.xp} XP`);
-      setFlipped(false);
-      if (safeIndex < visibleCrossCards.length - 1) {
-        setCardIndex(safeIndex + 1);
+      setSessionReviewed((n) => n + 1);
+
+      // Update active session queue: re-queue struggling cards ("Again" / "Hard") soon so they get repeated!
+      const ratedKey = activeItem.key;
+      let nextQueue = [...sessionQueueKeys];
+      let nextIdx = safeIndex + 1;
+
+      if (rating === 'again') {
+        // Re-insert 2 cards ahead (or at the end if queue is short) so the student immediately practices it again
+        const insertAt = Math.min(nextQueue.length, safeIndex + 3);
+        nextQueue.splice(insertAt, 0, ratedKey);
+        if (nextIdx >= nextQueue.length) nextIdx = 0;
+        setFeedback(
+          `Rated Again — queued again in 2 cards for active recall (${labelStr} SM-2 interval) · +${btnMeta.xp} XP`
+        );
+      } else if (rating === 'hard') {
+        // Reinforce once more ~4 cards later if not already pending ahead
+        const hasPendingAhead = nextQueue.slice(safeIndex + 1).includes(ratedKey);
+        if (!hasPendingAhead) {
+          const insertAt = Math.min(nextQueue.length, safeIndex + 5);
+          nextQueue.splice(insertAt, 0, ratedKey);
+        }
+        if (nextIdx >= nextQueue.length) nextIdx = 0;
+        setFeedback(
+          `Rated Hard — prioritized for follow-up review (${labelStr}) · +${btnMeta.xp} XP`
+        );
       } else {
-        setCardIndex(0);
+        // Good or Easy: remove any duplicate future retries of this card in the current session
+        const head = nextQueue.slice(0, safeIndex + 1);
+        const tail = nextQueue.slice(safeIndex + 1).filter((k) => k !== ratedKey);
+        nextQueue = [...head, ...tail];
+        if (reviewAllDueMode || dueOnlyInSet) {
+          // Remove from due queue once mastered for today
+          nextQueue.splice(safeIndex, 1);
+          nextIdx = safeIndex < nextQueue.length ? safeIndex : 0;
+        } else if (nextIdx >= nextQueue.length) {
+          nextIdx = 0;
+        }
+        setFeedback(`Rated ${btnMeta.label} — next review in ${labelStr} · +${btnMeta.xp} XP`);
       }
+
+      setSessionQueueKeys(nextQueue);
+      setCardIndex(nextIdx);
+      setFlipped(false);
     } finally {
       setSavingCard(false);
     }
@@ -296,11 +478,14 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
           easeFactor: 2.5,
           intervalDays: 0,
           repetitions: 0,
+          lapses: 0,
           nextReviewAt: now,
         };
+        const newKey = makeCardKey(targetSet.id, newCard.id);
         await updateStudySetFlashcards(targetSet.id, [...targetSet.flashcards, newCard]);
-        setCardIndex(targetSet.flashcards.length);
-        setFeedback('Added new flashcard to this set.');
+        setSessionQueueKeys((prev) => [newKey, ...prev]);
+        setCardIndex(0);
+        setFeedback('Added new flashcard at the front of your queue.');
       } else if (editingCardMode === 'edit' && activeItem) {
         const updated = targetSet.flashcards.map((c) =>
           c.id === activeItem.card.id
@@ -328,6 +513,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     try {
       const updated = targetSet.flashcards.filter((c) => c.id !== activeItem.card.id);
       await updateStudySetFlashcards(targetSet.id, updated);
+      setSessionQueueKeys((prev) => prev.filter((k) => k !== activeItem.key));
       setCardIndex((prev) => Math.max(0, prev - 1));
       setFlipped(false);
       setFeedback('Removed flashcard.');
@@ -336,16 +522,35 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     }
   };
 
+  const handlePrioritizeNow = () => {
+    const sorted = sortFlashcardsBySM2Priority(candidatePool, Date.now(), endOfTodayMs);
+    setSmartPrioritySort(true);
+    setSessionQueueKeys(sorted.map((c) => c.key));
+    setCardIndex(0);
+    setFlipped(false);
+    setFeedback('Re-sorted queue with struggling and overdue flashcards first.');
+  };
+
+  const activeBadge = activeItem ? getCardDifficultyBadge(activeItem.card) : null;
+
   return (
     <div className="space-y-6">
-      {/* Due Today Banner */}
+      {/* Due Today & Struggling Banner */}
       <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-0.5">
-          <p className="text-base font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
-            Due Today: {allDueTodayCards.length} flashcard{allDueTodayCards.length === 1 ? '' : 's'} across {studySets.length} set{studySets.length === 1 ? '' : 's'}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-base font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
+              Due Today: {allDueTodayCards.length} flashcard{allDueTodayCards.length === 1 ? '' : 's'} across {studySets.length} set{studySets.length === 1 ? '' : 's'}
+            </p>
+            {allStrugglingCount > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:text-amber-300 tabular-nums">
+                <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                {allStrugglingCount} struggling prioritized
+              </span>
+            )}
+          </div>
           <p className="text-sm text-slate-600 dark:text-neutral-400">
-            SM-2 spaced repetition adjusts your next review interval using Again / Hard / Good / Easy.
+            SM-2 spaced repetition automatically surfaces cards you struggle with first and re-queues Again/Hard cards during your session.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 shrink-0">
@@ -361,7 +566,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
             >
               {reviewAllDueMode
                 ? 'Exit Due Queue'
-                : `Review Due Today (${allDueTodayCards.length})`}
+                : `Review Priority Due (${allDueTodayCards.length})`}
             </Button>
           )}
         </div>
@@ -480,7 +685,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
       </Card>
 
       {feedback && (
-        <AlertBanner tone="success" title="Study Set Updated">
+        <AlertBanner tone="success" title="SM-2 Study Queue Updated">
           {feedback}
         </AlertBanner>
       )}
@@ -489,7 +694,10 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
         <div key="sets" className="animate-enter space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {(showAllSets ? studySets : studySets.slice(0, 6)).map((set) => {
-              const setDue = set.flashcards.filter((c) => c.nextReviewAt <= endOfTodayMs).length;
+              const setDue = set.flashcards.filter(
+                (c) => c.nextReviewAt <= endOfTodayMs || isStrugglingCard(c)
+              ).length;
+              const setStruggling = set.flashcards.filter((c) => isStrugglingCard(c)).length;
               const bannerClass = COURSE_BANNER[set.course] || 'bg-blue-700';
               return (
                 <div
@@ -507,7 +715,8 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                         {set.title}
                       </h3>
                       <p className="text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
-                        {set.flashcards.length} cards · {setDue} due today ·{' '}
+                        {set.flashcards.length} cards · {setDue} due
+                        {setStruggling > 0 ? ` · ${setStruggling} struggling` : ''} ·{' '}
                         {set.quizQuestions.length} quiz items
                       </p>
                     </div>
@@ -616,12 +825,33 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-slate-600 dark:text-neutral-400 tabular-nums">
               {reviewAllDueMode
-                ? `Reviewing all due cards today (${allDueTodayCards.length} left)`
-                : `${dueInActiveSet} due today · ${activeSet.flashcards.length} total cards`}
+                ? `Reviewing priority due queue (${orderedSessionCards.length} left${
+                    sessionReviewed > 0 ? ` · ${sessionReviewed} rated this session` : ''
+                  })`
+                : `${dueInActiveSet} due · ${strugglingInActiveSet} struggling · ${activeSet.flashcards.length} total cards`}
             </p>
             <div className="flex flex-wrap items-center gap-2">
               {!reviewAllDueMode && (
                 <>
+                  <button
+                    type="button"
+                    onClick={() => setSmartPrioritySort((prev) => !prev)}
+                    className={`px-3.5 min-h-[40px] rounded-xl border text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
+                      smartPrioritySort
+                        ? 'bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800'
+                        : 'bg-white dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 border-stone-200 dark:border-neutral-700 hover:bg-stone-50 dark:hover:bg-neutral-800'
+                    }`}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>{smartPrioritySort ? 'SM-2 Priority: ON' : 'Original Order'}</span>
+                  </button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePrioritizeNow}
+                  >
+                    Re-sort Struggling First
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
@@ -633,7 +863,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   <button
                     type="button"
                     onClick={() => setDueOnlyInSet((prev) => !prev)}
-                    className={`px-3.5 min-h-[40px] rounded-full border text-xs font-semibold transition-colors cursor-pointer ${
+                    className={`px-3.5 min-h-[40px] rounded-xl border text-xs font-semibold transition-colors cursor-pointer ${
                       dueOnlyInSet
                         ? 'bg-blue-700 text-white border-blue-700 dark:bg-blue-600 dark:border-blue-600'
                         : 'bg-white dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 border-stone-200 dark:border-neutral-700 hover:bg-stone-50 dark:hover:bg-neutral-800'
@@ -696,7 +926,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
           {!activeItem ? (
             <Card className="text-center py-10 space-y-3">
               <p className="text-base font-bold text-slate-900 dark:text-neutral-100">
-                All due cards are reviewed for today!
+                All due and struggling cards are reviewed for today!
               </p>
               <p className="text-sm text-slate-600 dark:text-neutral-400">
                 Great focus. Switch off Due Only to practice any card anytime.
@@ -733,10 +963,19 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                 >
                   {/* Front Face (Question) */}
                   <div className="flip-card-face rounded-2xl bg-white dark:bg-[#141416] border border-stone-200 dark:border-neutral-800 p-6 sm:p-10 min-h-[260px] flex flex-col justify-between shadow-[0_1px_3px_rgba(15,23,42,0.04)] hover:border-stone-300 dark:hover:border-neutral-700 transition-colors">
-                    <div className="flex items-center justify-between gap-2 text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
-                      <span>Question · {activeItem.setTitle}</span>
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span>Question · {activeItem.setTitle}</span>
+                        {activeBadge && (
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-md border text-[11px] font-semibold ${activeBadge.className}`}
+                          >
+                            {activeBadge.label}
+                          </span>
+                        )}
+                      </div>
                       <span>
-                        Card {safeIndex + 1} of {visibleCrossCards.length} · Reps{' '}
+                        Card {safeIndex + 1} of {orderedSessionCards.length} · Reps{' '}
                         {activeItem.card.repetitions ?? Math.max(0, (activeItem.card.box || 1) - 1)}
                       </span>
                     </div>
@@ -780,10 +1019,10 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
 
                   {/* Back Face (Answer) */}
                   <div className="flip-card-face flip-card-back rounded-2xl bg-[#FAF9F6] dark:bg-neutral-900 border border-blue-200 dark:border-blue-900/70 p-6 sm:p-10 min-h-[260px] flex flex-col justify-between shadow-[0_2px_8px_rgba(15,23,42,0.05)]">
-                    <div className="flex items-center justify-between gap-2 text-xs text-blue-700 dark:text-blue-400 font-semibold tabular-nums">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-blue-700 dark:text-blue-400 font-semibold tabular-nums">
                       <span>Answer · {activeItem.setTitle}</span>
                       <span>
-                        Card {safeIndex + 1} of {visibleCrossCards.length} · EF{' '}
+                        Card {safeIndex + 1} of {orderedSessionCards.length} · EF{' '}
                         {(activeItem.card.easeFactor || 2.5).toFixed(2)}
                       </span>
                     </div>
@@ -861,7 +1100,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                       stop();
                       setFlipped(false);
                       setCardIndex((prev) =>
-                        prev > 0 ? prev - 1 : visibleCrossCards.length - 1
+                        prev > 0 ? prev - 1 : orderedSessionCards.length - 1
                       );
                     }}
                   >
@@ -875,7 +1114,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                       stop();
                       setFlipped(false);
                       setCardIndex((prev) =>
-                        prev < visibleCrossCards.length - 1 ? prev + 1 : 0
+                        prev < orderedSessionCards.length - 1 ? prev + 1 : 0
                       );
                     }}
                   >

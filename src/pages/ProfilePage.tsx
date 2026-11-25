@@ -4,6 +4,7 @@ import {
   Bell,
   BellOff,
   Box,
+  Camera,
   CheckSquare,
   ChevronRight,
   LogOut,
@@ -13,10 +14,12 @@ import {
   Sun,
   Trash2,
   Trophy,
+  Upload,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { processAvatarImageFile } from '../lib/avatar';
 import {
   registerStudyNotifications,
   showDueCardsNotification,
@@ -27,6 +30,7 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Input, Select } from '../components/ui/Input';
 import { PWAInstallButton } from '../components/ui/PWAInstallButton';
+import { UserAvatar } from '../components/ui/UserAvatar';
 
 type ProfileTabKey = 'overview' | 'reminders' | 'privacy';
 
@@ -68,6 +72,7 @@ export const ProfilePage: React.FC = () => {
   const [notifEnabled, setNotifEnabled] = useState(Boolean(profile?.notificationsEnabled));
   const [notifTime, setNotifTime] = useState(profile?.notificationTime || '19:00');
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [savingNotif, setSavingNotif] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -75,6 +80,7 @@ export const ProfilePage: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   const nicknameInputRef = useRef<HTMLInputElement | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -174,8 +180,40 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  const handleAvatarSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setStatusMsg(null);
+    setErrorMsg(null);
+    setUploadingAvatar(true);
+    try {
+      const avatarDataUrl = await processAvatarImageFile(file);
+      await updateUserProfile({ avatarUrl: avatarDataUrl });
+      setStatusMsg('Profile picture updated!');
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Could not upload profile picture.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    setStatusMsg(null);
+    setErrorMsg(null);
+    setUploadingAvatar(true);
+    try {
+      await updateUserProfile({ avatarUrl: '' });
+      setStatusMsg('Profile picture removed.');
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Could not remove profile picture.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const displayName = profile?.nickname || profile?.username || 'Student';
-  const initial = displayName.charAt(0).toUpperCase();
   const checklistDoneCount = ALL_CHECKLIST_KEYS.filter((k) =>
     Boolean(profile?.checklist?.[k])
   ).length;
@@ -183,11 +221,37 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <input
+        ref={avatarInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/gif"
+        className="hidden"
+        aria-label="Upload profile picture"
+        onChange={(e) => {
+          void handleAvatarSelected(e);
+        }}
+      />
+
       {/* Profile Hero Header */}
       <div className="space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-          <div className="h-20 w-20 rounded-full bg-blue-700 dark:bg-blue-600 text-white text-2xl font-extrabold flex items-center justify-center shrink-0 ring-4 ring-white dark:ring-[#141416] shadow-sm">
-            {initial}
+          <div className="relative inline-flex self-start shrink-0">
+            <UserAvatar
+              name={displayName}
+              avatarUrl={profile?.avatarUrl}
+              size="xl"
+              className="ring-4 ring-white dark:ring-[#141416] shadow-sm"
+            />
+            <button
+              type="button"
+              disabled={uploadingAvatar}
+              onClick={() => avatarInputRef.current?.click()}
+              aria-label={profile?.avatarUrl ? 'Change profile picture' : 'Upload profile picture'}
+              title={profile?.avatarUrl ? 'Change profile picture' : 'Upload profile picture'}
+              className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white border-2 border-white dark:border-[#141416] flex items-center justify-center shadow-sm transition-colors cursor-pointer disabled:opacity-60"
+            >
+              <Camera className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
           </div>
           <div className="space-y-1.5 min-w-0">
             <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-slate-950 dark:text-neutral-100 truncate">
@@ -199,6 +263,28 @@ export const ProfilePage: React.FC = () => {
             </p>
             <div className="pt-1 flex flex-wrap items-center gap-2">
               <Button
+                size="sm"
+                loading={uploadingAvatar}
+                icon={<Upload className="h-3.5 w-3.5" />}
+                onClick={() => avatarInputRef.current?.click()}
+              >
+                {profile?.avatarUrl ? 'Change Photo' : 'Upload Photo'}
+              </Button>
+              {profile?.avatarUrl && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={uploadingAvatar}
+                  icon={<Trash2 className="h-3.5 w-3.5" />}
+                  onClick={() => {
+                    void handleRemoveAvatar();
+                  }}
+                >
+                  Remove Photo
+                </Button>
+              )}
+              <Button
+                variant="outline"
                 size="sm"
                 icon={<Pencil className="h-3.5 w-3.5" />}
                 onClick={() => {
@@ -338,6 +424,45 @@ export const ProfilePage: React.FC = () => {
               <h2 className="font-display text-lg font-bold text-slate-900 dark:text-neutral-100">
                 Student Profile &amp; Study Goal
               </h2>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-[#FAF9F6] dark:bg-neutral-900/80 border border-stone-200/80 dark:border-neutral-800 max-w-lg">
+                <div className="flex items-center gap-3 min-w-0">
+                  <UserAvatar name={displayName} avatarUrl={profile?.avatarUrl} size="md" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-slate-900 dark:text-neutral-100">
+                      Profile Picture
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-neutral-400">
+                      Shown in your header and Global Leadership Board
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    loading={uploadingAvatar}
+                    onClick={() => avatarInputRef.current?.click()}
+                  >
+                    {profile?.avatarUrl ? 'Change' : 'Upload'}
+                  </Button>
+                  {profile?.avatarUrl && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      disabled={uploadingAvatar}
+                      onClick={() => {
+                        void handleRemoveAvatar();
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+              </div>
+
               <form onSubmit={handleSaveSettings} className="space-y-4 max-w-lg">
                 <Input
                   ref={nicknameInputRef}

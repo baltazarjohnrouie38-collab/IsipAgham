@@ -290,12 +290,14 @@ export function subscribeStudySessions(
 
 /** SM-2 spaced-repetition calculation with 4 buttons: Again / Hard / Good / Easy */
 export function computeNextSM2Review(
-  card: Pick<FlashcardItem, 'box' | 'easeFactor' | 'intervalDays' | 'repetitions'>,
+  card: Pick<FlashcardItem, 'box' | 'easeFactor' | 'intervalDays' | 'repetitions' | 'lapses'>,
   rating: SM2Rating
 ): {
   easeFactor: number;
   intervalDays: number;
   repetitions: number;
+  lapses: number;
+  lastRating: SM2Rating;
   nextBox: number;
   nextReviewAt: number;
 } {
@@ -303,14 +305,17 @@ export function computeNextSM2Review(
   const prevEf = typeof card.easeFactor === 'number' && card.easeFactor >= 1.3 ? card.easeFactor : 2.5;
   const prevInterval = typeof card.intervalDays === 'number' && card.intervalDays > 0 ? card.intervalDays : 0;
   const prevReps = typeof card.repetitions === 'number' ? card.repetitions : Math.max(0, (card.box || 1) - 1);
+  const prevLapses = typeof card.lapses === 'number' && card.lapses >= 0 ? card.lapses : 0;
 
   if (rating === 'again') {
     return {
       easeFactor: Number(Math.max(1.3, prevEf - 0.2).toFixed(2)),
       intervalDays: 0,
       repetitions: 0,
+      lapses: prevLapses + 1,
+      lastRating: 'again',
       nextBox: 1,
-      nextReviewAt: now + 10 * 60 * 1000, // 10 minutes
+      nextReviewAt: now + 5 * 60 * 1000, // 5 minutes re-learn interval
     };
   }
 
@@ -319,7 +324,7 @@ export function computeNextSM2Review(
   const repetitions = prevReps + 1;
 
   if (rating === 'hard') {
-    easeFactor = Math.max(1.3, prevEf - 0.15);
+    easeFactor = Math.max(1.3, prevEf - 0.14);
     intervalDays =
       repetitions === 1 ? 0.5 : Math.max(1, Math.round(Math.max(1, prevInterval) * 1.2 * 10) / 10);
   } else if (rating === 'good') {
@@ -341,21 +346,85 @@ export function computeNextSM2Review(
     easeFactor: Number(easeFactor.toFixed(2)),
     intervalDays,
     repetitions,
+    lapses: prevLapses,
+    lastRating: rating,
     nextBox,
     nextReviewAt: now + Math.round(intervalDays * 24 * 60 * 60 * 1000),
   };
 }
 
 export function formatSM2IntervalLabel(
-  card: Pick<FlashcardItem, 'box' | 'easeFactor' | 'intervalDays' | 'repetitions'>,
+  card: Pick<FlashcardItem, 'box' | 'easeFactor' | 'intervalDays' | 'repetitions' | 'lapses'>,
   rating: SM2Rating
 ): string {
-  if (rating === 'again') return '10m';
+  if (rating === 'again') return '5m';
   const { intervalDays } = computeNextSM2Review(card, rating);
   if (intervalDays < 1) {
     return `${Math.max(1, Math.round(intervalDays * 24))}h`;
   }
   return `${Math.round(intervalDays)}d`;
+}
+
+/** Identifies flashcards the learner is currently struggling with via SM-2 signals */
+export function isStrugglingCard(card: FlashcardItem): boolean {
+  const ef = typeof card.easeFactor === 'number' ? card.easeFactor : 2.5;
+  const lapses = card.lapses ?? 0;
+  const reps = card.repetitions ?? Math.max(0, (card.box || 1) - 1);
+  if (card.lastRating === 'again') return true;
+  if (card.lastRating === 'hard' && reps < 3) return true;
+  if (lapses > 0 && reps < 2) return true;
+  return ef <= 2.25;
+}
+
+/** Higher priority score means the card should be surfaced earlier in the SM-2 study queue */
+export function getCardSM2PriorityScore(
+  card: FlashcardItem,
+  now = Date.now(),
+  endOfTodayMs = now
+): number {
+  const ef = typeof card.easeFactor === 'number' ? card.easeFactor : 2.5;
+  const lapses = card.lapses ?? 0;
+  const reps = card.repetitions ?? Math.max(0, (card.box || 1) - 1);
+
+  let score = 0;
+  // Immediate re-learn / failed cards come first
+  if (card.lastRating === 'again') score += 10000;
+  // Cards rated Hard or recently lapsed
+  if (card.lastRating === 'hard') score += 5000;
+  if (lapses > 0) score += Math.min(3000, lapses * 900) - Math.min(800, reps * 250);
+
+  // Low ease factor strongly boosts priority
+  score += Math.round((2.6 - Math.min(2.6, ef)) * 1200);
+
+  // Overdue or due right now
+  if (card.nextReviewAt <= now) {
+    const overdueHours = Math.max(0, (now - card.nextReviewAt) / 3600000);
+    score += 1800 + Math.min(800, overdueHours * 12);
+  } else if (card.nextReviewAt <= endOfTodayMs) {
+    score += 700;
+  } else {
+    // Future card: push well below due/struggling cards, earliest due first
+    const daysOut = Math.max(0, (card.nextReviewAt - now) / 86400000);
+    score -= Math.min(1500, daysOut * 20);
+  }
+
+  // Unseen cards slightly ahead of well-mastered future cards
+  if (!card.lastReviewedAt) score += 250;
+  score -= Math.min(400, reps * 45);
+
+  return score;
+}
+
+export function sortFlashcardsBySM2Priority<T extends { card: FlashcardItem }>(
+  items: T[],
+  now = Date.now(),
+  endOfTodayMs = now
+): T[] {
+  return [...items].sort(
+    (a, b) =>
+      getCardSM2PriorityScore(b.card, now, endOfTodayMs) -
+      getCardSM2PriorityScore(a.card, now, endOfTodayMs)
+  );
 }
 
 export function subscribeLeaderboard(onData: (entries: LeaderboardEntry[]) => void) {

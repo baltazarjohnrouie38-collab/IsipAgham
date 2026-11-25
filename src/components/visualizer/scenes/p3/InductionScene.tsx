@@ -4,7 +4,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -62,12 +62,16 @@ const InductionContent: React.FC<{
     if (needleRef.current) {
       needleRef.current.rotation.z = THREE.MathUtils.clamp(-emf * 0.05, -1.1, 1.1);
     }
-    if (pinRef.current) {
-      const lenzDir = emf > 0.05 ? 'Induced N opposes entry' : emf < -0.05 ? 'Induced S pulls back' : 'Stationary (ε ≈ 0)';
-      pinRef.current.textContent = `Φ_B=${(flux * 1000).toFixed(1)} mWb\nε = ${emf.toFixed(
-        2
-      )} V | ${lenzDir}`;
-    }
+    const lenzDir =
+      emf > 0.05
+        ? 'Induced N opposes entry'
+        : emf < -0.05
+        ? 'Induced S pulls back'
+        : 'Stationary (ε ≈ 0)';
+    setPinDisplay(
+      pinRef.current,
+      `Φ_B=${(flux * 1000).toFixed(1)} mWb\nε = ${emf.toFixed(2)} V | ${lenzDir}`
+    );
   });
 
   return (
@@ -102,7 +106,7 @@ const InductionContent: React.FC<{
         <Arrow3D origin={[0.95, 0, 0]} direction={[1, 0, 0]} length={0.75} color="#ef4444" />
         <PhysicsPin
           position={[0, -0.82, 0]}
-          title="$\varepsilon = -N\frac{\Delta\Phi_B}{\Delta t}$"
+          title="$\\varepsilon = -N\\frac{\\Delta\\Phi_B}{\\Delta t}$"
           textRef={pinRef}
           valueText="Moving magnet..."
           accentClass="border-red-400"
@@ -164,7 +168,7 @@ export const InductionScene: React.FC<SceneComponentProps> = () => {
         <div className="grid grid-cols-2 gap-3 text-xs tabular-nums">
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Peak Flux (<MathInline text="$\Phi_{B,\max}$" />)
+              Peak Flux (<MathInline text="$\\Phi_{B,\\max}$" />)
             </p>
             <p className="text-base font-bold text-slate-900 dark:text-neutral-100">
               {maxFluxMwb.toFixed(1)} mWb
@@ -172,7 +176,7 @@ export const InductionScene: React.FC<SceneComponentProps> = () => {
           </div>
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Peak Induced EMF (<MathInline text="$|\varepsilon|$" />)
+              Peak Induced EMF (<MathInline text="$|\\varepsilon|$" />)
             </p>
             <p className="text-base font-bold text-amber-600 dark:text-amber-400">
               ~{peakEmfApprox.toFixed(2)} V

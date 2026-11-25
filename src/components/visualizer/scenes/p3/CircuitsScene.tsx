@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -147,11 +147,12 @@ const CircuitsContent: React.FC<{
       }
     }
 
-    if (pinRef.current) {
-      pinRef.current.textContent = `R_eq=${req.toFixed(2)} Ω  I_tot=${iTotal.toFixed(
-        2
-      )} A\nP₁=${p1.toFixed(1)} W  P₂=${p2.toFixed(1)} W`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `R_eq=${req.toFixed(2)} Ω  I_tot=${iTotal.toFixed(2)} A\nP_1=${p1.toFixed(1)} W  P_2=${p2.toFixed(
+        1
+      )} W`
+    );
   });
 
   const glow1 = Math.min(2.2, p1 / 12);
@@ -242,7 +243,7 @@ const CircuitsContent: React.FC<{
       <group ref={pinAnchorRef} position={[-2.6, 0.25, -1.4]}>
         <PhysicsPin
           position={[0, 0.98, 0]}
-          title="$I = V / R_{\text{eq}}$"
+          title="$I = V / R_{\\text{eq}}$"
           textRef={pinRef}
           valueText={`I=${iTotal.toFixed(2)} A`}
           accentClass="border-amber-400"
@@ -325,7 +326,7 @@ export const CircuitsScene: React.FC<SceneComponentProps> = () => {
         <div className="grid grid-cols-2 gap-3 text-xs tabular-nums">
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Equivalent (<MathInline text="$R_{\text{eq}}$" />)
+              Equivalent (<MathInline text="$R_{\\text{eq}}$" />)
             </p>
             <p className="text-base font-bold text-slate-900 dark:text-neutral-100">
               {req.toFixed(2)} Ω

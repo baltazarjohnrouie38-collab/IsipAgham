@@ -24,6 +24,7 @@ import type { LeaderboardEntry } from '../types';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Logo } from '../components/ui/Logo';
+import { UserAvatar } from '../components/ui/UserAvatar';
 import heroMascotUrl from '../assets/images/regenerated_image_1795533934834.jpg';
 
 const RING_ACCENT: Record<string, string> = {
@@ -117,7 +118,6 @@ export const HomePage: React.FC = () => {
   const goalPct = Math.min(100, Math.round((todayMinutes / dailyGoalMinutes) * 100));
 
   const displayName = profile?.nickname || profile?.username || 'Student';
-  const userInitial = displayName.charAt(0).toUpperCase();
 
   const topThree = useMemo(() => leaderboard.slice(0, 3), [leaderboard]);
 
@@ -394,9 +394,12 @@ export const HomePage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
         <Card className="lg:col-span-2 flex flex-col justify-between gap-5">
           <div className="flex items-start gap-4">
-            <div className="h-13 w-13 rounded-full bg-blue-700 dark:bg-blue-600 text-white text-lg font-bold flex items-center justify-center shrink-0 ring-4 ring-blue-50 dark:ring-neutral-800">
-              {userInitial}
-            </div>
+            <UserAvatar
+              name={displayName}
+              avatarUrl={profile?.avatarUrl}
+              size="lg"
+              className="ring-4 ring-blue-50 dark:ring-neutral-800"
+            />
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-xs font-bold text-blue-700 dark:text-blue-400">
                 <Target className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
@@ -467,7 +470,7 @@ export const HomePage: React.FC = () => {
                     key={entry.uid}
                     className="py-2.5 flex items-center justify-between gap-2"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0">
                       <span
                         className={`h-6 w-6 rounded-full text-[11px] font-bold inline-flex items-center justify-center shrink-0 tabular-nums ${
                           RANK_MEDAL_COLORS[idx] || RANK_MEDAL_COLORS[2]
@@ -475,6 +478,12 @@ export const HomePage: React.FC = () => {
                       >
                         {idx + 1}
                       </span>
+                      <UserAvatar
+                        name={entry.nickname}
+                        avatarUrl={entry.avatarUrl}
+                        size="xs"
+                        tone={isSelf ? 'primary' : 'neutral'}
+                      />
                       <span className="text-sm font-bold text-slate-900 dark:text-neutral-100 truncate">
                         {entry.nickname}
                         {isSelf && (

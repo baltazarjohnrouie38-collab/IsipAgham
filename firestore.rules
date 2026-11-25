@@ -31,12 +31,22 @@ service cloud.firestore {
       return course is string && course in ['Physics 1', 'Physics 2', 'Physics 3'];
     }
 
+    function isValidAvatarUrl(url) {
+      return url is string
+        && url.size() <= 80000
+        && (
+          url == ''
+          || url.matches('^data:image/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$')
+          || url.matches('^https://\\S+$')
+        );
+    }
+
     // --- Entity Validation Blueprints ---
 
     function isValidUserProfile(data) {
       return data.keys().hasAll(['uid', 'nickname', 'darkMode', 'xp', 'createdAt', 'updatedAt'])
         && data.keys().hasOnly([
-          'uid', 'username', 'email', 'nickname', 'course', 'darkMode',
+          'uid', 'username', 'email', 'nickname', 'avatarUrl', 'course', 'darkMode',
           'pomodoroWorkMin', 'pomodoroBreakMin', 'dailyGoalMinutes',
           'notificationsEnabled', 'notificationTime', 'fcmToken',
           'xp', 'weeklyXp', 'weekKey', 'streakDays', 'lastStudyDate',
@@ -48,6 +58,7 @@ service cloud.firestore {
         && (!('username' in data) || (data.username is string && data.username.size() >= 2 && data.username.size() <= 24))
         && (!('email' in data) || (data.email is string && data.email.size() <= 254))
         && data.nickname is string && data.nickname.size() >= 2 && data.nickname.size() <= 24
+        && (!('avatarUrl' in data) || isValidAvatarUrl(data.avatarUrl))
         && (!('course' in data) || isValidCourse(data.course))
         && data.darkMode is bool
         && data.xp is int && data.xp >= 0 && data.xp <= 1000000
@@ -76,9 +87,10 @@ service cloud.firestore {
 
     function isValidLeaderboardEntry(data) {
       return data.keys().hasAll(['uid', 'nickname', 'xp', 'updatedAt'])
-        && data.keys().hasOnly(['uid', 'nickname', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'nickname', 'avatarUrl', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt'])
         && data.uid is string && data.uid == request.auth.uid && isValidId(data.uid)
         && data.nickname is string && data.nickname.size() >= 2 && data.nickname.size() <= 24
+        && (!('avatarUrl' in data) || isValidAvatarUrl(data.avatarUrl))
         && data.xp is int && data.xp >= 0 && data.xp <= 1000000
         && (!('weeklyXp' in data) || (data.weeklyXp is int && data.weeklyXp >= 0 && data.weeklyXp <= 1000000))
         && (!('weekKey' in data) || (data.weekKey is string && data.weekKey.size() <= 12))
@@ -171,20 +183,20 @@ service cloud.firestore {
         && incoming().createdAt == existing().createdAt
         && incoming().updatedAt == request.time
         && incoming().diff(existing()).affectedKeys().hasOnly([
-          'username', 'nickname', 'course', 'darkMode', 'pomodoroWorkMin',
+          'username', 'nickname', 'avatarUrl', 'course', 'darkMode', 'pomodoroWorkMin',
           'pomodoroBreakMin', 'dailyGoalMinutes', 'notificationsEnabled',
           'notificationTime', 'fcmToken', 'xp', 'weeklyXp', 'weekKey',
           'streakDays', 'lastStudyDate', 'todayStudyDate', 'todayStudySeconds',
           'totalStudySeconds', 'cardsReviewedCount', 'aiQuestionsAsked',
-          'lessonsCompleted', 'classCode', 'visitedCourses', 'checklist', 'updatedAt'
+          'lessonsCompleted', 'visitedCourses', 'checklist', 'updatedAt'
         ]);
       allow delete: if isValidId(userId) && isOwner(userId);
     }
 
-    // Public Leaderboard (strictly nickname + classCode + XP only, zero PII)
+    // Public Global Leadership Board (nickname + avatarUrl + XP only, zero PII)
     match /leaderboard/{userId} {
       allow get: if isValidId(userId) && isSignedIn();
-      allow list: if isSignedIn() && resource.data.keys().hasOnly(['uid', 'nickname', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt']);
+      allow list: if isSignedIn() && resource.data.keys().hasOnly(['uid', 'nickname', 'avatarUrl', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt']);
       allow create: if isValidId(userId)
         && isOwner(userId)
         && isValidLeaderboardEntry(incoming())
@@ -194,7 +206,7 @@ service cloud.firestore {
         && isValidLeaderboardEntry(incoming())
         && incoming().uid == existing().uid
         && incoming().updatedAt == request.time
-        && incoming().diff(existing()).affectedKeys().hasOnly(['nickname', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt']);
+        && incoming().diff(existing()).affectedKeys().hasOnly(['nickname', 'avatarUrl', 'xp', 'weeklyXp', 'weekKey', 'updatedAt']);
       allow delete: if isValidId(userId) && isOwner(userId);
     }
 

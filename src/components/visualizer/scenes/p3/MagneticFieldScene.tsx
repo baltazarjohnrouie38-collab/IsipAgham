@@ -4,7 +4,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -75,12 +75,12 @@ const MagFieldContent: React.FC<{
       }
     }
 
-    if (pinRef.current) {
-      pinRef.current.textContent =
-        mode === 'wire'
-          ? `B = μ₀I / (2πr)\nB = ${bWireMicroT.toFixed(1)} μT`
-          : `B = μ₀(N/L)I\nB = ${bSolenoidMilliT.toFixed(2)} mT`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      mode === 'wire'
+        ? `B = μ_0 I / (2πr)\nB = ${bWireMicroT.toFixed(1)} μT`
+        : `B = μ_0(N/L)I\nB = ${bSolenoidMilliT.toFixed(2)} mT`
+    );
   });
 
   const dirSign = current >= 0 ? 1 : -1;
@@ -191,7 +191,7 @@ export const MagneticFieldScene: React.FC<SceneComponentProps> = () => {
             ))}
           </div>
           <SliderControl
-            label="Current ($I$, $\pm$ flips dir)"
+            label="Current ($I$, $\\pm$ flips dir)"
             value={current}
             min={-15}
             max={15}

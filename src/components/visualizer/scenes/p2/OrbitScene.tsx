@@ -4,7 +4,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -89,11 +89,10 @@ const OrbitContent: React.FC<{
     if (satOrbitRef.current) {
       satOrbitRef.current.rotation.y = angleRef.current;
     }
-    if (pinRef.current) {
-      pinRef.current.textContent = `v=${(vOrbit / 1000).toFixed(2)} km/s\nF_g=${fg.toFixed(
-        0
-      )} N  T=${periodMin.toFixed(0)} min`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `v=${(vOrbit / 1000).toFixed(2)} km/s\nF_g=${fg.toFixed(0)} N  T=${periodMin.toFixed(0)} min`
+    );
   });
 
   const gravArrowLen = Math.min(1.35, Math.max(0.55, 1.35 / Math.pow(radiusRe / 1.2, 1.2)));
@@ -192,7 +191,7 @@ const OrbitContent: React.FC<{
 
           <PhysicsPin
             position={[0, 0.68, 0]}
-            title="$v = \sqrt{GM/r}$"
+            title="$v = \\sqrt{GM/r}$"
             textRef={pinRef}
             valueText={`v=${(vOrbit / 1000).toFixed(2)} km/s`}
             accentClass="border-blue-400"
@@ -231,9 +230,9 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
               Orbit Altitude Presets:
             </span>
             {[
-              { label: 'Low Earth (1.2 R_E)', r: 1.2 },
-              { label: 'Medium Orbit (2.0 R_E)', r: 2.0 },
-              { label: 'High Orbit (3.2 R_E)', r: 3.2 },
+              { label: 'Low Earth ($1.2\\,R_E$)', r: 1.2 },
+              { label: 'Medium Orbit ($2.0\\,R_E$)', r: 2.0 },
+              { label: 'High Orbit ($3.2\\,R_E$)', r: 3.2 },
             ].map((p) => (
               <button
                 key={p.r}
@@ -245,7 +244,7 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
                     : 'bg-[#FAF9F6] dark:bg-neutral-950 text-slate-700 dark:text-neutral-200 border-stone-200 dark:border-neutral-700 hover:border-blue-600'
                 }`}
               >
-                {p.label}
+                <MathInline text={p.label} />
               </button>
             ))}
           </div>
@@ -255,7 +254,7 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
             min={1.2}
             max={3.5}
             step={0.1}
-            unit="R_Earth"
+            unit="$R_E$"
             onChange={setRadiusRe}
           />
           <SliderControl
@@ -264,7 +263,7 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
             min={0.5}
             max={3.0}
             step={0.1}
-            unit="M_Earth"
+            unit="$M_E$"
             onChange={setPlanetMassMult}
           />
           <SliderControl

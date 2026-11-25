@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -65,11 +65,12 @@ const BernoulliContent: React.FC<{
 
       if (i === 0 && tracerPinGroupRef.current) {
         tracerPinGroupRef.current.position.set(x, 1.1, 0);
-        if (pinRef.current) {
-          pinRef.current.textContent = inThroat
-            ? `Throat: v₂=${v2.toFixed(2)} m/s\nP₂=${p2Kpa.toFixed(1)} kPa (faster = lower P)`
-            : `Wide: v₁=${v1.toFixed(2)} m/s\nP₁=${p1Kpa.toFixed(1)} kPa`;
-        }
+        setPinDisplay(
+          pinRef.current,
+          inThroat
+            ? `Throat: v_2=${v2.toFixed(2)} m/s\nP_2=${p2Kpa.toFixed(1)} kPa (faster = lower P)`
+            : `Wide: v_1=${v1.toFixed(2)} m/s\nP_1=${p1Kpa.toFixed(1)} kPa`
+        );
       }
     }
   });
@@ -128,7 +129,7 @@ const BernoulliContent: React.FC<{
           position={[0, 1.05, 0]}
           title="$A_1 v_1 = A_2 v_2$"
           textRef={pinRef}
-          valueText={`v₁=${v1.toFixed(2)} → v₂=${v2.toFixed(2)} m/s`}
+          valueText={`v_1=${v1.toFixed(2)} → v_2=${v2.toFixed(2)} m/s`}
           accentClass="border-amber-400"
         />
       </group>
@@ -186,7 +187,7 @@ export const BernoulliScene: React.FC<SceneComponentProps> = () => {
             onChange={setR2}
           />
           <SliderControl
-            label="Fluid Density ($\rho$)"
+            label="Fluid Density ($\\rho$)"
             value={density}
             min={700}
             max={1300}

@@ -16,6 +16,7 @@ import type { LeaderboardEntry, QuizAttempt, StudySession, StudySet } from '../.
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Logo } from '../ui/Logo';
+import { UserAvatar } from '../ui/UserAvatar';
 
 interface ProgressTabProps {
   attempts: QuizAttempt[];
@@ -133,7 +134,6 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
   const recentChartAttempts = [...attempts].slice(0, 10).reverse();
   const displayName = profile?.nickname || profile?.username || 'You';
-  const userInitial = displayName.charAt(0).toUpperCase();
   const completedLessonsSet = useMemo(
     () => new Set(profile?.lessonsCompleted || []),
     [profile?.lessonsCompleted]
@@ -283,9 +283,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-blue-700 dark:bg-blue-600 text-white text-lg font-bold flex items-center justify-center shrink-0">
-              {userInitial}
-            </div>
+            <UserAvatar name={displayName} avatarUrl={profile?.avatarUrl} size="md" />
             <div>
               <p className="text-base font-bold text-slate-900 dark:text-neutral-100">
                 {challengeMode === 'flashcards' ? 'SM-2 Flashcard Sprint' : 'Mixed Quiz Drill'}
@@ -396,7 +394,6 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 const rank =
                   sortedLeaderboard.findIndex((item) => item.uid === entry.uid) + 1;
                 const isSelf = entry.uid === user?.uid;
-                const initial = (entry.nickname || 'S').charAt(0).toUpperCase();
                 const displayXp =
                   periodMode === 'weekly'
                     ? entry.weekKey === currentWeekKey
@@ -413,16 +410,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <MedalBadge rank={rank} />
-                      <span
-                        className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                          isSelf
-                            ? 'bg-blue-700 text-white dark:bg-blue-600'
-                            : 'bg-stone-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-200'
-                        }`}
-                        aria-hidden="true"
-                      >
-                        {initial}
-                      </span>
+                      <UserAvatar
+                        name={entry.nickname}
+                        avatarUrl={entry.avatarUrl}
+                        size="sm"
+                        tone={isSelf ? 'primary' : 'neutral'}
+                      />
                       <div className="min-w-0">
                         <span className="text-sm font-bold text-slate-900 dark:text-neutral-100 truncate block">
                           {entry.nickname}

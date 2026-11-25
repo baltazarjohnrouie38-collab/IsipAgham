@@ -10,6 +10,9 @@ interface Arrow3DProps {
 }
 
 const UP = new THREE.Vector3(0, 1, 0);
+const _dir = new THREE.Vector3();
+const UNIT_SHAFT_GEO = new THREE.CylinderGeometry(1, 1, 1, 10);
+const UNIT_HEAD_GEO = new THREE.ConeGeometry(2.5, 1, 12);
 
 export const Arrow3D: React.FC<Arrow3DProps> = ({
   origin = [0, 0, 0],
@@ -19,13 +22,13 @@ export const Arrow3D: React.FC<Arrow3DProps> = ({
   radius = 0.04,
 }) => {
   const { quaternion, clampedLen } = useMemo(() => {
-    const dir = new THREE.Vector3(direction[0], direction[1], direction[2]);
-    const mag = dir.length();
+    _dir.set(direction[0], direction[1], direction[2]);
+    const mag = _dir.length();
     if (mag < 1e-5 || length <= 0.05) {
       return { quaternion: new THREE.Quaternion(), clampedLen: 0 };
     }
-    dir.normalize();
-    const quat = new THREE.Quaternion().setFromUnitVectors(UP, dir);
+    _dir.normalize();
+    const quat = new THREE.Quaternion().setFromUnitVectors(UP, _dir);
     return { quaternion: quat, clampedLen: Math.min(8, Math.max(0.15, length)) };
   }, [direction[0], direction[1], direction[2], length]);
 
@@ -36,12 +39,18 @@ export const Arrow3D: React.FC<Arrow3DProps> = ({
 
   return (
     <group position={origin} quaternion={quaternion}>
-      <mesh position={[0, shaftLen / 2, 0]}>
-        <cylinderGeometry args={[radius, radius, shaftLen, 10]} />
+      <mesh
+        geometry={UNIT_SHAFT_GEO}
+        position={[0, shaftLen / 2, 0]}
+        scale={[radius, shaftLen, radius]}
+      >
         <meshStandardMaterial color={color} roughness={0.35} metalness={0.1} />
       </mesh>
-      <mesh position={[0, shaftLen + headLen / 2, 0]}>
-        <coneGeometry args={[radius * 2.5, headLen, 12]} />
+      <mesh
+        geometry={UNIT_HEAD_GEO}
+        position={[0, shaftLen + headLen / 2, 0]}
+        scale={[radius, headLen, radius]}
+      >
         <meshStandardMaterial color={color} roughness={0.35} metalness={0.1} />
       </mesh>
     </group>

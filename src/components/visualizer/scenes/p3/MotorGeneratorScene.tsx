@@ -4,7 +4,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -50,18 +50,13 @@ const MotorGenContent: React.FC<{
     }
 
     const sinT = Math.sin(thetaRef.current);
-    if (pinRef.current) {
-      if (mode === 'motor') {
-        const torque = turns * currentOrSpeed * LOOP_AREA * fieldB * Math.abs(sinT);
-        pinRef.current.textContent = `θ=${(((thetaRef.current * 180) / Math.PI) % 360).toFixed(
-          0
-        )}°\nτ = N I A B |sin θ| = ${torque.toFixed(2)} N·m`;
-      } else {
-        const emf = turns * fieldB * LOOP_AREA * omega * sinT;
-        pinRef.current.textContent = `θ=${(((thetaRef.current * 180) / Math.PI) % 360).toFixed(
-          0
-        )}°\nε(t) = N B A ω sin θ = ${emf.toFixed(2)} V`;
-      }
+    const deg = (((thetaRef.current * 180) / Math.PI) % 360).toFixed(0);
+    if (mode === 'motor') {
+      const torque = turns * currentOrSpeed * LOOP_AREA * fieldB * Math.abs(sinT);
+      setPinDisplay(pinRef.current, `θ=${deg}°\nτ = N I A B |sin θ| = ${torque.toFixed(2)} N·m`);
+    } else {
+      const emf = turns * fieldB * LOOP_AREA * omega * sinT;
+      setPinDisplay(pinRef.current, `θ=${deg}°\nε(t) = N B A ω sin θ = ${emf.toFixed(2)} V`);
     }
   });
 

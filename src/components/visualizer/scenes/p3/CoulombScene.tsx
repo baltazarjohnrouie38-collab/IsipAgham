@@ -4,7 +4,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -112,14 +112,13 @@ const CoulombContent: React.FC<{
     const ey = (K_COULOMB * q1 * ry1) / Math.pow(r1, 3) + (K_COULOMB * q2 * ry2) / Math.pow(r2, 3);
     const eMag = Math.hypot(ex, ey);
 
-    if (pin1Ref.current) {
-      pin1Ref.current.textContent = `F = ${forceN.toFixed(3)} N\n(${
+    setPinDisplay(
+      pin1Ref.current,
+      `F = ${forceN.toFixed(3)} N\n(${
         attractive ? 'Attractive' : q1Micro * q2Micro === 0 ? 'Zero force' : 'Repulsive'
-      })`;
-    }
-    if (pinProbeRef.current) {
-      pinProbeRef.current.textContent = `E = ${(eMag / 1000).toFixed(1)} kN/C`;
-    }
+      })`
+    );
+    setPinDisplay(pinProbeRef.current, `E = ${(eMag / 1000).toFixed(1)} kN/C`);
   });
 
   const fDir1 = attractive ? 1 : -1;
@@ -177,7 +176,7 @@ const CoulombContent: React.FC<{
         </mesh>
         <PhysicsPin
           position={[0, 0.52, 0]}
-          title="$\vec{E}$-field probe"
+          title="$\\vec{E}$-field probe"
           textRef={pinProbeRef}
           valueText="E=0 kN/C"
           accentClass="border-emerald-400"
@@ -247,7 +246,7 @@ export const CoulombScene: React.FC<SceneComponentProps> = () => {
           </div>
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              <MathInline text="$|\vec{E}_1|$ at $q_2$" />
+              <MathInline text="$|\\vec{E}_1|$ at $q_2$" />
             </p>
             <p className="text-base font-bold text-emerald-700 dark:text-emerald-400">
               {(eAtQ2 / 1000).toFixed(1)} kN/C

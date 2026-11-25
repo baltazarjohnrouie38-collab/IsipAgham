@@ -9,6 +9,7 @@
         "username": { "type": "string", "minLength": 2, "maxLength": 24 },
         "email": { "type": "string", "maxLength": 254 },
         "nickname": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "avatarUrl": { "type": "string", "maxLength": 80000, "pattern": "^(|https:\\/\\/\\S+|data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+)$" },
         "course": { "type": "string", "enum": ["Physics 1", "Physics 2", "Physics 3"] },
         "darkMode": { "type": "boolean" },
         "pomodoroWorkMin": { "type": "integer" },
@@ -38,11 +39,12 @@
     },
     "LeaderboardEntry": {
       "title": "LeaderboardEntry",
-      "description": "Public leaderboard entry exposing only username/nickname, class code, and XP (no PII).",
+      "description": "Public Global Leadership Board entry exposing only username/nickname, optional avatar, and XP (no PII).",
       "type": "object",
       "properties": {
         "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
         "nickname": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "avatarUrl": { "type": "string", "maxLength": 80000, "pattern": "^(|https:\\/\\/\\S+|data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+)$" },
         "xp": { "type": "integer" },
         "weeklyXp": { "type": "integer" },
         "weekKey": { "type": "string", "maxLength": 12 },
@@ -141,7 +143,7 @@
     },
     "/leaderboard/{userId}": {
       "schema": { "$ref": "#/entities/LeaderboardEntry" },
-      "description": "Public leaderboard usernames, class codes, and XP; readable by authenticated users, writable only by owner."
+      "description": "Public Global Leadership Board usernames, avatars, and XP; readable by authenticated users, writable only by owner."
     },
     "/materials/{materialId}": {
       "schema": { "$ref": "#/entities/StudyMaterial" },

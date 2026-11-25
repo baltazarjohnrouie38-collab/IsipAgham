@@ -4,7 +4,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -116,11 +116,10 @@ const ProjectileContent: React.FC<{
       velArrowRef.current.scale.set(1, lenScale, 1);
     }
 
-    if (pinRef.current) {
-      pinRef.current.textContent = `x=${xMeters.toFixed(1)} m  y=${yMeters.toFixed(
-        1
-      )} m\nv_x=${vx.toFixed(1)}  v_y=${vyNow.toFixed(1)} m/s`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `x=${xMeters.toFixed(1)} m  y=${yMeters.toFixed(1)} m\nv_x=${vx.toFixed(1)}  v_y=${vyNow.toFixed(1)} m/s`
+    );
   });
 
   return (
@@ -232,7 +231,7 @@ const ProjectileContent: React.FC<{
         </group>
         <PhysicsPin
           position={[0, 0.78, 0]}
-          title="$\vec{v}(t) = \vec{v}_0 + \vec{g}t$"
+          title="$\\vec{v}(t) = \\vec{v}_0 + \\vec{g}t$"
           textRef={pinRef}
           valueText="x=0.0 m  y=0.0 m"
           accentClass="border-amber-400"
@@ -295,11 +294,11 @@ export const ProjectileScene: React.FC<SceneComponentProps> = () => {
               onClick={() => applyPreset(45, 9, 1.62)}
               className="min-h-[36px] px-3 rounded-lg text-xs font-semibold border border-stone-200 dark:border-neutral-700 bg-[#FAF9F6] dark:bg-neutral-950 text-slate-700 dark:text-neutral-200 hover:border-blue-600 cursor-pointer"
             >
-              Moon Gravity ($g=1.62$)
+              <MathInline text="Moon Gravity ($g=1.62$)" />
             </button>
           </div>
           <SliderControl
-            label="Launch Angle ($\theta$)"
+            label="Launch Angle ($\\theta$)"
             value={angle}
             min={15}
             max={80}

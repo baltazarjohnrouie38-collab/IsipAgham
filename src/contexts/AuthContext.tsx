@@ -21,6 +21,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+import { isValidAvatarUrl } from '../lib/avatar';
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
 import type { ChecklistKey, PhysicsCourse, UserProfile } from '../types';
 import { useTheme } from './ThemeContext';
@@ -167,6 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         uid: firebaseUser.uid,
         username,
         nickname: username,
+        avatarUrl: '',
         email: storedEmail,
         course: options?.course || 'Physics 1',
         darkMode,
@@ -194,6 +196,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       batch.set(lbRef, {
         uid: firebaseUser.uid,
         nickname: username,
+        avatarUrl: '',
         xp: 0,
         weeklyXp: 0,
         weekKey,
@@ -241,6 +244,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               username: raw.username || raw.nickname || 'Student',
               email: raw.email || '',
               nickname: raw.nickname || raw.username || 'Student',
+              avatarUrl: isValidAvatarUrl(raw.avatarUrl) ? raw.avatarUrl : '',
               course: raw.course || 'Physics 1',
               darkMode: Boolean(raw.darkMode),
               pomodoroWorkMin: raw.pomodoroWorkMin || 25,
@@ -350,6 +354,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const allowedKeys: (keyof UserProfile)[] = [
       'username',
       'nickname',
+      'avatarUrl',
       'course',
       'darkMode',
       'pomodoroWorkMin',
@@ -380,6 +385,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const clean = sanitizeUsername(updates[key] as string);
           sanitized.nickname = clean;
           sanitized.username = clean;
+        } else if (key === 'avatarUrl') {
+          if (!isValidAvatarUrl(updates.avatarUrl)) {
+            throw new Error('Invalid profile picture format or size.');
+          }
+          sanitized.avatarUrl = updates.avatarUrl;
         } else {
           sanitized[key] = updates[key];
         }
@@ -391,6 +401,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const shouldSyncLb =
       sanitized.nickname !== undefined ||
+      sanitized.avatarUrl !== undefined ||
       sanitized.xp !== undefined ||
       sanitized.weeklyXp !== undefined ||
       sanitized.weekKey !== undefined;
@@ -408,6 +419,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         {
           uid: user.uid,
           nickname: (sanitized.nickname as string) ?? profile.nickname,
+          avatarUrl:
+            (sanitized.avatarUrl as string) ??
+            (isValidAvatarUrl(profile.avatarUrl) ? profile.avatarUrl : ''),
           xp: (sanitized.xp as number) ?? profile.xp,
           weeklyXp: lbWeeklyXp,
           weekKey: (sanitized.weekKey as string) ?? currentWeek,

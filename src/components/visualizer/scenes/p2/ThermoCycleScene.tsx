@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -214,11 +214,12 @@ const ThermoContent: React.FC<{
     if (pvDotRef.current) {
       pvDotRef.current.position.set(...dotPos);
     }
-    if (pinRef.current) {
-      pinRef.current.textContent = `${stage}\nV=${vNow.toFixed(2)} m³  P=${(
-        pNow / 1000
-      ).toFixed(2)} kPa\nW=${(workCycle / 1000).toFixed(2)} kJ  e=${actualEffPct.toFixed(1)}%`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `${stage}\nV=${vNow.toFixed(2)} m^3  P=${(pNow / 1000).toFixed(2)} kPa\nW=${(
+        workCycle / 1000
+      ).toFixed(2)} kJ  e=${actualEffPct.toFixed(1)}%`
+    );
   });
 
   return (
@@ -293,7 +294,7 @@ const ThermoContent: React.FC<{
 
         <PhysicsPin
           position={[0, 1.72, 0]}
-          title="$PV = nRT,\;\Delta U = Q - W$"
+          title="$PV = nRT,\\;\\Delta U = Q - W$"
           textRef={pinRef}
           valueText="Cycle active"
           accentClass="border-orange-400"
@@ -386,7 +387,7 @@ export const ThermoCycleScene: React.FC<SceneComponentProps> = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs tabular-nums">
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Net Work (<MathInline text="$W_{\text{net}}$" />)
+              Net Work (<MathInline text="$W_{\\text{net}}$" />)
             </p>
             <p className="text-base font-bold text-emerald-700 dark:text-emerald-400">
               {wNetKj.toFixed(2)} kJ
@@ -394,7 +395,7 @@ export const ThermoCycleScene: React.FC<SceneComponentProps> = () => {
           </div>
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Heat In (<MathInline text="$Q_{\text{in}}$" />)
+              Heat In (<MathInline text="$Q_{\\text{in}}$" />)
             </p>
             <p className="text-base font-bold text-amber-700 dark:text-amber-400">
               {qInKj.toFixed(2)} kJ

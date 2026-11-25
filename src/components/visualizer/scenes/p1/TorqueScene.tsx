@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
 import { Arrow3D } from '../../Arrow3D';
-import { PhysicsPin } from '../../PhysicsPin';
+import { PhysicsPin, setPinDisplay } from '../../PhysicsPin';
 import { MathInline } from '../../../ui/MathText';
 import type { SceneComponentProps } from '../../scenesCatalog';
 
@@ -44,11 +44,10 @@ const TorqueContent: React.FC<{
       wheelRef.current.rotation.z += omegaRef.current * dt;
     }
 
-    if (pinRef.current) {
-      pinRef.current.textContent = `τ=${torque.toFixed(1)} N·m  α=${alpha.toFixed(
-        2
-      )} rad/s²\nω=${omegaRef.current.toFixed(2)} rad/s`;
-    }
+    setPinDisplay(
+      pinRef.current,
+      `τ=${torque.toFixed(1)} N·m  α=${alpha.toFixed(2)} rad/s^2\nω=${omegaRef.current.toFixed(2)} rad/s`
+    );
   });
 
   return (
@@ -86,7 +85,7 @@ const TorqueContent: React.FC<{
           />
           <PhysicsPin
             position={[0.2, 0.8, 0]}
-            title="$\tau = rF\sin\theta$"
+            title="$\\tau = rF\\sin\\theta$"
             textRef={pinRef}
             valueText={`τ=${torque.toFixed(1)} N·m`}
             accentClass="border-amber-400"
@@ -137,7 +136,7 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
             onChange={setForce}
           />
           <SliderControl
-            label="Force Angle ($\theta$)"
+            label="Force Angle ($\\theta$)"
             value={angle}
             min={15}
             max={165}
@@ -160,7 +159,7 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
         <div className="grid grid-cols-2 gap-3 text-xs tabular-nums">
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Torque (<MathInline text="$\tau$" />)
+              Torque (<MathInline text="$\\tau$" />)
             </p>
             <p className="text-base font-bold text-slate-900 dark:text-neutral-100">
               {torque.toFixed(2)} N·m
@@ -168,7 +167,7 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
           </div>
           <div className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Inertia (<MathInline text="$I = \tfrac{1}{2}MR^2$" />)
+              Inertia (<MathInline text="$I = \\tfrac{1}{2}MR^2$" />)
             </p>
             <p className="text-base font-bold text-slate-900 dark:text-neutral-100">
               {inertia.toFixed(2)} kg·m²
@@ -176,7 +175,7 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
           </div>
           <div className="col-span-2 rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 p-3 border border-stone-200 dark:border-neutral-800">
             <p className="text-slate-500 dark:text-neutral-400">
-              Angular Acceleration (<MathInline text="$\alpha = \tau / I$" />)
+              Angular Acceleration (<MathInline text="$\\alpha = \\tau / I$" />)
             </p>
             <p className="text-base font-bold text-blue-700 dark:text-blue-400">
               {alpha.toFixed(2)} rad/s²
