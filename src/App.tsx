@@ -6,6 +6,7 @@ import { PageSkeleton } from './components/ui/Skeleton';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { useGlobalClickSound } from './lib/sound';
 import { AuthPage } from './pages/AuthPage';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -108,6 +109,8 @@ const AppRoutes: React.FC = () => {
 };
 
 export default function App() {
+  useGlobalClickSound();
+
   return (
     <ErrorBoundary>
       <ThemeProvider>

@@ -477,3 +477,109 @@ Rules you MUST follow strictly:
   }
   return answer.slice(0, 18000);
 }
+
+const TTS_MODEL = 'gemini-3.8-flash-lite-tts';
+const ALLOWED_TTS_VOICES = new Set(['Zephyr', 'Kore', 'Puck', 'Charon', 'Fenrir']);
+
+export function formatPhysicsTextForSpeech(raw: string): string {
+  return raw
+    .replace(/\$\$/g, ' ')
+    .replace(/\$/g, '')
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1 over $2')
+    .replace(/\\sqrt\{([^}]+)\}/g, 'square root of $1')
+    .replace(/\\vec\{([^}]+)\}/g, 'vector $1')
+    .replace(/\\text\{([^}]+)\}/g, '$1')
+    .replace(/\\Delta/g, 'delta ')
+    .replace(/\\theta/g, 'theta ')
+    .replace(/\\omega/g, 'omega ')
+    .replace(/\\alpha/g, 'alpha ')
+    .replace(/\\beta/g, 'beta ')
+    .replace(/\\gamma/g, 'gamma ')
+    .replace(/\\lambda/g, 'lambda ')
+    .replace(/\\mu/g, 'mu ')
+    .replace(/\\pi/g, 'pi ')
+    .replace(/\\rho/g, 'rho ')
+    .replace(/\\sigma/g, 'sigma ')
+    .replace(/\\tau/g, 'tau ')
+    .replace(/\\Phi/g, 'phi ')
+    .replace(/\\times/g, ' times ')
+    .replace(/\\cdot/g, ' times ')
+    .replace(/\\approx/g, ' is approximately ')
+    .replace(/\\leq/g, ' is less than or equal to ')
+    .replace(/\\geq/g, ' is greater than or equal to ')
+    .replace(/\^2\b/g, ' squared')
+    .replace(/\^3\b/g, ' cubed')
+    .replace(/[*#_`~]/g, ' ')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 2600);
+}
+
+export async function synthesizeSpeechTts(params: {
+  text: string;
+  voiceName?: string;
+}): Promise<{ audioBase64: string; mimeType: string }> {
+  const ai = getAiClient();
+  const cleanText = formatPhysicsTextForSpeech(redactPotentialPii(params.text));
+  if (!cleanText) {
+    throw new GeminiServiceError('There is no readable text to speak.', 400, false);
+  }
+
+  const safeVoice =
+    params.voiceName && ALLOWED_TTS_VOICES.has(params.voiceName) ? params.voiceName : 'Zephyr';
+
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    if (attempt > 0) {
+      await sleep(650);
+    }
+    try {
+      const response = await ai.models.generateContent({
+        model: TTS_MODEL,
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: cleanText,
+                speechMetadata: {
+                  style:
+                    'Warm, natural, encouraging senior high school Physics tutor speaking clearly at a steady conversational pace',
+                },
+              } as unknown as { text: string },
+            ],
+          },
+        ],
+        config: {
+          responseModalities: ['AUDIO'],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: {
+                voiceName: safeVoice,
+              },
+            },
+          },
+        },
+      });
+
+      const inlineData = response.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+      if (inlineData?.data) {
+        return {
+          audioBase64: inlineData.data,
+          mimeType: inlineData.mimeType || 'audio/wav',
+        };
+      }
+      throw new GeminiServiceError('Voice synthesis returned no audio data.', 502, true);
+    } catch (err) {
+      lastError = err;
+      const details = extractApiErrorDetails(err);
+      if (attempt === 0 && isRetryableError(details)) {
+        continue;
+      }
+      throw toFriendlyGeminiError(err);
+    }
+  }
+
+  throw toFriendlyGeminiError(lastError);
+}

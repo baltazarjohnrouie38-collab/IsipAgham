@@ -16,7 +16,9 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useSpeech } from '../../hooks/useSpeech';
+import { NATURAL_VOICE_OPTIONS, useSpeech } from '../../hooks/useSpeech';
+import type { NaturalVoiceName } from '../../lib/api';
+import { playUiSound } from '../../lib/sound';
 import {
   computeNextSM2Review,
   deleteStudySet,
@@ -150,7 +152,17 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
   onStartQuiz,
 }) => {
   const { user, awardXp, toggleChecklistItem } = useAuth();
-  const { supported: ttsSupported, speaking, rate, setRate, speak, stop } = useSpeech();
+  const {
+    supported: ttsSupported,
+    speaking,
+    loading: ttsLoading,
+    rate,
+    setRate,
+    voice,
+    setVoice,
+    speak,
+    stop,
+  } = useSpeech();
   const [searchParams] = useSearchParams();
 
   const [viewMode, setViewMode] = useState<'flashcards' | 'reviewer' | 'sets'>(
@@ -337,11 +349,11 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
   const strugglingInActiveSet = activeSet.flashcards.filter((c) => isStrugglingCard(c)).length;
 
   const handleListen = (text: string) => {
-    if (speaking) {
+    if (speaking || ttsLoading) {
       stop();
       return;
     }
-    speak(text.replace(/\$+/g, ''));
+    speak(text);
     void toggleChecklistItem('try_tts_darkmode', true);
   };
 
@@ -638,6 +650,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
             <div className="flex gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800">
               <button
                 type="button"
+                data-sound="tab"
                 onClick={() => setViewMode('flashcards')}
                 className={`px-3 min-h-[40px] rounded-lg text-xs font-semibold transition-colors whitespace-nowrap cursor-pointer ${
                   viewMode === 'flashcards'
@@ -649,6 +662,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
               </button>
               <button
                 type="button"
+                data-sound="tab"
                 onClick={() => {
                   setReviewAllDueMode(false);
                   setViewMode('reviewer');
@@ -663,6 +677,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
               </button>
               <button
                 type="button"
+                data-sound="tab"
                 onClick={() => {
                   setReviewAllDueMode(false);
                   setViewMode('sets');
@@ -793,6 +808,18 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
             {ttsSupported && (
               <div className="flex flex-wrap items-center gap-2">
                 <select
+                  aria-label="Natural voice"
+                  value={voice}
+                  onChange={(e) => setVoice(e.target.value as NaturalVoiceName)}
+                  className="min-h-[40px] rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-2.5 text-xs font-semibold text-slate-800 dark:text-neutral-200"
+                >
+                  {NATURAL_VOICE_OPTIONS.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.label}
+                    </option>
+                  ))}
+                </select>
+                <select
                   aria-label="Speech speed"
                   value={rate}
                   onChange={(e) => setRate(Number(e.target.value))}
@@ -803,14 +830,15 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   <option value={1.15}>1.15x Fast</option>
                 </select>
                 <Button
-                  variant={speaking ? 'danger' : 'outline'}
+                  variant={speaking || ttsLoading ? 'danger' : 'outline'}
                   size="sm"
+                  loading={ttsLoading}
                   icon={speaking ? <Square className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                   onClick={() =>
                     handleListen(`${activeSet.title}. ${activeSet.reviewerSummary}`)
                   }
                 >
-                  {speaking ? 'Stop Reading' : 'Read Aloud'}
+                  {ttsLoading ? 'Preparing...' : speaking ? 'Stop Reading' : 'Read Aloud'}
                 </Button>
               </div>
             )}
@@ -949,6 +977,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                 <div
                   role="button"
                   tabIndex={0}
+                  data-sound="flip"
                   onClick={() => setFlipped((f) => !f)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -1001,7 +1030,12 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                           }}
                           className="inline-flex items-center gap-1.5 min-h-[36px] px-3 rounded-full border border-stone-200 dark:border-neutral-700 text-xs font-semibold text-slate-700 dark:text-neutral-200 hover:bg-stone-100 dark:hover:bg-neutral-800 cursor-pointer"
                         >
-                          {speaking ? (
+                          {ttsLoading ? (
+                            <>
+                              <Volume2 className="h-3.5 w-3.5 animate-pulse" aria-hidden="true" />
+                              <span>Preparing...</span>
+                            </>
+                          ) : speaking ? (
                             <>
                               <Square className="h-3.5 w-3.5" aria-hidden="true" />
                               <span>Stop</span>
@@ -1048,7 +1082,12 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                           }}
                           className="inline-flex items-center gap-1.5 min-h-[36px] px-3 rounded-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs font-semibold text-slate-700 dark:text-neutral-200 hover:bg-stone-100 dark:hover:bg-neutral-700 cursor-pointer"
                         >
-                          {speaking ? (
+                          {ttsLoading ? (
+                            <>
+                              <Volume2 className="h-3.5 w-3.5 animate-pulse" aria-hidden="true" />
+                              <span>Preparing...</span>
+                            </>
+                          ) : speaking ? (
                             <>
                               <Square className="h-3.5 w-3.5" aria-hidden="true" />
                               <span>Stop</span>
@@ -1074,8 +1113,16 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                     <button
                       key={btn.rating}
                       type="button"
+                      data-sound="none"
                       disabled={savingCard}
                       onClick={() => {
+                        playUiSound(
+                          btn.rating === 'easy' || btn.rating === 'good'
+                            ? 'correct'
+                            : btn.rating === 'again'
+                            ? 'wrong'
+                            : 'click'
+                        );
                         void handleRateCard(btn.rating);
                       }}
                       className={`min-h-[52px] px-3 py-2 rounded-xl border font-semibold transition-[transform,background-color] duration-150 active:scale-[0.97] flex flex-col items-center justify-center cursor-pointer disabled:opacity-50 ${btn.style}`}

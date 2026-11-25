@@ -21,6 +21,7 @@ import {
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useSpeech } from '../hooks/useSpeech';
 import { generateStudySetApi } from '../lib/api';
+import { playUiSound } from '../lib/sound';
 import { saveStudySet, subscribeStudySets } from '../lib/studyService';
 import type { StudySet } from '../types';
 import { AlertBanner } from '../components/ui/AlertBanner';
@@ -33,7 +34,7 @@ export const LessonDetailPage: React.FC = () => {
   const { user, profile, toggleLessonCompleted, toggleChecklistItem } = useAuth();
   const navigate = useNavigate();
   const isOnline = useOnlineStatus();
-  const { supported: ttsSupported, speaking, speak, stop } = useSpeech();
+  const { supported: ttsSupported, speaking, loading: ttsLoading, speak, stop } = useSpeech();
 
   const lesson = getLessonById(lessonId);
   const nextLesson = lesson ? getNextLesson(lesson.id) : undefined;
@@ -127,13 +128,11 @@ export const LessonDetailPage: React.FC = () => {
   };
 
   const handleListenLesson = () => {
-    if (speaking) {
+    if (speaking || ttsLoading) {
       stop();
       return;
     }
-    const cleanSpeech = `${lesson.code} ${lesson.title}. Objective: ${lesson.objective}. ${lesson.explanation}`
-      .replace(/\$+/g, '')
-      .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1 over $2');
+    const cleanSpeech = `${lesson.code} ${lesson.title}. Objective: ${lesson.objective}. ${lesson.explanation}`;
     speak(cleanSpeech);
     void toggleChecklistItem('try_tts_darkmode', true);
   };
@@ -153,8 +152,10 @@ export const LessonDetailPage: React.FC = () => {
         <Button
           variant={isCompleted ? 'secondary' : 'outline'}
           size="sm"
+          data-sound="none"
           icon={<CheckCircle2 className="h-4 w-4" />}
           onClick={() => {
+            playUiSound(isCompleted ? 'click' : 'celebrate');
             void toggleLessonCompleted(lesson.id);
           }}
         >
@@ -233,12 +234,13 @@ export const LessonDetailPage: React.FC = () => {
 
         {ttsSupported && (
           <Button
-            variant={speaking ? 'danger' : 'ghost'}
+            variant={speaking || ttsLoading ? 'danger' : 'ghost'}
             size="sm"
+            loading={ttsLoading}
             icon={speaking ? <Square className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             onClick={handleListenLesson}
           >
-            {speaking ? 'Stop Reading' : 'Listen'}
+            {ttsLoading ? 'Preparing Voice...' : speaking ? 'Stop Reading' : 'Listen'}
           </Button>
         )}
       </div>
@@ -341,7 +343,9 @@ export const LessonDetailPage: React.FC = () => {
                       <button
                         key={cIdx}
                         type="button"
+                        data-sound="none"
                         onClick={() => {
+                          playUiSound(cIdx === cq.correctIndex ? 'correct' : 'wrong');
                           setSelectedChoices((prev) => ({ ...prev, [qIdx]: cIdx }));
                           setRevealedChecks((prev) => ({ ...prev, [qIdx]: true }));
                         }}
@@ -380,8 +384,10 @@ export const LessonDetailPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
         <Button
           variant={isCompleted ? 'outline' : 'secondary'}
+          data-sound="none"
           icon={<CheckCircle2 className="h-4 w-4" />}
           onClick={() => {
+            playUiSound(isCompleted ? 'click' : 'celebrate');
             void toggleLessonCompleted(lesson.id);
           }}
         >

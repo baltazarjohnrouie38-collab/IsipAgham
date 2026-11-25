@@ -10,6 +10,7 @@ import {
   GeminiServiceError,
   generateStudySetFromMaterial,
   redactPotentialPii,
+  synthesizeSpeechTts,
 } from './server/gemini.ts';
 
 const app = express();
@@ -32,6 +33,12 @@ const aiLimiter = createRateLimiter({
   windowMs: 60_000,
   maxRequests: 15,
   label: 'AI generation',
+});
+
+const ttsLimiter = createRateLimiter({
+  windowMs: 60_000,
+  maxRequests: 40,
+  label: 'voice synthesis',
 });
 
 function sendRouteError(
@@ -173,6 +180,28 @@ app.post('/api/ai-chat', requireAuth, aiLimiter, async (req: AuthenticatedReques
     res.json({ answer });
   } catch (err) {
     sendRouteError(res, err, 'Could not get an answer right now.', 500);
+  }
+});
+
+app.post('/api/tts', requireAuth, ttsLimiter, async (req: AuthenticatedRequest, res) => {
+  try {
+    const { text, voiceName } = req.body as {
+      text?: unknown;
+      voiceName?: unknown;
+    };
+
+    if (typeof text !== 'string' || !text.trim() || text.length > 10000) {
+      res.status(400).json({ error: 'Readable text (1 to 10000 characters) is required.' });
+      return;
+    }
+
+    const result = await synthesizeSpeechTts({
+      text,
+      voiceName: typeof voiceName === 'string' ? voiceName : undefined,
+    });
+    res.json(result);
+  } catch (err) {
+    sendRouteError(res, err, 'Could not synthesize natural speech right now.', 500);
   }
 });
 

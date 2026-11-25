@@ -150,3 +150,40 @@ export async function askPhysicsTutorApi(params: {
 
   throw new Error('The AI Tutor is experiencing a brief traffic spike right now. Please try again.');
 }
+
+export type NaturalVoiceName = 'Zephyr' | 'Kore' | 'Puck' | 'Charon' | 'Fenrir';
+
+export async function synthesizeSpeechApi(params: {
+  text: string;
+  voiceName?: NaturalVoiceName;
+  signal?: AbortSignal;
+}): Promise<{ audioBase64: string; mimeType: string }> {
+  const authHeaders = await getAuthHeader();
+  const response = await fetch('/api/tts', {
+    method: 'POST',
+    headers: {
+      ...authHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text: params.text,
+      voiceName: params.voiceName,
+    }),
+    signal: params.signal,
+  });
+
+  const data = await parseJsonResponse<{ audioBase64?: string; mimeType?: string }>(
+    response,
+    'Could not generate natural speech.'
+  );
+
+  if (!response.ok || !data.audioBase64) {
+    throw new Error(cleanErrorMessage(data.error, 'Could not generate natural speech.'));
+  }
+
+  return {
+    audioBase64: data.audioBase64,
+    mimeType: data.mimeType || 'audio/wav',
+  };
+}
+

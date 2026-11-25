@@ -15,15 +15,20 @@ import {
   Trash2,
   Trophy,
   Upload,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { NATURAL_VOICE_OPTIONS, useSpeech } from '../hooks/useSpeech';
+import type { NaturalVoiceName } from '../lib/api';
 import { processAvatarImageFile } from '../lib/avatar';
 import {
   registerStudyNotifications,
   showDueCardsNotification,
 } from '../lib/notifications';
+import { useSoundSettings } from '../lib/sound';
 import type { ChecklistKey, PhysicsCourse } from '../types';
 import { AlertBanner } from '../components/ui/AlertBanner';
 import { Button } from '../components/ui/Button';
@@ -57,6 +62,15 @@ export const ProfilePage: React.FC = () => {
   } = useAuth();
   const { dueTodayCount, pushCustomNotification } = useNotifications();
   const { darkMode, toggleDarkMode } = useTheme();
+  const { soundEnabled, toggleSound } = useSoundSettings();
+  const {
+    voice,
+    setVoice,
+    speaking: previewSpeaking,
+    loading: previewLoading,
+    speak: previewSpeak,
+    stop: previewStop,
+  } = useSpeech();
 
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('tab');
@@ -328,6 +342,7 @@ export const ProfilePage: React.FC = () => {
             <button
               key={tab.key}
               type="button"
+              data-sound="tab"
               onClick={() => setActiveTab(tab.key)}
               className={`pb-3 min-h-[44px] text-sm font-semibold border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 activeTab === tab.key
@@ -601,6 +616,67 @@ export const ProfilePage: React.FC = () => {
                 >
                   {darkMode ? 'Light Mode' : 'Dark Mode'}
                 </Button>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 py-2 border-b border-stone-200 dark:border-neutral-800">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-neutral-100">
+                    Click Sound Effects
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400">
+                    Plays a subtle tactile click on buttons, navigation, and flashcards.
+                  </p>
+                </div>
+                <Button
+                  variant={soundEnabled ? 'primary' : 'outline'}
+                  size="sm"
+                  icon={soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                  onClick={toggleSound}
+                >
+                  {soundEnabled ? 'Sound On' : 'Muted'}
+                </Button>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-2 border-b border-stone-200 dark:border-neutral-800">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-neutral-100">
+                    Natural Reading Voice
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400">
+                    Used when listening to lessons, flashcards, and AI Tutor answers.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <select
+                    aria-label="Natural Reading Voice"
+                    value={voice}
+                    onChange={(e) => setVoice(e.target.value as NaturalVoiceName)}
+                    className="min-h-[38px] rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 text-xs font-semibold text-slate-800 dark:text-neutral-100"
+                  >
+                    {NATURAL_VOICE_OPTIONS.map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.label}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    loading={previewLoading}
+                    icon={<Volume2 className="h-3.5 w-3.5" />}
+                    onClick={() => {
+                      if (previewSpeaking || previewLoading) {
+                        previewStop();
+                      } else {
+                        previewSpeak(
+                          'Kumusta! I am your IsipAgham Physics tutor. Let us master Grade 12 Physics together!'
+                        );
+                      }
+                    }}
+                  >
+                    {previewSpeaking ? 'Stop' : 'Preview'}
+                  </Button>
+                </div>
               </div>
 
               <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { playUiSound } from '../../lib/sound';
 import { saveQuizAttempt } from '../../lib/studyService';
 import type { QuizQuestion, StudySet } from '../../types';
 import { AlertBanner } from '../ui/AlertBanner';
@@ -142,6 +143,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
       void toggleChecklistItem('take_quiz', true);
       setLastXp(xpEarned);
       setSubmitted(true);
+      playUiSound(percentage >= 70 ? 'celebrate' : score > 0 ? 'correct' : 'wrong');
     } finally {
       setSaving(false);
     }
@@ -337,6 +339,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
             <Button
               type="submit"
               size="lg"
+              data-sound="none"
               loading={saving}
               disabled={answeredCount < questions.length}
             >

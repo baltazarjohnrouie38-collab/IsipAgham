@@ -4,17 +4,12 @@ import {
   ArrowLeft,
   Bell,
   BellOff,
-  BookOpen,
-  Bot,
-  Box,
   CheckCheck,
   CheckSquare,
   ChevronDown,
   ChevronRight,
   Clock,
   Flame,
-  GraduationCap,
-  Home,
   Layers,
   LogOut,
   Moon,
@@ -36,6 +31,15 @@ import {
 import type { PhysicsCourse } from '../../types';
 import { Logo } from '../ui/Logo';
 import { OfflineBanner } from '../ui/OfflineBanner';
+import {
+  ChecklistGraphicIcon,
+  HomeGraphicIcon,
+  LessonsGraphicIcon,
+  ProfileGraphicIcon,
+  StudyGraphicIcon,
+  TutorGraphicIcon,
+  VisualizerGraphicIcon,
+} from '../ui/PhysicsIcons';
 import { PWAInstallButton } from '../ui/PWAInstallButton';
 import { UserAvatar } from '../ui/UserAvatar';
 import sidebarLogoUrl from '../../assets/images/regenerated_image_1795533932091.jpg';
@@ -49,17 +53,17 @@ interface NavItem {
 }
 
 const MOBILE_NAV: NavItem[] = [
-  { to: '/', label: 'Home', mobileLabel: 'Home', icon: Home, end: true },
-  { to: '/lessons', label: 'Lessons', mobileLabel: 'Lessons', icon: GraduationCap },
-  { to: '/study', label: 'Study Hub', mobileLabel: 'Study', icon: BookOpen },
-  { to: '/visualizer', label: '3D Visualizer', mobileLabel: '3D Sim', icon: Box },
-  { to: '/ai', label: 'AI Tutor', mobileLabel: 'AI Tutor', icon: Bot },
+  { to: '/', label: 'Home', mobileLabel: 'Home', icon: HomeGraphicIcon, end: true },
+  { to: '/lessons', label: 'Lessons', mobileLabel: 'Lessons', icon: LessonsGraphicIcon },
+  { to: '/study', label: 'Study Hub', mobileLabel: 'Study', icon: StudyGraphicIcon },
+  { to: '/visualizer', label: '3D Visualizer', mobileLabel: '3D Sim', icon: VisualizerGraphicIcon },
+  { to: '/ai', label: 'AI Tutor', mobileLabel: 'AI Tutor', icon: TutorGraphicIcon },
 ];
 
 const SIDEBAR_NAV: NavItem[] = [
   ...MOBILE_NAV,
-  { to: '/profile', label: 'Profile', mobileLabel: 'Profile', icon: User },
-  { to: '/checklist', label: 'Study Week', mobileLabel: 'Checklist', icon: CheckSquare },
+  { to: '/profile', label: 'Profile', mobileLabel: 'Profile', icon: ProfileGraphicIcon },
+  { to: '/checklist', label: 'Study Week', mobileLabel: 'Checklist', icon: ChecklistGraphicIcon },
 ];
 
 const COURSE_SWATCH: Record<PhysicsCourse, string> = {
@@ -515,14 +519,16 @@ export const AppShell: React.FC = () => {
                 to={to}
                 end={end}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3.5 min-h-[42px] rounded-xl text-sm font-semibold transition-colors whitespace-nowrap ${
+                  `group flex items-center gap-3 px-3 min-h-[44px] rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
                     isActive
-                      ? 'bg-blue-50 text-blue-800 dark:bg-blue-950/50 dark:text-blue-300'
+                      ? 'bg-blue-50/90 text-blue-900 dark:bg-blue-950/50 dark:text-blue-200 ring-1 ring-blue-200/80 dark:ring-blue-800/70 shadow-[0_1px_2px_rgba(37,99,235,0.06)]'
                       : 'text-slate-600 dark:text-neutral-300 hover:bg-stone-100/80 dark:hover:bg-neutral-800/70 hover:text-slate-900 dark:hover:text-neutral-100'
                   }`
                 }
               >
-                <Icon className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
+                <span className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-150 group-hover:scale-105">
+                  <Icon className="h-6 w-6" />
+                </span>
                 <span>{label}</span>
               </NavLink>
             ))}
@@ -655,7 +661,7 @@ export const AppShell: React.FC = () => {
       {/* Mobile Compact Sticky Top Bar */}
       <header className="lg:hidden sticky top-0 z-30 h-14 bg-white/95 dark:bg-[#141416]/95 border-b border-stone-200/90 dark:border-neutral-800 px-3 sm:px-4 flex items-center justify-between">
         <NavLink to="/" className="focus-visible:outline-none">
-          <Logo size="sm" />
+          <Logo size="sm" src={sidebarLogoUrl} />
         </NavLink>
 
         <div className="flex items-center gap-1.5">
@@ -891,15 +897,25 @@ export const AppShell: React.FC = () => {
               to={to}
               end={end}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 min-h-[44px] text-[11px] font-semibold transition-colors ${
+                `flex flex-col items-center justify-center gap-0.5 min-h-[44px] text-[11px] font-semibold transition-colors ${
                   isActive
                     ? 'text-blue-700 dark:text-blue-400'
                     : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-200'
                 }`
               }
             >
-              <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-              <span className="truncate max-w-full px-1">{mobileLabel}</span>
+              {({ isActive }) => (
+                <>
+                  <span
+                    className={`h-7 w-10 rounded-xl flex items-center justify-center transition-colors ${
+                      isActive ? 'bg-blue-50 dark:bg-blue-950/60' : ''
+                    }`}
+                  >
+                    <Icon className="h-5.5 w-5.5 shrink-0" />
+                  </span>
+                  <span className="truncate max-w-full px-1">{mobileLabel}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </div>

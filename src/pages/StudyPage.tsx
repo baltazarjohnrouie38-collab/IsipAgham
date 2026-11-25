@@ -97,6 +97,7 @@ export const StudyPage: React.FC = () => {
           <button
             key={item.key}
             type="button"
+            data-sound="tab"
             onClick={() => switchTab(item.key)}
             className={`px-3.5 min-h-[44px] rounded-xl text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap cursor-pointer ${
               activeTab === item.key

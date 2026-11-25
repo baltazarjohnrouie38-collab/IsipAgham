@@ -92,6 +92,7 @@ export const LessonsPage: React.FC = () => {
             <button
               key={String(item.key)}
               type="button"
+              data-sound="tab"
               onClick={() => setSelectedTerm(item.key)}
               className={`px-3.5 min-h-[42px] rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                 selectedTerm === item.key

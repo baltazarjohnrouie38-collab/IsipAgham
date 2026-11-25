@@ -3,18 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   Bell,
-  Box,
   ChevronRight,
   Clock,
-  FileText,
-  FileUp,
-  Flame,
-  GraduationCap,
   Layers,
   Plus,
   Send,
   Target,
-  Trophy,
 } from 'lucide-react';
 import { useAuth, getLocalDateKey } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -24,6 +18,14 @@ import type { LeaderboardEntry } from '../types';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Logo } from '../components/ui/Logo';
+import {
+  LessonsGraphicIcon,
+  NotesGraphicIcon,
+  StreakGraphicIcon,
+  TrophyGraphicIcon,
+  UploadGraphicIcon,
+  VisualizerGraphicIcon,
+} from '../components/ui/PhysicsIcons';
 import { UserAvatar } from '../components/ui/UserAvatar';
 import heroMascotUrl from '../assets/images/regenerated_image_1795533934834.jpg';
 
@@ -188,33 +190,33 @@ export const HomePage: React.FC = () => {
         <div className="flex flex-wrap items-center justify-center gap-2.5">
           <Link
             to="/lessons"
-            className="min-h-[42px] px-4 rounded-full bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 shadow-xs text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color] duration-150 whitespace-nowrap shrink-0"
+            className="min-h-[44px] px-4 rounded-2xl bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 shadow-xs text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color] duration-150 whitespace-nowrap shrink-0"
           >
-            <GraduationCap className="h-4 w-4" aria-hidden="true" />
+            <LessonsGraphicIcon className="h-5 w-5" />
             <span>47 Lessons</span>
           </Link>
 
           <Link
             to="/study?tab=materials"
-            className="min-h-[42px] px-4 rounded-full bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
+            className="min-h-[44px] px-4 rounded-2xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
           >
-            <FileUp className="h-4 w-4 text-blue-700 dark:text-blue-400" aria-hidden="true" />
+            <UploadGraphicIcon className="h-5 w-5" />
             <span>Upload File</span>
           </Link>
 
           <Link
             to="/study?tab=materials&mode=text"
-            className="min-h-[42px] px-4 rounded-full bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
+            className="min-h-[44px] px-4 rounded-2xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
           >
-            <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
+            <NotesGraphicIcon className="h-5 w-5" />
             <span>Paste Notes</span>
           </Link>
 
           <Link
             to="/visualizer"
-            className="min-h-[42px] px-4 rounded-full bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
+            className="min-h-[44px] px-4 rounded-2xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
           >
-            <Box className="h-4 w-4 text-sky-600 dark:text-sky-400" aria-hidden="true" />
+            <VisualizerGraphicIcon className="h-5 w-5" />
             <span>3D Visualizer</span>
           </Link>
         </div>
@@ -257,7 +259,7 @@ export const HomePage: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card padding="sm" className="space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-neutral-400">
-            <Flame className="h-4 w-4 text-amber-500" aria-hidden="true" />
+            <StreakGraphicIcon className="h-4.5 w-4.5" />
             <span>Study Streak</span>
           </div>
           <p className="font-display text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
@@ -444,7 +446,7 @@ export const HomePage: React.FC = () => {
         <Card className="flex flex-col justify-between gap-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Trophy className="h-4.5 w-4.5 text-amber-500 shrink-0" aria-hidden="true" />
+              <TrophyGraphicIcon className="h-5 w-5 shrink-0" />
               <h2 className="font-display text-base font-bold text-slate-900 dark:text-neutral-100">
                 Global Leadership Board
               </h2>

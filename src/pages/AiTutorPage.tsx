@@ -53,7 +53,7 @@ const STARTER_PROMPTS = [
 export const AiTutorPage: React.FC = () => {
   const { user, profile, awardXp, toggleChecklistItem } = useAuth();
   const isOnline = useOnlineStatus();
-  const { supported: ttsSupported, speaking, speak, stop } = useSpeech();
+  const { supported: ttsSupported, speaking, loading: ttsLoading, speak, stop } = useSpeech();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [materials, setMaterials] = useState<StudyMaterial[]>([]);
@@ -116,10 +116,10 @@ export const AiTutorPage: React.FC = () => {
   }, [messages.length, sending]);
 
   useEffect(() => {
-    if (!speaking) {
+    if (!speaking && !ttsLoading) {
       setSpeakingMessageId(null);
     }
-  }, [speaking]);
+  }, [speaking, ttsLoading]);
 
   const activeContext = useMemo(() => {
     if (!selectedContextKey) return null;
@@ -234,12 +234,12 @@ export const AiTutorPage: React.FC = () => {
 
   const handleSpeakToggle = (msg: AiMessage) => {
     if (!ttsSupported) return;
-    if (speaking && speakingMessageId === msg.id) {
+    if ((speaking || ttsLoading) && speakingMessageId === msg.id) {
       stop();
       setSpeakingMessageId(null);
     } else {
       setSpeakingMessageId(msg.id);
-      speak(msg.content.replace(/\$+/g, ''));
+      speak(msg.content);
     }
   };
 
@@ -420,8 +420,9 @@ export const AiTutorPage: React.FC = () => {
             </div>
           ) : (
             messages.map((msg) => {
-              const isUser = msg.role === 'user';
-              const isReadingThis = speaking && speakingMessageId === msg.id;
+                      const isUser = msg.role === 'user';
+                      const isReadingThis = speaking && speakingMessageId === msg.id;
+                      const isLoadingThis = ttsLoading && speakingMessageId === msg.id;
 
               return (
                 <div
@@ -475,7 +476,12 @@ export const AiTutorPage: React.FC = () => {
                             onClick={() => handleSpeakToggle(msg)}
                             className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline min-h-[36px] px-2 cursor-pointer"
                           >
-                            {isReadingThis ? (
+                            {isLoadingThis ? (
+                              <>
+                                <Volume2 className="h-3.5 w-3.5 animate-pulse" aria-hidden="true" />
+                                Preparing...
+                              </>
+                            ) : isReadingThis ? (
                               <>
                                 <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
                                 Stop
