@@ -283,7 +283,7 @@ export const AiTutorPage: React.FC = () => {
               label="Lesson or Study Material Context (Optional)"
               value={selectedContextKey}
               onChange={(e) => setSelectedContextKey(e.target.value)}
-              hint="Ground the tutor in any of the 47 built-in lessons or your own uploaded notes."
+              hint={`Ground the tutor in any of the ${ALL_LESSONS.length} built-in lessons or your own uploaded notes.`}
             >
               <option value="">General Grade 12 Physics 1–3 (All topics)</option>
               {materials.length > 0 && (
@@ -295,10 +295,10 @@ export const AiTutorPage: React.FC = () => {
                   ))}
                 </optgroup>
               )}
-              <optgroup label="Built-in Curriculum Lessons (Terms 1–3)">
+              <optgroup label="Built-in Curriculum Lessons (Physics 1–3)">
                 {ALL_LESSONS.map((l) => (
                   <option key={l.id} value={`lesson:${l.id}`}>
-                    [Term {l.term}] {l.code} {l.title}
+                    [{l.course}] {l.code} {l.title}
                   </option>
                 ))}
               </optgroup>

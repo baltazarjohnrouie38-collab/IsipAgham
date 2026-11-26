@@ -227,7 +227,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       items.push({
         id: `next-lesson-${nextLesson.id}`,
         title: `Up Next: ${nextLesson.code} ${nextLesson.title}`,
-        message: `Continue Term ${nextLesson.term} (${nextLesson.course}): ${nextLesson.objective}`,
+        message: `Continue ${nextLesson.course}: ${nextLesson.objective}`,
         category: 'lesson',
         createdAt: Date.now() - 300_000,
         actionLabel: 'Open Lesson',

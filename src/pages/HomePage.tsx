@@ -193,7 +193,7 @@ export const HomePage: React.FC = () => {
             className="min-h-[44px] px-4 rounded-2xl bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 shadow-xs text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color] duration-150 whitespace-nowrap shrink-0"
           >
             <LessonsGraphicIcon className="h-5 w-5" />
-            <span>47 Lessons</span>
+            <span>{ALL_LESSONS.length} Lessons</span>
           </Link>
 
           <Link
@@ -297,7 +297,7 @@ export const HomePage: React.FC = () => {
         <Card padding="sm" className="space-y-1.5">
           <p className="text-xs font-semibold text-slate-500 dark:text-neutral-400">Lessons &amp; XP</p>
           <p className="font-display text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
-            {completedLessons.length}/47 · {profile?.xp ?? 0} XP
+            {completedLessons.length}/{ALL_LESSONS.length} · {profile?.xp ?? 0} XP
           </p>
         </Card>
       </div>
@@ -307,7 +307,7 @@ export const HomePage: React.FC = () => {
         <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-blue-200/80 dark:border-blue-900/70">
           <div className="space-y-1 min-w-0">
             <p className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
-              Continue Curriculum · Term {nextLesson.term} ({nextLesson.course})
+              Continue Curriculum · {nextLesson.course}
             </p>
             <h2 className="font-display text-lg font-bold text-slate-950 dark:text-neutral-100 truncate">
               {nextLesson.code} {nextLesson.title}
@@ -319,7 +319,7 @@ export const HomePage: React.FC = () => {
           <div className="flex items-center gap-2 shrink-0">
             <Link to="/lessons">
               <Button variant="outline" size="sm">
-                All 47
+                All {ALL_LESSONS.length}
               </Button>
             </Link>
             <Link to={`/lessons/${nextLesson.id}`}>

@@ -8,7 +8,8 @@ import {
   Search,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { ALL_LESSONS, TERMS_META, getLessonsByTerm } from '../data/lessons';
+import { ALL_LESSONS, COURSES_META, getLessonsByCourse } from '../data/lessons';
+import type { PhysicsCourse } from '../types';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { PageHeader } from '../components/ui/PageHeader';
@@ -16,7 +17,7 @@ import { MathInline } from '../components/ui/MathText';
 
 export const LessonsPage: React.FC = () => {
   const { profile, toggleLessonCompleted } = useAuth();
-  const [selectedTerm, setSelectedTerm] = useState<'all' | 1 | 2 | 3>('all');
+  const [selectedCourse, setSelectedCourse] = useState<'all' | PhysicsCourse>('all');
   const [query, setQuery] = useState('');
 
   const completedSet = useMemo(
@@ -32,12 +33,12 @@ export const LessonsPage: React.FC = () => {
   const totalCompleted = ALL_LESSONS.filter((l) => completedSet.has(l.id)).length;
   const totalPct = Math.round((totalCompleted / ALL_LESSONS.length) * 100);
 
-  const visibleTerms = useMemo(
+  const visibleCourses = useMemo(
     () =>
-      selectedTerm === 'all'
-        ? TERMS_META
-        : TERMS_META.filter((t) => t.term === selectedTerm),
-    [selectedTerm]
+      selectedCourse === 'all'
+        ? COURSES_META
+        : COURSES_META.filter((c) => c.course === selectedCourse),
+    [selectedCourse]
   );
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -46,7 +47,7 @@ export const LessonsPage: React.FC = () => {
     <div className="space-y-6">
       <PageHeader
         title="Built-in Physics Lessons"
-        subtitle="47 step-by-step Grade 12 Academic Track lessons across Terms 1, 2, and 3"
+        subtitle={`${ALL_LESSONS.length} step-by-step Grade 12 Academic Track lessons across Physics 1, Physics 2, and Physics 3`}
         action={
           <div className="text-sm font-bold text-blue-700 dark:text-blue-400 tabular-nums">
             {totalCompleted} / {ALL_LESSONS.length} completed ({totalPct}%)
@@ -60,7 +61,7 @@ export const LessonsPage: React.FC = () => {
           <div className="space-y-1 min-w-0">
             <p className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
               {totalCompleted === ALL_LESSONS.length
-                ? 'All 47 Lessons Completed — Kaya mo talaga!'
+                ? `All ${ALL_LESSONS.length} Lessons Completed — Kaya mo talaga!`
                 : 'Up Next in Your Curriculum'}
             </p>
             <h2 className="font-display text-lg sm:text-xl font-bold text-slate-900 dark:text-neutral-100 truncate">
@@ -78,24 +79,24 @@ export const LessonsPage: React.FC = () => {
         </Card>
       )}
 
-      {/* Term Filter & Search Controls */}
+      {/* Course Filter & Search Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl bg-stone-200/70 dark:bg-neutral-800/80 w-full md:w-fit">
           {(
             [
-              { key: 'all', label: 'All Terms (47)' },
-              { key: 1, label: 'Term 1 (11)' },
-              { key: 2, label: 'Term 2 (14)' },
-              { key: 3, label: 'Term 3 (22)' },
+              { key: 'all', label: `All Courses (${ALL_LESSONS.length})` },
+              { key: 'Physics 1', label: `Physics 1 (${getLessonsByCourse('Physics 1').length})` },
+              { key: 'Physics 2', label: `Physics 2 (${getLessonsByCourse('Physics 2').length})` },
+              { key: 'Physics 3', label: `Physics 3 (${getLessonsByCourse('Physics 3').length})` },
             ] as const
           ).map((item) => (
             <button
-              key={String(item.key)}
+              key={item.key}
               type="button"
               data-sound="tab"
-              onClick={() => setSelectedTerm(item.key)}
+              onClick={() => setSelectedCourse(item.key)}
               className={`px-3.5 min-h-[42px] rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                selectedTerm === item.key
+                selectedCourse === item.key
                   ? 'bg-white dark:bg-[#141416] text-slate-950 dark:text-neutral-100 shadow-xs'
                   : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100'
               }`}
@@ -121,52 +122,52 @@ export const LessonsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Terms 1, 2, and 3 Sections */}
+      {/* Physics 1, 2, and 3 Sections */}
       <div className="space-y-8">
-        {visibleTerms.map((termMeta) => {
-          const allInTerm = getLessonsByTerm(termMeta.term);
-          const doneInTerm = allInTerm.filter((l) => completedSet.has(l.id)).length;
-          const pctTerm = Math.round((doneInTerm / allInTerm.length) * 100);
+        {visibleCourses.map((courseMeta) => {
+          const allInCourse = getLessonsByCourse(courseMeta.course);
+          const doneInCourse = allInCourse.filter((l) => completedSet.has(l.id)).length;
+          const pctCourse = Math.round((doneInCourse / allInCourse.length) * 100);
 
           const filtered = normalizedQuery
-            ? allInTerm.filter(
+            ? allInCourse.filter(
                 (l) =>
                   l.title.toLowerCase().includes(normalizedQuery) ||
                   l.code.toLowerCase().includes(normalizedQuery) ||
                   l.objective.toLowerCase().includes(normalizedQuery)
               )
-            : allInTerm;
+            : allInCourse;
 
           if (normalizedQuery && filtered.length === 0) return null;
 
           return (
-            <section key={termMeta.term} className="space-y-3">
-              {/* Term Progress Header */}
+            <section key={courseMeta.course} className="space-y-3">
+              {/* Course Progress Header */}
               <Card className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
-                      {termMeta.course}
+                      {courseMeta.course}
                     </p>
                     <h2 className="font-display text-lg sm:text-xl font-bold text-slate-950 dark:text-neutral-100">
-                      {termMeta.fullTitle}
+                      {courseMeta.fullTitle}
                     </h2>
                     <p className="text-sm text-slate-600 dark:text-neutral-400">
-                      {termMeta.description}
+                      {courseMeta.description}
                     </p>
                   </div>
                   <div className="text-left sm:text-right shrink-0 tabular-nums">
                     <p className="text-lg font-bold text-slate-950 dark:text-neutral-100">
-                      {doneInTerm} / {allInTerm.length}
+                      {doneInCourse} / {allInCourse.length}
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-neutral-400">{pctTerm}% complete</p>
+                    <p className="text-xs text-slate-500 dark:text-neutral-400">{pctCourse}% complete</p>
                   </div>
                 </div>
 
                 <div className="h-2.5 w-full rounded-full bg-stone-200 dark:bg-neutral-800 overflow-hidden">
                   <div
                     className="h-full bg-blue-700 dark:bg-blue-500 transition-all duration-300"
-                    style={{ width: `${pctTerm}%` }}
+                    style={{ width: `${pctCourse}%` }}
                   />
                 </div>
               </Card>

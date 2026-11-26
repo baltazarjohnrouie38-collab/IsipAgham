@@ -8,7 +8,7 @@
     "title": "Newton's Law of Universal Gravitation",
     "objective": "Calculate gravitational attraction between masses and analyze satellite circular orbits.",
     "keyFormula": "$$F_g = \\frac{G m_1 m_2}{r^2}, \\quad v_{\\text{orbit}} = \\sqrt{\\frac{GM}{r}}$$",
-    "explanation": "Every two masses in the universe attract each other with a force proportional to the product of their masses and inversely proportional to the square of their center-to-center distance $r$, where $G = 6.67 \\times 10^{-11}\\text{ N}\\cdot\\text{m}^2/\\text{kg}^2$.\n\nFor a satellite orbiting Earth (like Philippine microsatellites Diwata-2 or Maya), gravity provides the inward centripetal force: $\\frac{GMm}{r^2} = \\frac{mv^2}{r}$, giving orbital speed $v = \\sqrt{GM/r}$.\n\n[Teacher/Module Placeholder: Add Kepler's Third Law period calculations here.]",
+    "explanation": "Why do planets stay in orbit around the Sun and moons circle planets? Sir Isaac Newton discovered that the same **gravitational force** pulling a ripe mango downward also steers satellites around Earth.\n\n### All You Need to Know\n- **Newton's Law of Universal Gravitation**:\n  $$F_g = G \\frac{m_1 m_2}{r^2}$$\n  - $G = 6.67 \\times 10^{-11}\\text{ N}\\cdot\\text{m}^2/\\text{kg}^2$: universal gravitational constant.\n  - $m_1, m_2$: masses of the two objects ($\\text{kg}$).\n  - $r$: **center-to-center** distance ($\\text{m}$), NOT altitude above the ground! ($r = R_{\\text{Earth}} + h$).\n  - **Inverse-Square Rule**: Doubling separation $r$ shrinks gravity to $\\frac{1}{4}$; tripling $r$ shrinks it to $\\frac{1}{9}$.\n- **Gravitational Field** ($g$): At distance $r$ from a planet of mass $M$, $g = \\frac{GM}{r^2}$ ($\\approx 9.8\\text{ m/s}^2$ at Earth's surface).\n- **Circular Satellite Orbits**: Gravity supplies centripetal force $\\frac{GMm}{r^2} = \\frac{mv^2}{r}$, giving orbital speed $v_{\\text{orbit}} = \\sqrt{\\frac{GM}{r}}$ and Kepler's Third Law $T^2 = \\frac{4\\pi^2}{GM}r^3$. Notice the satellite's own mass $m$ cancels!",
     "workedExample": {
       "problem": "If the distance $r$ between two satellites is tripled while their masses stay constant, by what factor does the gravitational force change?",
       "solutionSteps": [
@@ -21,19 +21,52 @@
       {
         "id": "3.1-q1",
         "prompt": "If Earth's mass stayed the same and your distance from Earth's center doubled, your weight would become:",
-        "choices": ["One-fourth as much", "Half as much", "Twice as much", "Unchanged"],
+        "choices": [
+          "One-fourth as much",
+          "Half as much",
+          "Twice as much",
+          "Unchanged"
+        ],
         "correctIndex": 0,
         "explanation": "Gravitational force follows $1/r^2$, so doubling distance reduces weight by $2^2 = 4$."
       },
       {
         "id": "3.1-q2",
         "prompt": "Does the orbital speed $v_{\\text{orbit}} = \\sqrt{GM/r}$ of a satellite depend on the satellite's own mass $m$?",
-        "choices": ["No, $m$ cancels out", "Yes, heavier satellites move faster", "Yes, lighter satellites fall inward", "Only at the equator"],
+        "choices": [
+          "No, $m$ cancels out",
+          "Yes, heavier satellites move faster",
+          "Yes, lighter satellites fall inward",
+          "Only at the equator"
+        ],
         "correctIndex": 0,
         "explanation": "Setting $GMm/r^2 = mv^2/r$ cancels satellite mass $m$."
       }
     ],
-    "suggestedSceneId": "p2-orbit"
+    "suggestedSceneId": "p2-orbit",
+    "keyTerms": [
+      {
+        "term": "Universal Gravitational Constant ($G$)",
+        "definition": "Fundamental constant ($6.67 \\times 10^{-11}\\text{ N}\\cdot\\text{m}^2/\\text{kg}^2$) governing gravitational attraction between any two masses."
+      },
+      {
+        "term": "Inverse-Square Law",
+        "definition": "Relationship where force decreases proportionally to $1/r^2$ as center-to-center separation $r$ increases."
+      },
+      {
+        "term": "Orbital Speed ($v_{\\text{orbit}}$)",
+        "definition": "Speed needed to maintain a circular orbit at radius $r$: $v = \\sqrt{GM/r}$, independent of satellite mass."
+      },
+      {
+        "term": "Kepler's Third Law",
+        "definition": "Orbital period squared is proportional to orbital radius cubed ($T^2 \\propto r^3$)."
+      }
+    ],
+    "realWorldExamples": [
+      "Philippine Microsatellites (Diwata-2 & Maya-2): Built with Filipino engineers, they orbit ~600 km above Earth at ~7.6 km/s—falling continuously around Earth's curve instead of crashing down.",
+      "Geostationary Weather & TV Satellites: Placed at $r \\approx 42{,}164\\text{ km}$ from Earth's center so their orbital period $T$ matches Earth's 24-hour rotation, hovering over one spot on the equator.",
+      "Ocean Tides: The Moon pulls slightly harder on Earth's near ocean side than on Earth's center and far side, creating two high-tide bulges daily along Philippine coastlines."
+    ]
   },
   {
     "id": "3.2",
@@ -44,7 +77,7 @@
     "title": "Gravitational Potential Energy",
     "objective": "Use the universal gravitational potential energy formula and compute escape speed from a planet.",
     "keyFormula": "$$U_g = -\\frac{G M m}{r}, \\quad v_{\\text{escape}} = \\sqrt{\\frac{2GM}{R}}$$",
-    "explanation": "Close to Earth's surface where $g$ is nearly constant, $\\Delta U_g = mg\\Delta h$. Over planetary or orbital distances where $g$ weakens with height, we set zero potential energy at infinite separation ($r \\to \\infty$), giving negative bound potential energy $U_g = -\\frac{GMm}{r}$.\n\nAs a rocket moves farther from Earth ($r$ increases), $U_g$ becomes less negative—meaning potential energy **increases**. Setting $K + U_g = 0$ gives Earth's escape velocity ($\\approx 11.2\\text{ km/s}$).\n\n[Teacher/Module Placeholder: Include satellite transfer energy problems.]",
+    "explanation": "Near your classroom floor, $U_g = mgh$ works great because $g = 9.8\\text{ m/s}^2$ stays nearly uniform. For rockets, moons, and planets stretching thousands of kilometers into space, gravity weakens as $1/r^2$, so we need the universal gravitational potential energy formula.\n\n### All You Need to Know\n- **Universal Gravitational Potential Energy**:\n  $$U_g = -\\frac{G M m}{r}$$\n  - **Why Is It Negative?**: Physicists choose $U_g = 0$ at infinite distance ($r \\to \\infty$), completely free of the planet's gravity. Because gravity is always attractive, a planet traps objects in a \"gravity well\" below zero energy—you must add positive work to climb out!\n  - Moving higher ($r$ increases) makes $U_g$ **less negative**, which means $U_g$ **increases**!\n- **Total Mechanical Energy in Orbit**: $E = K + U_g = -\\frac{GMm}{2r}$ (still negative for bound orbits).\n- **Escape Speed** ($v_{\\text{escape}}$): Minimum launch speed (ignoring air drag) needed to reach $r \\to \\infty$ with zero speed ($K + U_g = 0$):\n  $$v_{\\text{escape}} = \\sqrt{\\frac{2GM}{R}}$$\n  For Earth, $v_{\\text{escape}} \\approx 11.2\\text{ km/s}$—independent of the spacecraft's mass!",
     "workedExample": {
       "problem": "A $500\\text{ kg}$ probe sits on a planet of mass $M = 6.0 \\times 10^{24}\\text{ kg}$ and radius $R = 6.4 \\times 10^6\\text{ m}$. Find its escape speed ($G = 6.67 \\times 10^{-11}$).",
       "solutionSteps": [
@@ -69,12 +102,40 @@
       {
         "id": "3.2-q2",
         "prompt": "When a spacecraft climbs to a higher orbit ($r$ increases), $U_g = -GMm/r$:",
-        "choices": ["Increases (becomes less negative)", "Decreases", "Becomes positive immediately", "Stays constant"],
+        "choices": [
+          "Increases (becomes less negative)",
+          "Decreases",
+          "Becomes positive immediately",
+          "Stays constant"
+        ],
         "correctIndex": 0,
         "explanation": "Moving from $-10$ to $-5$ is an increase in energy."
       }
     ],
-    "suggestedSceneId": "p2-orbit"
+    "suggestedSceneId": "p2-orbit",
+    "keyTerms": [
+      {
+        "term": "Gravitational Potential Energy ($U_g$)",
+        "definition": "Stored energy of two masses separated by center-to-center distance $r$: $U_g = -GMm/r$ ($\\text{J}$)."
+      },
+      {
+        "term": "Gravity Well",
+        "definition": "Concept describing how planets create a negative potential-energy dip that spacecraft must expend work to climb out of."
+      },
+      {
+        "term": "Escape Speed ($v_{\\text{escape}}$)",
+        "definition": "Minimum surface launch speed ($\\sqrt{2GM/R}$) required to break completely free of a planet's gravity without extra thrust."
+      },
+      {
+        "term": "Bound Orbit",
+        "definition": "An orbit with negative total mechanical energy ($E < 0$), trapping the satellite around the central body."
+      }
+    ],
+    "realWorldExamples": [
+      "Deep-Space Probes Leaving Earth: Rockets must accelerate payloads past ~11.2 km/s (plus overcome atmospheric drag) to escape Earth's gravity well toward Mars or Jupiter.",
+      "Why the Moon Has No Atmosphere: The Moon's escape speed is only $2.38\\text{ km/s}$; warm gas molecules moving faster than that easily leaked away into space over billions of years.",
+      "Elliptical Satellite Speedups: As a comet or elliptical satellite drops closer to the Sun ($r$ shrinks, $U_g$ drops), conservation of energy turns potential energy into faster orbital speed ($K$ rises)."
+    ]
   },
   {
     "id": "3.3",
@@ -85,7 +146,7 @@
     "title": "Fluids in Everyday Situations",
     "objective": "Describe what distinguishes fluids (liquids and gases) from solids and identify everyday fluid phenomena.",
     "keyFormula": "$$\\text{Fluid: flows continuously under shear stress}$$",
-    "explanation": "A **fluid** is any substance that can flow and take the shape of its container—this includes both **liquids** (water, cooking oil, blood) and **gases** (air, steam, LPG). Unlike solids, fluids cannot permanently resist a sideways shear force; instead they deform continuously.\n\nFrom water pipes in our barangays, tire air pressure, atmospheric sea breezes, and intravenous drips to hydraulic car lifts, fluid behavior drives daily life and engineering.\n\n[Teacher/Module Placeholder: Add student brainstorming examples of fluids at home.]",
+    "explanation": "Solids hold their own rigid shape because their atoms lock into tight lattices. **Fluids**—which include **both liquids and gases**—have molecules that slide freely past one another, allowing them to flow and reshape continuously.\n\n### All You Need to Know\n- **What Defines a Fluid**: A fluid is any substance that cannot resist a steady sideways **shear force** without flowing continuously.\n- **Liquids vs. Gases**:\n  - **Liquids** (water, cooking oil, mercury, blood): Molecules stay tightly packed, giving a **definite volume** (nearly incompressible) while taking the shape of the container bottom.\n  - **Gases** (air, oxygen, steam, LPG): Molecules fly far apart with weak attractions, making gases **easily compressible** and able to expand until they fill the entire container volume.\n- **Continuum Assumption**: Even though fluids consist of trillions of colliding molecules, mechanics treats them smoothly via bulk properties like density ($\\rho$) and pressure ($P$).",
     "workedExample": {
       "problem": "Compare how $1\\text{ L}$ of liquid water and $1\\text{ L}$ of air behave when moved into a $2\\text{ L}$ sealed jar.",
       "solutionSteps": [
@@ -98,19 +159,52 @@
       {
         "id": "3.3-q1",
         "prompt": "Which states of matter are classified as fluids in physics?",
-        "choices": ["Both liquids and gases", "Only liquids", "Only water and oil", "Solids and liquids"],
+        "choices": [
+          "Both liquids and gases",
+          "Only liquids",
+          "Only water and oil",
+          "Solids and liquids"
+        ],
         "correctIndex": 0,
         "explanation": "Both liquids and gases flow under shear forces and are treated by fluid mechanics."
       },
       {
         "id": "3.3-q2",
         "prompt": "How do gases differ most noticeably from liquids under ordinary pressures?",
-        "choices": ["Gases are easily compressed and expand to fill any vessel", "Gases have fixed shape", "Liquids cannot flow", "Gases have higher density than solids"],
+        "choices": [
+          "Gases are easily compressed and expand to fill any vessel",
+          "Gases have fixed shape",
+          "Liquids cannot flow",
+          "Gases have higher density than solids"
+        ],
         "correctIndex": 0,
         "explanation": "Large spacing between gas molecules makes gases highly compressible."
       }
     ],
-    "suggestedSceneId": "p2-buoyancy"
+    "suggestedSceneId": "p2-buoyancy",
+    "keyTerms": [
+      {
+        "term": "Fluid",
+        "definition": "Any substance (liquid or gas) that flows continuously when subjected to a sideways shear stress."
+      },
+      {
+        "term": "Shear Stress",
+        "definition": "Force applied parallel (tangential) to a surface divided by the area over which it acts ($\\text{Pa}$)."
+      },
+      {
+        "term": "Incompressible Fluid",
+        "definition": "A fluid whose density stays virtually constant under pressure changes (most liquids under everyday conditions)."
+      },
+      {
+        "term": "Compressible Fluid",
+        "definition": "A fluid whose volume and density change markedly when pressure or temperature changes (gases)."
+      }
+    ],
+    "realWorldExamples": [
+      "LPG Cooking Tanks vs. Water Pitchers: Liquid propane/butane sits compressed at the bottom of an LPG tank while gas fills the top; pouring water from a pitcher changes only its shape, never its 1-liter volume.",
+      "Medical Syringes & IV Drips: Pressing the plunger forces liquid medicine to flow smoothly through a tiny needle, while air trapped inside compresses noticeably like a spring.",
+      "Sea Breezes Along Philippine Coasts: Warm daytime air over land rises as less-dense gas while cooler, denser sea air flows inland to replace it."
+    ]
   },
   {
     "id": "3.4",
@@ -121,7 +215,7 @@
     "title": "Properties of Fluids",
     "objective": "Define and compute density, specific gravity, pressure, and depth pressure in static fluids.",
     "keyFormula": "$$\\rho = \\frac{m}{V}, \\quad P = \\frac{F}{A}, \\quad P = P_0 + \\rho g h$$",
-    "explanation": "Key properties describe every fluid:\n- **Density ($\\rho = m/V$)**: mass per unit volume in $\\text{kg/m}^3$ (freshwater $\\approx 1000\\text{ kg/m}^3$).\n- **Specific Gravity ($\\text{SG} = \\rho / \\rho_{\\text{water}}$)**: dimensionless ratio comparing a substance's density to water.\n- **Pressure ($P = F/A$)**: perpendicular force per unit area in pascals ($1\\text{ Pa} = 1\\text{ N/m}^2$).\n- **Hydrostatic pressure**: deeper fluid supports more weight above it, so $P = P_0 + \\rho g h$.\n\n[Teacher/Module Placeholder: Add viscosity and surface tension notes if included in your syllabus.]",
+    "explanation": "Because fluids flow rather than stay in rigid blocks, we describe them using **mass per unit volume (density)** and **force per unit area (pressure)** instead of single total mass or force.\n\n### All You Need to Know\n- **Density** ($\\rho$): $\\rho = \\frac{m}{V}$, SI unit $\\text{kg/m}^3$. Handy conversions: $1\\text{ g/cm}^3 = 1000\\text{ kg/m}^3$ (pure water $\\rho = 1000\\text{ kg/m}^3$; seawater $\\approx 1025\\text{ kg/m}^3$).\n- **Specific Gravity** ($\\text{SG}$): Dimensionless ratio $\\text{SG} = \\frac{\\rho_{\\text{substance}}}{\\rho_{\\text{water}}}$. If $\\text{SG} < 1$, the substance floats on freshwater!\n- **Pressure** ($P$): $P = \\frac{F_{\\perp}}{A}$, measured in **pascals** ($1\\text{ Pa} = 1\\text{ N/m}^2$). Standard atmospheric pressure at sea level: $P_{\\text{atm}} = 1.013 \\times 10^5\\text{ Pa} = 101.3\\text{ kPa}$.\n- **Hydrostatic Depth Pressure**: In a still liquid of density $\\rho$ open to surface pressure $P_0$:\n  $$P = P_0 + \\rho g h$$\n  **Golden Rule**: Pressure at depth $h$ depends **only on vertical depth** $h$ **and fluid density** $\\rho$—never on container width or shape! **Gauge pressure** is $P_{\\text{gauge}} = P - P_0 = \\rho g h$.",
     "workedExample": {
       "problem": "Find the gauge pressure $\\Delta P = \\rho g h$ at the bottom of a $3.0\\text{ m}$ deep freshwater pool ($\\rho = 1000\\text{ kg/m}^3$, $g = 9.8\\text{ m/s}^2$).",
       "solutionSteps": [
@@ -145,12 +239,40 @@
       {
         "id": "3.4-q2",
         "prompt": "An object has mass $600\\text{ kg}$ and volume $0.50\\text{ m}^3$. What is its density?",
-        "choices": ["1200 kg/m³", "300 kg/m³", "600 kg/m³", "0.83 kg/m³"],
+        "choices": [
+          "1200 kg/m³",
+          "300 kg/m³",
+          "600 kg/m³",
+          "0.83 kg/m³"
+        ],
         "correctIndex": 0,
         "explanation": "$\\rho = m / V = 600 / 0.50 = 1200\\text{ kg/m}^3$."
       }
     ],
-    "suggestedSceneId": "p2-hydraulics"
+    "suggestedSceneId": "p2-hydraulics",
+    "keyTerms": [
+      {
+        "term": "Density ($\\rho$)",
+        "definition": "Mass per unit volume ($\\rho = m/V$), measured in $\\text{kg/m}^3$ ($1\\text{ g/cm}^3 = 1000\\text{ kg/m}^3$)."
+      },
+      {
+        "term": "Specific Gravity ($\\text{SG}$)",
+        "definition": "Ratio of a material's density to pure water's density ($1000\\text{ kg/m}^3$); unitless."
+      },
+      {
+        "term": "Pressure ($P$)",
+        "definition": "Normal force exerted per unit area ($P = F/A$), measured in pascals ($1\\text{ Pa} = 1\\text{ N/m}^2$)."
+      },
+      {
+        "term": "Gauge vs. Absolute Pressure",
+        "definition": "Gauge pressure ($\\rho gh$) measures pressure above atmospheric pressure; absolute pressure ($P_0 + \\rho gh$) includes atmospheric pressure."
+      }
+    ],
+    "realWorldExamples": [
+      "Scuba Diving Ear Popping: Descending just $10.3\\text{ m}$ underwater adds a full extra atmosphere ($\\sim 101\\text{ kPa}$) of pressure onto your eardrums because water is ~800 times denser than air.",
+      "Dam Wall Thickness: Concrete dams like Angat Dam are built skinny at the top and super thick at the bottom because hydrostatic pressure $P = \\rho gh$ grows linearly with water depth.",
+      "High Heels vs. Snowshoes: A narrow stiletto heel concentrates body weight into a tiny area $A$, generating huge pressure ($P = F/A$) that dents soft floors, while wide boots spread the same weight gently."
+    ]
   },
   {
     "id": "3.5",
@@ -161,7 +283,7 @@
     "title": "Fluid Statics and Pascal's Principle",
     "objective": "Apply Pascal's principle to explain how hydraulic lifts multiply force.",
     "keyFormula": "$$\\frac{F_1}{A_1} = \\frac{F_2}{A_2} \\implies F_2 = F_1\\left(\\frac{A_2}{A_1}\\right)$$",
-    "explanation": "**Pascal's Principle** states that pressure applied to an enclosed, incompressible fluid is transmitted equally and undiminished to every point in the fluid and to the container walls.\n\nIn a hydraulic press or vulcanizing-shop car jack, a small input force $F_1$ on a small piston ($A_1$) creates pressure $P = F_1/A_1$, which pushes upward on a larger piston ($A_2$) with amplified force $F_2 = F_1(A_2/A_1)$. Energy is still conserved because the small piston must move farther ($A_1 d_1 = A_2 d_2$).\n\n[Teacher/Module Placeholder: Include hydraulic brake diagram or problems.]",
+    "explanation": "Fluids in a closed container transmit pressure everywhere equally—the secret behind effortless car lifts, heavy excavator arms, and your car's brake pedal!\n\n### All You Need to Know\n- **Pascal's Principle**: Any change in pressure applied to an enclosed, incompressible fluid is transmitted undiminished to every point inside the fluid and to the walls of its container:\n  $$\\Delta P_1 = \\Delta P_2 \\implies \\frac{F_1}{A_1} = \\frac{F_2}{A_2}$$\n- **Force Multiplication**: If output piston area $A_2$ is 50 times larger than input piston area $A_1$, then output force $F_2 = F_1 \\left(\\frac{A_2}{A_1}\\right)$ is **50 times stronger**!\n- **Conservation of Energy Trade-Off**: Nothing comes for free—because fluid volume pushed out equals volume pushed in ($A_1 d_1 = A_2 d_2$), the small piston must travel a **50 times longer stroke** ($d_1 = d_2 \\frac{A_2}{A_1}$) so input work $F_1 d_1$ equals output work $F_2 d_2$.\n- **Area Warning**: Circular piston area scales with radius squared ($A = \\pi r^2$), so doubling piston diameter multiplies output force by $2^2 = 4$!",
     "workedExample": {
       "problem": "A hydraulic lift has piston areas $A_1 = 0.020\\text{ m}^2$ and $A_2 = 0.50\\text{ m}^2$. How much input force $F_1$ lifts a $10{,}000\\text{ N}$ jeepney?",
       "solutionSteps": [
@@ -174,7 +296,12 @@
       {
         "id": "3.5-q1",
         "prompt": "In an ideal hydraulic lift, if output piston area $A_2$ is $10$ times input area $A_1$, how does output force $F_2$ compare to $F_1$?",
-        "choices": ["$F_2 = 10 F_1$", "$F_2 = F_1 / 10$", "$F_2 = F_1$", "$F_2 = 100 F_1$"],
+        "choices": [
+          "$F_2 = 10 F_1$",
+          "$F_2 = F_1 / 10$",
+          "$F_2 = F_1$",
+          "$F_2 = 100 F_1$"
+        ],
         "correctIndex": 0,
         "explanation": "Equal pressure $F_1/A_1 = F_2/A_2$ multiplies force by the area ratio $A_2/A_1 = 10$."
       },
@@ -191,7 +318,30 @@
         "explanation": "Input work $F_1 d_1$ equals output work $F_2 d_2$ because volume displaced $A_1 d_1 = A_2 d_2$ is equal."
       }
     ],
-    "suggestedSceneId": "p2-hydraulics"
+    "suggestedSceneId": "p2-hydraulics",
+    "keyTerms": [
+      {
+        "term": "Pascal's Principle",
+        "definition": "Pressure applied to an enclosed fluid transmits equally throughout the entire fluid without loss."
+      },
+      {
+        "term": "Hydraulic Lift",
+        "definition": "Device using two connected pistons of different areas to multiply a small input force into a large lifting force."
+      },
+      {
+        "term": "Mechanical Advantage ($A_2 / A_1$)",
+        "definition": "Force multiplication factor equal to the ratio of output piston area to input piston area."
+      },
+      {
+        "term": "Volume Conservation ($A_1 d_1 = A_2 d_2$)",
+        "definition": "Constraint showing that multiplying force requires pushing the small piston proportionally farther."
+      }
+    ],
+    "realWorldExamples": [
+      "Vulcanizing & Auto Repair Car Lifts: A mechanic presses a foot pedal or small hydraulic pump piston so hydraulic oil pushes upward on a wide steel cylinder, effortlessly hoisting a $1500\\text{ kg}$ SUV.",
+      "Car Hydraulic Disc Brakes: Your foot pushes a small master cylinder piston; brake fluid carries equal pressure to wide caliper pistons at all four wheels simultaneously.",
+      "Backhoe & Dump Truck Arms: Pressurized hydraulic fluid drives heavy steel rams to scoop tons of soil and tilt loaded truck beds."
+    ]
   },
   {
     "id": "3.6",
@@ -202,7 +352,7 @@
     "title": "Archimedes' Principle and Buoyant Force",
     "objective": "Calculate buoyant force from displaced fluid weight and predict whether an object floats or sinks.",
     "keyFormula": "$$F_B = \\rho_{\\text{fluid}} V_{\\text{sub}} g$$",
-    "explanation": "**Archimedes' Principle** states that the upward **buoyant force** $F_B$ on any submerged or floating object equals the **weight of the fluid displaced** by the object: $F_B = \\rho_{\\text{fluid}} V_{\\text{sub}} g$.\n\nAn object floats when its average density is less than the fluid density ($\\rho_{\\text{obj}} < \\rho_{\\text{fluid}}$); at equilibrium while floating, $F_B = W_{\\text{obj}}$ and the submerged fraction equals $\\rho_{\\text{obj}}/\\rho_{\\text{fluid}}$.\n\n[Teacher/Module Placeholder: Add steel ship hull or banca buoyancy examples.]",
+    "explanation": "Why does a tiny iron nail sink straight to the bottom of a pail while a massive steel cargo ship floats easily across Manila Bay? **Archimedes' Principle** explains upward buoyancy!\n\n### All You Need to Know\n- **Why Buoyancy Exists**: Fluid pressure increases with depth ($P = P_0 + \\rho gh$), so upward fluid pressure on the **bottom** of a submerged object is greater than downward fluid pressure on its **top**—creating a net upward **buoyant force** ($F_B$).\n- **Archimedes' Principle**: The buoyant force on any submerged or floating body equals the **weight of the fluid displaced**:\n  $$F_B = W_{\\text{displaced}} = \\rho_{\\text{fluid}} V_{\\text{sub}} g$$\n  - $\\rho_{\\text{fluid}}$: density of the surrounding fluid (NOT the object!).\n  - $V_{\\text{sub}}$: volume of the object actually under the fluid surface.\n- **Floating vs. Sinking Rules**:\n  - $\\rho_{\\text{avg}} > \\rho_{\\text{fluid}}$ ($W > F_{B,\\max}$): Object **sinks**.\n  - $\\rho_{\\text{avg}} < \\rho_{\\text{fluid}}$: Object **floats** with submerged fraction $\\frac{V_{\\text{sub}}}{V_{\\text{total}}} = \\frac{\\rho_{\\text{obj}}}{\\rho_{\\text{fluid}}}$ until $F_B = W$!\n  - **Apparent Weight in Fluid**: $W_{\\text{apparent}} = W_{\\text{air}} - F_B$.",
     "workedExample": {
       "problem": "A block of volume $V = 0.040\\text{ m}^3$ is completely submerged in water ($\\rho = 1000\\text{ kg/m}^3$, $g = 9.8\\text{ m/s}^2$). What is the buoyant force?",
       "solutionSteps": [
@@ -214,7 +364,12 @@
       {
         "id": "3.6-q1",
         "prompt": "A wood block with density $750\\text{ kg/m}^3$ floats in freshwater ($1000\\text{ kg/m}^3$). What fraction of its volume is submerged?",
-        "choices": ["75%", "25%", "100%", "50%"],
+        "choices": [
+          "75%",
+          "25%",
+          "100%",
+          "50%"
+        ],
         "correctIndex": 0,
         "explanation": "Submerged fraction equals $\\rho_{\\text{obj}}/\\rho_{\\text{fluid}} = 750/1000 = 0.75$ (75%)."
       },
@@ -231,7 +386,30 @@
         "explanation": "Floating depends on average density (total mass divided by total enclosed volume), not hull material alone."
       }
     ],
-    "suggestedSceneId": "p2-buoyancy"
+    "suggestedSceneId": "p2-buoyancy",
+    "keyTerms": [
+      {
+        "term": "Buoyant Force ($F_B$)",
+        "definition": "Net upward force exerted by a fluid on an immersed object due to pressure increasing with depth ($\\text{N}$)."
+      },
+      {
+        "term": "Archimedes' Principle",
+        "definition": "Buoyant force equals the weight of the fluid displaced by the submerged portion of an object ($F_B = \\rho_f V_{\\text{sub}} g$)."
+      },
+      {
+        "term": "Apparent Weight",
+        "definition": "Scale reading when an object is submerged in a fluid ($W_{\\text{air}} - F_B$)."
+      },
+      {
+        "term": "Neutral Buoyancy",
+        "definition": "Condition where an object's average density equals the surrounding fluid's density ($F_B = W$), hovering at any depth."
+      }
+    ],
+    "realWorldExamples": [
+      "Steel Ships Floating on Oceans: A hollow ship hull traps huge volumes of air inside, making the ship's average density (steel + air) much less than seawater ($1025\\text{ kg/m}^3$).",
+      "Submarines & Fish Swim Bladders: Submarines pump water into or out of ballast tanks to raise or lower their average density; bony fish adjust gas in their swim bladders for neutral buoyancy.",
+      "Freshwater vs. Saltwater Swimming: Because seawater is denser than pool water ($1025$ vs. $1000\\text{ kg/m}^3$), you displace less water to balance your weight and float higher at the beach!"
+    ]
   },
   {
     "id": "3.7",
@@ -242,7 +420,7 @@
     "title": "Fluid Dynamics, Types of Flow, and the Continuity Equation",
     "objective": "Distinguish laminar from turbulent flow and apply the continuity equation for incompressible fluids.",
     "keyFormula": "$$Q = A v = \\text{constant} \\implies A_1 v_1 = A_2 v_2$$",
-    "explanation": "In **laminar (streamline) flow**, fluid particles glide smoothly in parallel layers, whereas **turbulent flow** features swirling eddies and chaotic mixing.\n\nFor steady, incompressible flow in a pipe, mass conservation requires the **volume flow rate** $Q = A v$ ($\\text{m}^3/\\text{s}$) to remain constant: $A_1 v_1 = A_2 v_2$. Squeezing the tip of a garden hose narrows area $A_2$, so water speed $v_2$ speeds up!\n\n[Teacher/Module Placeholder: Add blood vessel constriction or pipe-radius ratio drills.]",
+    "explanation": "Moving from still fluids (hydrostatics) to flowing fluids (fluid dynamics), we track how smoothly fluid layers glide and why water shoots faster when you pinch a garden hose!\n\n### All You Need to Know\n- **Laminar vs. Turbulent Flow**:\n  - **Laminar Flow**: Smooth, orderly, parallel layers (streamlines) that never cross—typical of slow, viscous flow like honey pouring or steady blood in capillaries.\n  - **Turbulent Flow**: Chaotic, swirling eddies and vortices above a critical speed—increases drag and energy loss (e.g., white-water river rapids or stormy air behind a speeding truck).\n- **Volume Flow Rate** ($Q$): Volume passing a cross-section per second:\n  $$Q = \\frac{\\Delta V}{\\Delta t} = A v$$\n  SI unit: $\\text{m}^3/\\text{s}$ ($1\\text{ m}^3/\\text{s} = 1000\\text{ L/s}$).\n- **Continuity Equation** (for steady incompressible fluid without leaks): Mass/volume entering a pipe per second must equal mass/volume leaving per second:\n  $$A_1 v_1 = A_2 v_2$$\n  **Golden Rule**: Narrower cross-section $A$ $\\implies$ **faster flow speed** $v$! (For circular pipes, $A = \\pi r^2$, so halving pipe radius makes speed $4\\times$ faster!)",
     "workedExample": {
       "problem": "Water flows at $v_1 = 2.0\\text{ m/s}$ in a pipe of cross-sectional area $A_1 = 6.0\\text{ cm}^2$, which narrows to $A_2 = 2.0\\text{ cm}^2$. Find speed $v_2$.",
       "solutionSteps": [
@@ -255,19 +433,52 @@
       {
         "id": "3.7-q1",
         "prompt": "If a pipe's cross-sectional area shrinks to one-third of its original area, steady water speed will:",
-        "choices": ["Triple", "Become one-third", "Stay the same", "Become 9 times faster"],
+        "choices": [
+          "Triple",
+          "Become one-third",
+          "Stay the same",
+          "Become 9 times faster"
+        ],
         "correctIndex": 0,
         "explanation": "From $A_1 v_1 = A_2 v_2$, reducing $A$ by 3 increases $v$ by 3."
       },
       {
         "id": "3.7-q2",
         "prompt": "Which type of fluid flow is characterized by smooth, parallel streamlines without eddies?",
-        "choices": ["Laminar flow", "Turbulent flow", "Compressible shock", "Cavitation"],
+        "choices": [
+          "Laminar flow",
+          "Turbulent flow",
+          "Compressible shock",
+          "Cavitation"
+        ],
         "correctIndex": 0,
         "explanation": "Laminar flow occurs smoothly in parallel layers at moderate speeds."
       }
     ],
-    "suggestedSceneId": "p2-bernoulli"
+    "suggestedSceneId": "p2-bernoulli",
+    "keyTerms": [
+      {
+        "term": "Laminar Flow",
+        "definition": "Smooth, layered fluid motion along non-crossing streamlines without eddies."
+      },
+      {
+        "term": "Turbulent Flow",
+        "definition": "Irregular, swirling fluid motion filled with chaotic eddies and mixing."
+      },
+      {
+        "term": "Volume Flow Rate ($Q$)",
+        "definition": "Volume of fluid passing through a cross-section per unit time: $Q = Av$ ($\\text{m}^3/\\text{s}$)."
+      },
+      {
+        "term": "Continuity Equation ($A_1 v_1 = A_2 v_2$)",
+        "definition": "Conservation of mass for incompressible steady flow: narrowing area increases fluid speed."
+      }
+    ],
+    "realWorldExamples": [
+      "Thumb Over a Garden Hose: Covering half the nozzle opening shrinks area $A_2$, forcing water speed $v_2$ to jump upward so the stream sprays far across the yard.",
+      "Human Artery Narrowing (Atherosclerosis): Plaque buildup shrinks artery area $A$, forcing blood speed $v$ to surge sharply and straining the heart.",
+      "Smoke Rising From a Mosquito Coil (Katol): Smoke rises in a smooth laminar ribbon for the first few centimeters before accelerating and breaking into swirling turbulent curls."
+    ]
   },
   {
     "id": "3.8",
@@ -278,7 +489,7 @@
     "title": "Bernoulli's Principle",
     "objective": "Relate fluid pressure, speed, and elevation using Bernoulli's equation.",
     "keyFormula": "$$P_1 + \\frac{1}{2}\\rho v_1^2 + \\rho g y_1 = P_2 + \\frac{1}{2}\\rho v_2^2 + \\rho g y_2$$",
-    "explanation": "**Bernoulli's Equation** expresses conservation of mechanical energy per unit volume for an ideal flowing fluid. Where fluid speed $v$ **increases** along a level streamline, static pressure $P$ **decreases**.\n\nThis explains Venturi atomizers, curveballs, why fast typhoon wind blowing over a house roof creates upward lift (lower pressure above than inside), and airplane wing lift.\n\n[Teacher/Module Placeholder: Include Venturi tube or Torricelli efflux problem.]",
+    "explanation": "Bernoulli's equation is simply **conservation of energy per unit volume** applied to a smoothly flowing, incompressible, frictionless fluid!\n\n### All You Need to Know\n- **Bernoulli's Equation**: Along any steady streamline:\n  $$P_1 + \\frac{1}{2}\\rho v_1^2 + \\rho g y_1 = P_2 + \\frac{1}{2}\\rho v_2^2 + \\rho g y_2$$\n  - $P$: static fluid pressure ($\\text{Pa}$).\n  - $\\frac{1}{2}\\rho v^2$: dynamic kinetic energy per unit volume.\n  - $\\rho g y$: gravitational potential energy per unit volume.\n- **The Classic Bernoulli Trade-Off** (at constant height $y_1 = y_2$):\n  $$P + \\frac{1}{2}\\rho v^2 = \\text{constant}$$\n  **Where fluid speed** $v$ **is HIGH, internal fluid pressure** $P$ **is LOW! Where speed** $v$ **is LOW, pressure** $P$ **is HIGH.**\n- **Torricelli's Law Special Case**: Water leaking out a hole depth $h$ below an open tank surface exits at $v = \\sqrt{2gh}$—the exact same speed as free fall from height $h$!",
     "workedExample": {
       "problem": "Water ($\\rho = 1000\\text{ kg/m}^3$) flows through a level pipe. In the wide section, $v_1 = 2.0\\text{ m/s}$ and $P_1 = 150\\text{ kPa}$. In the narrow section, $v_2 = 6.0\\text{ m/s}$. Find $P_2$.",
       "solutionSteps": [
@@ -291,7 +502,12 @@
       {
         "id": "3.8-q1",
         "prompt": "According to Bernoulli's principle in a horizontal pipe, when fluid enters a narrower section and speeds up, its pressure:",
-        "choices": ["Decreases", "Increases", "Stays identical", "Becomes zero"],
+        "choices": [
+          "Decreases",
+          "Increases",
+          "Stays identical",
+          "Becomes zero"
+        ],
         "correctIndex": 0,
         "explanation": "Higher kinetic energy density $\\frac{1}{2}\\rho v^2$ comes at the expense of lower static pressure $P$."
       },
@@ -308,7 +524,30 @@
         "explanation": "Higher outside air speed lowers pressure above the roof, creating a net upward force."
       }
     ],
-    "suggestedSceneId": "p2-bernoulli"
+    "suggestedSceneId": "p2-bernoulli",
+    "keyTerms": [
+      {
+        "term": "Bernoulli's Principle",
+        "definition": "For ideal steady flow, regions of higher fluid speed correspond to lower static fluid pressure (and vice versa)."
+      },
+      {
+        "term": "Dynamic Pressure ($\\frac{1}{2}\\rho v^2$)",
+        "definition": "Kinetic energy density of a moving fluid stream ($\\text{Pa}$)."
+      },
+      {
+        "term": "Venturi Effect",
+        "definition": "Drop in fluid pressure that occurs when fluid speeds up through a constricted pipe section."
+      },
+      {
+        "term": "Torricelli's Theorem",
+        "definition": "Efflux speed of liquid from an open tank hole at depth $h$ equals $v = \\sqrt{2gh}$."
+      }
+    ],
+    "realWorldExamples": [
+      "Typhoon Roof Uplift in the Philippines: Hurricane winds racing rapidly over a galvanized roof create low outside pressure above, while calm indoor air below pushes upward with atmospheric pressure—lifting unanchored roofs off!",
+      "Airplane Wing Lift: Airfoil curvature forces air over the top wing surface faster than underneath, lowering upper pressure and generating net upward lift.",
+      "Perfume Atomizers & Carburetors: Squeezing the bulb blasts fast air across a narrow tube tip, dropping pressure there so liquid rises up the straw and mists into the airstream."
+    ]
   },
   {
     "id": "3.9",
@@ -319,7 +558,7 @@
     "title": "Solving Problems on Fluids",
     "objective": "Synthesize hydrostatics, Pascal, Archimedes, continuity, and Bernoulli equations in multi-step fluid problems.",
     "keyFormula": "$$P = P_0 + \\rho gh, \\quad F_B = \\rho_f V_{\\text{sub}}g, \\quad A_1 v_1 = A_2 v_2$$",
-    "explanation": "To solve fluid problems smoothly, separate **static** situations (fluid at rest: use $P = P_0 + \\rho g h$, $F_1/A_1 = F_2/A_2$, or $F_B = \\rho_f V_{\\text{sub}} g$) from **flowing** situations (use Continuity $A_1 v_1 = A_2 v_2$ first to find missing speeds, then Bernoulli to find pressure or height changes).\n\nAlways convert areas from $\\text{cm}^2$ to $\\text{m}^2$ ($1\\text{ m}^2 = 10^4\\text{ cm}^2$) when computing pressure in pascals!\n\n[Teacher/Module Placeholder: Insert Term 3 fluid mechanics mixed review problems.]",
+    "explanation": "Real fluid mechanics exams combine hydrostatics, Pascal's principle, Archimedes' buoyancy, continuity, and Bernoulli into multi-step word problems. Knowing which tool fits which clue solves them quickly!\n\n### All You Need to Know: Fluid Problem Strategy\n1. **Is the Fluid Stationary or Flowing?**\n   - **Still Fluid**:\n     - Pressure at depth $h$? Use $P = P_0 + \\rho g h$ (remember $P_{\\text{gauge}} = \\rho g h$).\n     - Connected pistons / hydraulic press? Use $\\frac{F_1}{A_1} = \\frac{F_2}{A_2}$.\n     - Floating, sinking, or \"apparent weight in water\"? Use $F_B = W_{\\text{air}} - W_{\\text{water}} = \\rho_f V_{\\text{sub}} g$.\n   - **Flowing Fluid**:\n     - Pipe changes diameter or asks for speed/flow rate? Use **Continuity** $A_1 v_1 = A_2 v_2$ first!\n     - Asks for pressure change between wide/narrow or high/low pipe sections? Plug speeds into **Bernoulli's equation**!\n2. **Unit Traps to Watch**:\n   - Convert $\\text{cm}^2 \\to \\text{m}^2$ by dividing by $10{,}000$ ($10^4$).\n   - Convert $\\text{g/cm}^3 \\to \\text{kg/m}^3$ by multiplying by $1000$.\n   - Use **radius** $r = d/2$ in $A = \\pi r^2$, never diameter directly!",
     "workedExample": {
       "problem": "A metal crown weighs $14.7\\text{ N}$ in air and reads $13.4\\text{ N}$ when submerged in water ($\\rho = 1000\\text{ kg/m}^3$). Find the buoyant force and the crown's volume.",
       "solutionSteps": [
@@ -332,19 +571,52 @@
       {
         "id": "3.9-q1",
         "prompt": "A rock weighs $20\\text{ N}$ in air and $14\\text{ N}$ submerged in water. What is the buoyant force on the rock?",
-        "choices": ["6 N", "14 N", "20 N", "34 N"],
+        "choices": [
+          "6 N",
+          "14 N",
+          "20 N",
+          "34 N"
+        ],
         "correctIndex": 0,
         "explanation": "$F_B = W_{\\text{air}} - W_{\\text{submerged}} = 20 - 14 = 6\\text{ N}$."
       },
       {
         "id": "3.9-q2",
         "prompt": "In a pipe problem where both diameter and pressure change, which equation should you usually apply first?",
-        "choices": ["Continuity equation ($A_1 v_1 = A_2 v_2$)", "Archimedes' principle", "Kepler's law", "Ideal gas law"],
+        "choices": [
+          "Continuity equation ($A_1 v_1 = A_2 v_2$)",
+          "Archimedes' principle",
+          "Kepler's law",
+          "Ideal gas law"
+        ],
         "correctIndex": 0,
         "explanation": "Continuity finds the unknown flow speed $v_2$, which you then plug into Bernoulli's equation."
       }
     ],
-    "suggestedSceneId": "p2-bernoulli"
+    "suggestedSceneId": "p2-bernoulli",
+    "keyTerms": [
+      {
+        "term": "Hydrostatics",
+        "definition": "Study of fluids at rest where shear forces are zero and pressure depends only on depth ($\\rho gh$)."
+      },
+      {
+        "term": "Fluid Dynamics",
+        "definition": "Study of fluids in motion governed by mass conservation (Continuity) and energy conservation (Bernoulli)."
+      },
+      {
+        "term": "Venturi Flowmeter",
+        "definition": "Constricted pipe instrument that measures fluid speed from the pressure drop between wide and narrow sections."
+      },
+      {
+        "term": "SI Area Conversion",
+        "definition": "$1\\text{ m}^2 = 10{,}000\\text{ cm}^2 = 10^4\\text{ cm}^2$, crucial when converting hydraulic piston areas to pascals."
+      }
+    ],
+    "realWorldExamples": [
+      "Municipal Water Tower Distribution: Elevated tanks create hydrostatic head ($\\rho gh$) driving water through wide mains into narrower household pipes via Continuity and Bernoulli.",
+      "Testing Gold Purity (Archimedes' Classic Problem): Weighing a ring in air and in water gives $F_B$, revealing volume $V = F_B / (\\rho_{\\text{water}}g)$ and exact density $\\rho = m/V$ without scratching the jewelry.",
+      "IV Drip Bag Height Adjustment: Raising an IV bottle increases $\\rho gh$ so fluid overcomes venous blood pressure and flows steadily into the patient."
+    ]
   },
   {
     "id": "3.10",
@@ -355,7 +627,7 @@
     "title": "Mechanisms of Heat Transfer",
     "objective": "Compare conduction, convection, and radiation and calculate conductive heat current.",
     "keyFormula": "$$H = \\frac{Q}{t} = \\frac{k A \\Delta T}{L}$$",
-    "explanation": "Thermal energy transfers by three distinct mechanisms:\n1. **Conduction**: direct molecular collisions through solids (rate $H = kA\\Delta T/L$; metals conduct rapidly, wood/styrofoam insulate).\n2. **Convection**: bulk movement of warm rising and cool sinking fluid currents (sea/land breezes, boiling water).\n3. **Radiation**: electromagnetic waves requiring **no medium** ($P = e\\sigma A T^4$), such as sunlight warming Earth.\n\n[Teacher/Module Placeholder: Add thermos flask design explanation activity.]",
+    "explanation": "Heat naturally flows spontaneously from **hotter objects to cooler objects** whenever a temperature difference exists. There are three distinct physical mechanisms for this energy transfer.\n\n### All You Need to Know\n1. **Conduction**: Heat transfer through **direct molecular collisions** without bulk movement of the material—dominant in solids (especially metals, whose free electrons carry heat rapidly). Governed by **Fourier's Law**:\n   $$H = \\frac{Q}{t} = \\frac{k A (T_{\\text{hot}} - T_{\\text{cold}})}{L}$$\n   - $k$: thermal conductivity ($\\text{W}/(\\text{m}\\cdot\\text{K})$); $A$: cross-sectional area; $L$: wall/rod thickness.\n2. **Convection**: Heat transfer by the **bulk circulation of warmer, less-dense fluid rising and cooler, denser fluid sinking**—occurs in liquids and gases (boiling water, sea breezes, air-conditioning placement).\n3. **Radiation**: Heat transfer via **electromagnetic waves (mostly infrared)**—requires **no medium at all** and travels even through empty vacuum! Governed by the **Stefan–Boltzmann Law**: $P = e\\sigma A T^4$ (with $T$ in **kelvin**!).",
     "workedExample": {
       "problem": "An aluminum pot base ($k = 205\\text{ W/(m}\\cdot\\text{K)}$) has area $A = 0.030\\text{ m}^2$ and thickness $L = 0.0040\\text{ m}$. If $\\Delta T = 20\\text{ K}$ across it, find heat transfer rate $H$.",
       "solutionSteps": [
@@ -367,7 +639,12 @@
       {
         "id": "3.10-q1",
         "prompt": "Which heat transfer mechanism brings thermal energy from the Sun across the vacuum of space to the Philippines?",
-        "choices": ["Radiation", "Conduction", "Convection", "Evaporation"],
+        "choices": [
+          "Radiation",
+          "Conduction",
+          "Convection",
+          "Evaporation"
+        ],
         "correctIndex": 0,
         "explanation": "Radiation travels as electromagnetic waves and requires no matter medium."
       },
@@ -384,7 +661,30 @@
         "explanation": "Removing air eliminates conduction and convection across the gap."
       }
     ],
-    "suggestedSceneId": "p2-thermal"
+    "suggestedSceneId": "p2-thermal",
+    "keyTerms": [
+      {
+        "term": "Thermal Conduction",
+        "definition": "Heat transfer through direct particle collisions and electron motion within solids, quantified by $H = kA\\Delta T / L$."
+      },
+      {
+        "term": "Thermal Conductivity ($k$)",
+        "definition": "Material property measuring how easily heat conducts through a substance ($\\text{W}/(\\text{m}\\cdot\\text{K})$); high for copper/aluminum, low for wood/styrofoam."
+      },
+      {
+        "term": "Convection",
+        "definition": "Heat transfer by buoyant circulation of heated liquids or gases."
+      },
+      {
+        "term": "Thermal Radiation",
+        "definition": "Emission of electromagnetic energy by all objects above $0\\text{ K}$, requiring no physical medium ($P = e\\sigma A T^4$)."
+      }
+    ],
+    "realWorldExamples": [
+      "Cooking Sinigang in a Metal Pot: Conduction passes burner heat through the aluminum pot base; convection currents swirl hot broth from bottom to top; radiant infrared warmth hits your hand beside the stove.",
+      "Why Air Conditioners Mount High & Heaters Mount Low: Cool air from a high AC sinks naturally while warm room air rises toward the intake, circulating cool air across the whole classroom.",
+      "Thermos (Vacuum Flask) Design: A vacuum gap blocks conduction and convection, while shiny silvered walls reflect thermal radiation—keeping coffee hot for hours."
+    ]
   },
   {
     "id": "3.11",
@@ -395,7 +695,7 @@
     "title": "Temperature and How It Is Measured",
     "objective": "Relate temperature to average molecular kinetic energy and convert between Celsius, Fahrenheit, and Kelvin scales.",
     "keyFormula": "$$T_K = T_C + 273.15, \\quad T_F = \\frac{9}{5}T_C + 32$$",
-    "explanation": "**Temperature** measures the average translational kinetic energy of particles in a substance ($K_{\\text{avg}} = \\frac{3}{2}k_B T$ for an ideal monatomic gas). Thermometers measure a physical property that changes smoothly with temperature—such as liquid expansion, electrical resistance, or infrared emission.\n\nAlways convert Celsius to **Kelvin ($\\text{K}$)** in gas laws and thermodynamics equations because $0\\text{ K}$ is absolute zero.\n\n[Teacher/Module Placeholder: Add thermometer calibration lab notes.]",
+    "explanation": "Temperature isn't just \"how hot something feels\"—microscopically, temperature measures the **average translational kinetic energy of randomly jiggling molecules** ($\\overline{K}_{\\text{trans}} = \\frac{3}{2}k_B T$).\n\n### All You Need to Know\n- **Three Standard Temperature Scales**:\n  - **Celsius** ($^\\circ\\text{C}$): Water freezes at $0^\\circ\\text{C}$ and boils at $100^\\circ\\text{C}$ ($1\\text{ atm}$).\n  - **Fahrenheit** ($^\\circ\\text{F}$): Water freezes at $32^\\circ\\text{F}$ and boils at $212^\\circ\\text{F}$.\n  - **Kelvin** ($\\text{K}$) (SI base unit!): Starts at **Absolute Zero** ($0\\text{ K} = -273.15^\\circ\\text{C}$), where molecular translational motion minimizes. No degree symbol ($^\\circ$) is written with Kelvin!\n- **Essential Conversion Formulas**:\n  - $T_K = T_C + 273.15$\n  - $T_F = \\frac{9}{5}T_C + 32$ and $T_C = \\frac{5}{9}(T_F - 32)$\n- **Crucial Shortcut for Temperature Changes** ($\\Delta T$): Because $1\\text{ K}$ has the exact same step size as $1^\\circ\\text{C}$, $\\Delta T_K = \\Delta T_C$! (Only add $273.15$ to absolute $T$, never to $\\Delta T$!)",
     "workedExample": {
       "problem": "A warm afternoon in Manila reaches $35.0^\\circ\\text{C}$. Express this temperature in Kelvin and Fahrenheit.",
       "solutionSteps": [
@@ -408,19 +708,52 @@
       {
         "id": "3.11-q1",
         "prompt": "Which temperature scale starts at absolute zero ($0\\text{ K}$) and must be used in ideal gas calculations?",
-        "choices": ["Kelvin", "Celsius", "Fahrenheit", "Rankine only"],
+        "choices": [
+          "Kelvin",
+          "Celsius",
+          "Fahrenheit",
+          "Rankine only"
+        ],
         "correctIndex": 0,
         "explanation": "Kelvin is the SI absolute temperature scale where $0\\text{ K} = -273.15^\\circ\\text{C}$."
       },
       {
         "id": "3.11-q2",
         "prompt": "A temperature rise of $\\Delta T = 10^\\circ\\text{C}$ corresponds to what temperature change in Kelvin?",
-        "choices": ["10 K", "283.15 K", "18 K", "263.15 K"],
+        "choices": [
+          "10 K",
+          "283.15 K",
+          "18 K",
+          "263.15 K"
+        ],
         "correctIndex": 0,
         "explanation": "Celsius and Kelvin have identical step sizes: $\\Delta T_K = \\Delta T_C$."
       }
     ],
-    "suggestedSceneId": "p2-thermal"
+    "suggestedSceneId": "p2-thermal",
+    "keyTerms": [
+      {
+        "term": "Temperature ($T$)",
+        "definition": "Macroscopic measure proportional to the average translational kinetic energy of molecules in a substance."
+      },
+      {
+        "term": "Kelvin ($\\text{K}$)",
+        "definition": "SI base unit of thermodynamic temperature anchored at absolute zero ($0\\text{ K} = -273.15^\\circ\\text{C}$)."
+      },
+      {
+        "term": "Absolute Zero ($0\\text{ K}$)",
+        "definition": "Theoretical lowest possible temperature ($-273.15^\\circ\\text{C}$), where atoms have minimum quantum thermal energy."
+      },
+      {
+        "term": "Thermometer",
+        "definition": "Instrument using a thermometric property (liquid expansion, electrical resistance, or infrared emission) to indicate temperature."
+      }
+    ],
+    "realWorldExamples": [
+      "Infrared Forehead Thermometers: Measure thermal infrared radiation emitted by skin rather than mercury expansion, giving fast non-contact fever checks ($\\ge 37.8^\\circ\\text{C}$ or $100.0^\\circ\\text{F}$).",
+      "Baking Recipes Across Countries: Philippine and metric ovens use Celsius ($180^\\circ\\text{C}$), whereas American recipes list Fahrenheit ($356^\\circ\\text{F}$)—solved by $T_F = 1.8 T_C + 32$.",
+      "Car Tire Pressure & Gas Laws: Mechanics and physicists must convert Celsius into Kelvin before using $PV = nRT$ because doubling temperature from $20^\\circ\\text{C}$ to $40^\\circ\\text{C}$ is NOT doubling $T_K$ ($293\\text{ K}$ to $313\\text{ K}$)."
+    ]
   },
   {
     "id": "3.12",
@@ -431,7 +764,7 @@
     "title": "Heat and the Movement of Energy in Systems",
     "objective": "Distinguish heat Q from internal energy U and apply calorimetry conservation.",
     "keyFormula": "$$Q_{\\text{gained}} + Q_{\\text{lost}} = 0 \\text{ (isolated system)}$$",
-    "explanation": "**Internal energy ($U$)** is the total microscopic kinetic and potential energy stored inside a substance. **Heat ($Q$)** is not a substance stored in an object—it is thermal energy **in transit** from a hotter body to a colder body because of a temperature difference.\n\nIn a well-insulated calorimeter, energy lost by hot objects equals energy gained by cooler objects: $\\sum Q = 0$.\n\n[Teacher/Module Placeholder: Include calorimetry mixing lab setup.]",
+    "explanation": "Students often mix up **temperature**, **heat**, and **internal energy**—knowing the exact difference clears up almost every thermodynamics question!\n\n### All You Need to Know\n- **Internal Energy** ($U$): The total kinetic + potential energy of all molecules inside a system. A bathtub of lukewarm water has vastly more internal energy than a tiny drop of boiling water because it has billions more molecules!\n- **Heat** ($Q$): **Energy in transit** crossing a boundary solely because of a temperature difference ($\\text{J}$ or $\\text{cal}$, where $1\\text{ cal} = 4.186\\text{ J}$). An object doesn't \"contain heat\"—it contains internal energy and transfers heat!\n- **Calorimetry (Conservation of Heat Energy)**: When hot and cold substances mix inside an insulated calorimeter with no heat escaping outside:\n  $$\\sum Q = 0 \\implies Q_{\\text{gained}} + Q_{\\text{lost}} = 0$$\n  Remember $Q > 0$ means heat **absorbed** (warming up), and $Q < 0$ means heat **released** (cooling down).",
     "workedExample": {
       "problem": "Hot metal loses $2500\\text{ J}$ of thermal energy to cool water in an insulated calorimeter. How much heat does the water gain?",
       "solutionSteps": [
@@ -444,19 +777,52 @@
       {
         "id": "3.12-q1",
         "prompt": "What drives spontaneous heat flow between two contacting objects?",
-        "choices": ["A difference in temperature", "A difference in mass", "A difference in volume", "Equal temperatures"],
+        "choices": [
+          "A difference in temperature",
+          "A difference in mass",
+          "A difference in volume",
+          "Equal temperatures"
+        ],
         "correctIndex": 0,
         "explanation": "Heat naturally flows from higher temperature to lower temperature until thermal equilibrium."
       },
       {
         "id": "3.12-q2",
         "prompt": "In physics, what sign convention indicates heat entering a system?",
-        "choices": ["Positive ($Q > 0$)", "Negative ($Q < 0$)", "Zero ($Q = 0$)", "Undefined"],
+        "choices": [
+          "Positive ($Q > 0$)",
+          "Negative ($Q < 0$)",
+          "Zero ($Q = 0$)",
+          "Undefined"
+        ],
         "correctIndex": 0,
         "explanation": "$Q > 0$ means heat flows into the system; $Q < 0$ means heat leaves the system."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "Heat ($Q$)",
+        "definition": "Thermal energy transferred between two systems due to a temperature difference, measured in joules ($\\text{J}$)."
+      },
+      {
+        "term": "Internal Energy ($U$)",
+        "definition": "Sum of all microscopic kinetic and intermolecular potential energies within a system ($\\text{J}$)."
+      },
+      {
+        "term": "Calorimetry",
+        "definition": "Experimental technique measuring heat exchanged during temperature changes, phase transitions, or chemical reactions in an insulated vessel."
+      },
+      {
+        "term": "Thermal Equilibrium",
+        "definition": "State reached when interacting bodies settle at the same temperature and net heat flow stops ($Q_{\\text{net}} = 0$)."
+      }
+    ],
+    "realWorldExamples": [
+      "Cooling Hot Soup with Ice or Tap Water: Heat energy leaves the hot soup ($Q_{\\text{soup}} < 0$) and enters the cooler water/spoon ($Q_{\\text{water}} > 0$) until both settle at one shared equilibrium temperature.",
+      "Sparklers vs. Hot Bathwater: A $1000^\\circ\\text{C}$ sparkler spark barely stings skin because its tiny mass carries negligible internal energy, whereas $100^\\circ\\text{C}$ boiling water causes severe burns because water stores huge energy.",
+      "Food Nutrition Calories (kcal): One food 'Calorie' equals $1\\text{ kcal} = 4186\\text{ J}$, originally measured by burning food samples inside a bomb calorimeter."
+    ]
   },
   {
     "id": "3.13",
@@ -467,7 +833,7 @@
     "title": "Heat, Temperature Change, and Phase Change",
     "objective": "Calculate sensible heat with specific heat capacity and latent heat during melting or boiling.",
     "keyFormula": "$$Q = m c \\Delta T, \\quad Q = \\pm m L$$",
-    "explanation": "When heat enters a substance without changing phase, temperature rises according to **specific heat** $c$: $Q = mc\\Delta T$ (for water, $c = 4186\\text{ J/(kg}\\cdot\\text{K)}$).\n\nDuring a **phase change** (melting or boiling), added heat breaks intermolecular bonds **without changing temperature**! That energy is **latent heat**: $Q = m L_f$ (fusion, $3.34 \\times 10^5\\text{ J/kg}$ for ice) or $Q = m L_v$ (vaporization, $2.26 \\times 10^6\\text{ J/kg}$ for water).\n\n[Teacher/Module Placeholder: Add heating-curve diagram labeling activity.]",
+    "explanation": "Adding heat to a substance usually raises its temperature—**except during a phase change**, when temperature stays completely flat while intermolecular bonds break!\n\n### All You Need to Know\n- **1. Sensible Heat (Changing Temperature Within One Phase)**:\n  $$Q = m c \\Delta T$$\n  - $m$: mass ($\\text{kg}$); $c$: **specific heat capacity** ($\\text{J}/(\\text{kg}\\cdot\\text{K})$)—energy to warm $1\\text{ kg}$ by $1^\\circ\\text{C}$. Water's huge $c = 4186\\text{ J}/(\\text{kg}\\cdot\\text{K})$ makes oceans great climate stabilizers!\n- **2. Latent Heat (Changing Phase at Constant Temperature)**:\n  $$Q = \\pm m L$$\n  - **Latent Heat of Fusion** ($L_f$): Melting (solid $\\to$ liquid, $+mL_f$) or freezing ($-mL_f$). For water: $L_f = 3.34 \\times 10^5\\text{ J/kg}$ at $0^\\circ\\text{C}$.\n  - **Latent Heat of Vaporization** ($L_v$): Boiling/evaporating ($+mL_v$) or condensing ($-mL_v$). For water: $L_v = 2.26 \\times 10^6\\text{ J/kg}$ at $100^\\circ\\text{C}$.\n- **Multi-Step Heating Curve Rule**: Never jump across $0^\\circ\\text{C}$ or $100^\\circ\\text{C}$ in one $mc\\Delta T$! Split into separate segments: warm ice $\\to$ melt at $0^\\circ\\text{C}$ $\\to$ warm water $\\to$ boil at $100^\\circ\\text{C}$ $\\to$ heat steam!",
     "workedExample": {
       "problem": "How much heat is required to melt $0.50\\text{ kg}$ of ice at $0^\\circ\\text{C}$ into water at $0^\\circ\\text{C}$ ($L_f = 3.34 \\times 10^5\\text{ J/kg}$)?",
       "solutionSteps": [
@@ -480,19 +846,52 @@
       {
         "id": "3.13-q1",
         "prompt": "While water is actively boiling in a pot at $100^\\circ\\text{C}$, what happens to its temperature as the stove keeps supplying heat?",
-        "choices": ["It stays constant at $100^\\circ\\text{C}$ until all liquid vaporizes", "It rises to $200^\\circ\\text{C}$", "It drops to $0^\\circ\\text{C}$", "It oscillates"],
+        "choices": [
+          "It stays constant at $100^\\circ\\text{C}$ until all liquid vaporizes",
+          "It rises to $200^\\circ\\text{C}$",
+          "It drops to $0^\\circ\\text{C}$",
+          "It oscillates"
+        ],
         "correctIndex": 0,
         "explanation": "Heat during a phase transition supplies latent heat of vaporization ($Q = mL_v$) at constant temperature."
       },
       {
         "id": "3.13-q2",
         "prompt": "Why does coastal weather near Manila Bay heat up more slowly than inland concrete?",
-        "choices": ["Water has a very high specific heat capacity $c$", "Water conducts heat faster than metal", "Water reflects 100% of sunlight", "Water has zero latent heat"],
+        "choices": [
+          "Water has a very high specific heat capacity $c$",
+          "Water conducts heat faster than metal",
+          "Water reflects 100% of sunlight",
+          "Water has zero latent heat"
+        ],
         "correctIndex": 0,
         "explanation": "Water's high specific heat ($4186\\text{ J/(kg}\\cdot\\text{K)}$) requires large heat input per degree of warming."
       }
     ],
-    "suggestedSceneId": "p2-thermal"
+    "suggestedSceneId": "p2-thermal",
+    "keyTerms": [
+      {
+        "term": "Specific Heat Capacity ($c$)",
+        "definition": "Energy required to raise $1\\text{ kg}$ of a substance by $1^\\circ\\text{C}$ ($1\\text{ K}$), in $\\text{J}/(\\text{kg}\\cdot\\text{K})$."
+      },
+      {
+        "term": "Latent Heat ($L$)",
+        "definition": "Energy absorbed or released per kilogram during a phase change at constant temperature ($\\text{J/kg}$)."
+      },
+      {
+        "term": "Latent Heat of Fusion ($L_f$)",
+        "definition": "Latent heat for solid–liquid transitions (melting or freezing)."
+      },
+      {
+        "term": "Latent Heat of Vaporization ($L_v$)",
+        "definition": "Latent heat for liquid–gas transitions (boiling, evaporation, or condensation)."
+      }
+    ],
+    "realWorldExamples": [
+      "Why Steam Burns Worse Than Boiling Water at 100°C: Condensing $1\\text{ kg}$ of $100^\\circ\\text{C}$ steam onto skin instantly releases $2.26 \\times 10^6\\text{ J}$ of latent heat before the water even begins cooling down!",
+      "Sweat Cooling Your Body: Evaporating sweat absorbs huge latent heat ($L_v$) straight from your warm skin, keeping core body temperature safe during tropical PE or sports.",
+      "Ice Keeping Halo-Halo Cold: Melting ice absorbs $3.34 \\times 10^5\\text{ J/kg}$ while holding temperature steady at $0^\\circ\\text{C}$ until every ice crystal melts."
+    ]
   },
   {
     "id": "3.14",
@@ -503,7 +902,7 @@
     "title": "Thermal Expansion",
     "objective": "Calculate linear and volume thermal expansion of solids and liquids.",
     "keyFormula": "$$\\Delta L = \\alpha L_0 \\Delta T, \\quad \\Delta V = \\beta V_0 \\Delta T$$",
-    "explanation": "As temperature rises, atoms vibrate farther apart, causing materials to expand. **Linear expansion** follows $\\Delta L = \\alpha L_0 \\Delta T$, where $\\alpha$ is the coefficient of linear expansion ($^\\circ\\text{C}^{-1}$). For isotropic solids, volume expansion coefficient $\\beta \\approx 3\\alpha$.\n\nThis explains expansion joints on Philippine bridges, overhead power-line sag on hot afternoons, and bimetallic thermostat strips.\n\n[Teacher/Module Placeholder: Add steel rail or gasoline tank overflow calculation.]",
+    "explanation": "As temperature rises, molecules vibrate faster and push slightly farther apart on average—causing almost all solids and liquids to **expand when heated** and **contract when cooled**.\n\n### All You Need to Know\n- **Linear Thermal Expansion** (rods, rails, cables, bridges):\n  $$\\Delta L = \\alpha L_0 \\Delta T$$\n  - $L_0$: original length; $\\alpha$: coefficient of linear expansion ($^\\circ\\text{C}^{-1}$ or $\\text{K}^{-1}$); $\\Delta T = T_f - T_i$.\n- **Area Expansion**: $\\Delta A \\approx 2\\alpha A_0 \\Delta T$.\n- **Volume Thermal Expansion** (liquids, tanks, solid blocks):\n  $$\\Delta V = \\beta V_0 \\Delta T$$\n  For isotropic solids, $\\beta \\approx 3\\alpha$. Liquids typically have much larger $\\beta$ than solids!\n- **Key Conceptual Trap (Holes Expand Too!)**: Heating a metal ring or washer makes the **inner hole expand** at the exact same rate as if solid metal filled the hole!\n- **Water's Anomaly** ($0^\\circ\\text{C}$ **to** $4^\\circ\\text{C}$): Liquid water is densest at $4^\\circ\\text{C}$ and actually expands slightly as it cools from $4^\\circ\\text{C}$ down to $0^\\circ\\text{C}$, allowing ice to float and protect aquatic life underneath.",
     "workedExample": {
       "problem": "A steel bridge span ($\\alpha = 1.2 \\times 10^{-5}\\text{ }^\\circ\\text{C}^{-1}$) is $L_0 = 50.0\\text{ m}$ long at $20^\\circ\\text{C}$. How much does it lengthen at $40^\\circ\\text{C}$?",
       "solutionSteps": [
@@ -516,19 +915,52 @@
       {
         "id": "3.14-q1",
         "prompt": "Why are small gaps (expansion joints) built into concrete bridges and LRT rail tracks?",
-        "choices": ["To give steel and concrete room to expand in hot weather without buckling", "To drain rainwater faster", "To reduce gravity", "To lower bridge mass"],
+        "choices": [
+          "To give steel and concrete room to expand in hot weather without buckling",
+          "To drain rainwater faster",
+          "To reduce gravity",
+          "To lower bridge mass"
+        ],
         "correctIndex": 0,
         "explanation": "Preventing expansion creates huge thermal stress that would buckle the span."
       },
       {
         "id": "3.14-q2",
         "prompt": "If a brass ring with a hole in the middle is heated uniformly, the center hole:",
-        "choices": ["Gets larger (expands)", "Shrinks", "Stays the same size", "Closes completely"],
+        "choices": [
+          "Gets larger (expands)",
+          "Shrinks",
+          "Stays the same size",
+          "Closes completely"
+        ],
         "correctIndex": 0,
         "explanation": "Thermal expansion scales every dimension—including openings—outward like a photographic enlargement."
       }
     ],
-    "suggestedSceneId": "p2-thermal"
+    "suggestedSceneId": "p2-thermal",
+    "keyTerms": [
+      {
+        "term": "Linear Expansion Coefficient ($\\alpha$)",
+        "definition": "Fractional length change per degree temperature rise ($^\\circ\\text{C}^{-1}$ or $\\text{K}^{-1}$)."
+      },
+      {
+        "term": "Volume Expansion Coefficient ($\\beta$)",
+        "definition": "Fractional volume change per degree temperature rise ($\\beta \\approx 3\\alpha$ for solids)."
+      },
+      {
+        "term": "Thermal Stress",
+        "definition": "Large internal mechanical force generated when a heated or cooled structure is prevented from expanding or contracting freely."
+      },
+      {
+        "term": "Bimetallic Strip",
+        "definition": "Two bonded metals with different $\\alpha$ values that bend predictably when heated, used in thermostats."
+      }
+    ],
+    "realWorldExamples": [
+      "Bridge & Railway Expansion Joints: Steel bridges (like San Juanico Bridge) and MRT tracks feature toothed gaps so hot Philippine summer afternoons don't buckle steel girders.",
+      "Running Hot Water Over a Stuck Metal Jar Lid: Metal expands more ($alpha_{\\text{steel}} > \\alpha_{\\text{glass}}$) and warms first, widening the lid diameter slightly so it twists open easily.",
+      "Overhead Power Lines Sagging in Summer: Electrical lines hang noticeably lower at midday heat than on cool nights; engineers leave controlled slack so winter contraction won't snap wires."
+    ]
   },
   {
     "id": "3.15",
@@ -539,7 +971,7 @@
     "title": "Zeroth Law",
     "objective": "State the Zeroth Law of Thermodynamics and explain how it underpins temperature measurement.",
     "keyFormula": "$$T_A = T_C \\text{ and } T_B = T_C \\implies T_A = T_B$$",
-    "explanation": "The **Zeroth Law of Thermodynamics** states: *If system A is in thermal equilibrium with system C, and system B is also in thermal equilibrium with system C, then A and B are in thermal equilibrium with each other.*\n\nThis simple law makes thermometry possible: a thermometer (system C) can touch cup A and then cup B to tell us whether A and B share the exact same temperature.\n\n[Teacher/Module Placeholder: Add thermal equilibrium checkpoint prompts.]",
+    "explanation": "Added after the First and Second Laws were already named, the **Zeroth Law of Thermodynamics** turns out to be the logical foundation that makes temperature and thermometers possible!\n\n### All You Need to Know\n- **Statement of the Zeroth Law**: If system $A$ is in thermal equilibrium with system $C$, and system $B$ is also in thermal equilibrium with system $C$, then $A$ and $B$ are in thermal equilibrium with each other (meaning $T_A = T_B$).\n- **Why It Matters**: Here, system $C$ is a **thermometer**! Because thermal equilibrium is transitive, you don't need to touch two glasses of water together to verify they have the same temperature—measuring each one with the same calibrated thermometer proves whether $T_A = T_B$ and predicts zero net heat flow if they later touch.\n- **Thermal Contact vs. Adiabatic Wall**: Diathermal walls allow heat flow until $T$ equalizes; ideal adiabatic (insulated) walls block heat transfer completely.",
     "workedExample": {
       "problem": "A digital probe thermometer reads $37.0^\\circ\\text{C}$ in beaker X and later reads $37.0^\\circ\\text{C}$ in beaker Y. What happens if X and Y are placed in thermal contact?",
       "solutionSteps": [
@@ -552,19 +984,48 @@
       {
         "id": "3.15-q1",
         "prompt": "Which fundamental law of thermodynamics justifies using a thermometer to compare temperatures of two separate objects?",
-        "choices": ["Zeroth Law", "First Law", "Second Law", "Newton's Third Law"],
+        "choices": [
+          "Zeroth Law",
+          "First Law",
+          "Second Law",
+          "Newton's Third Law"
+        ],
         "correctIndex": 0,
         "explanation": "The Zeroth Law defines thermal equilibrium as a transitive relation, which defines temperature."
       },
       {
         "id": "3.15-q2",
         "prompt": "Two blocks reach thermal equilibrium after touching. Which property must now be equal?",
-        "choices": ["Temperature", "Mass", "Specific heat", "Volume"],
+        "choices": [
+          "Temperature",
+          "Mass",
+          "Specific heat",
+          "Volume"
+        ],
         "correctIndex": 0,
         "explanation": "Thermal equilibrium means net heat exchange ceases because temperatures are equal."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "Zeroth Law of Thermodynamics",
+        "definition": "If two systems are each in thermal equilibrium with a third system (thermometer), they are in thermal equilibrium with each other."
+      },
+      {
+        "term": "Thermal Equilibrium",
+        "definition": "Condition where two bodies in thermal contact share the same temperature and exchange zero net heat."
+      },
+      {
+        "term": "Thermometric Property",
+        "definition": "A measurable physical property (volume, pressure, resistance, color) that varies reliably with temperature."
+      }
+    ],
+    "realWorldExamples": [
+      "Clinical Fever Thermometer: Wait a few seconds for the thermometer tip ($C$) to reach thermal equilibrium with your body ($A$); because it's calibrated against boiling/ice points ($B$), its reading reliably reports your true body temperature.",
+      "Checking Oven or Aquarium Temperatures: An aquarium strip thermometer reaches equilibrium with the glass/water so you know the water matches the safe $26^\\circ\\text{C}$ range without touching another reference tank.",
+      "Refrigerator Thermostat Calibration: Air inside the fridge equilibrates with the sensor probe, telling the compressor accurately whether food items inside are at $4^\\circ\\text{C}$."
+    ]
   },
   {
     "id": "3.16",
@@ -575,7 +1036,7 @@
     "title": "First Law",
     "objective": "Apply the First Law of Thermodynamics connecting internal energy change, heat added, and work done by a gas.",
     "keyFormula": "$$\\Delta U = Q - W, \\quad W = \\int P\\,dV \\text{ (area under P-V curve)}$$",
-    "explanation": "The **First Law of Thermodynamics** is energy conservation applied to heat and mechanical work: $\\Delta U = Q - W$, where:\n- $\\Delta U$: change in the system's internal energy.\n- $Q$: heat added **to** the system ($>0$ if absorbed, $<0$ if released).\n- $W$: work done **by** the system ($>0$ when gas expands, $<0$ when compressed).\n\nFor an ideal gas, $U$ depends only on temperature $T$ ($\\Delta U = 0$ in isothermal expansion so $Q = W$).\n\n[Teacher/Module Placeholder: Add P-V work sign convention drill table.]",
+    "explanation": "The **First Law of Thermodynamics** is simply the universal **Law of Conservation of Energy** upgraded to include heat ($Q$) and mechanical work ($W$) together!\n\n### All You Need to Know\n- **First Law Equation** (standard engineering/physics form where $W$ is work done **by** the gas):\n  $$\\Delta U = Q - W$$\n  - $\\Delta U = U_f - U_i$: change in internal energy ($\\text{J}$). For an **ideal gas**, $U$ depends **only on temperature** $T$ ($\\Delta U = \\frac{3}{2}nR\\Delta T$ for monatomic gas)!\n  - $Q$: heat transferred **into** ($+$) or **out of** ($-$) the system.\n  - $W$: work done **by** the gas expanding ($+$) or done **on** the gas compressing ($-$). Specifically, $W = \\text{area under } P\\text{-}V \\text{ curve}$ ($W = P\\Delta V$ at constant pressure).\n- **Sign Check Cheat Sheet**:\n  - Heat added ($Q > 0$), heat removed ($Q < 0$).\n  - Gas expands ($\\Delta V > 0 \\Rightarrow W > 0$), gas compressed ($\\Delta V < 0 \\Rightarrow W < 0$).\n  - Temperature rises ($\\Delta U > 0$), temperature drops ($\\Delta U < 0$), same $T$ ($\\Delta U = 0$).",
     "workedExample": {
       "problem": "A cylinder absorbs $Q = +600\\text{ J}$ of heat while expanding gas pushes a piston, doing $W = +220\\text{ J}$ of work. Find $\\Delta U$.",
       "solutionSteps": [
@@ -587,19 +1048,52 @@
       {
         "id": "3.16-q1",
         "prompt": "A gas is compressed rapidly inside an insulated cylinder ($Q = 0$) with $150\\text{ J}$ of work done ON the gas ($W = -150\\text{ J}$). What is $\\Delta U$?",
-        "choices": ["+150 J (gas heats up)", "-150 J (gas cools)", "0 J", "+300 J"],
+        "choices": [
+          "+150 J (gas heats up)",
+          "-150 J (gas cools)",
+          "0 J",
+          "+300 J"
+        ],
         "correctIndex": 0,
         "explanation": "$\\Delta U = Q - W = 0 - (-150\\text{ J}) = +150\\text{ J}$, raising gas temperature."
       },
       {
         "id": "3.16-q2",
         "prompt": "In an isothermal expansion of an ideal gas ($\\Delta T = 0$), $\\Delta U = 0$. What must be true?",
-        "choices": ["$Q = W$", "$Q = 0$", "$W = 0$", "$Q = -W$"],
+        "choices": [
+          "$Q = W$",
+          "$Q = 0$",
+          "$W = 0$",
+          "$Q = -W$"
+        ],
         "correctIndex": 0,
         "explanation": "From $0 = Q - W$, all heat absorbed goes directly into expansion work ($Q = W$)."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "First Law of Thermodynamics ($\\Delta U = Q - W$)",
+        "definition": "Change in a system's internal energy equals net heat added minus net work performed by the system."
+      },
+      {
+        "term": "State Function ($U, P, V, T$)",
+        "definition": "A quantity depending only on the current state of the system, not the path taken to get there."
+      },
+      {
+        "term": "Path Function ($Q, W$)",
+        "definition": "Energy transfers that depend explicitly on the thermodynamic path taken between states."
+      },
+      {
+        "term": "Thermodynamic Work ($W$)",
+        "definition": "Mechanical energy transferred as a gas expands or compresses ($W = \\int P\\,dV$, area under a $P$-$V$ curve)."
+      }
+    ],
+    "realWorldExamples": [
+      "Bicycle Pump Heating Up: When you rapidly pump air into a bike tire, you push inward doing work on the gas ($W < 0$); by $\\Delta U = Q - W$, internal energy jumps and the metal barrel feels hot!",
+      "Aerosol Spray Can Feeling Freezing Cold: Letting pressurized gas expand rapidly out of a spray nozzle forces the gas to do positive work pushing air aside ($W > 0$) using its own internal energy, dropping its temperature.",
+      "Boiling Pot Lid Rattling: Stove heat ($Q > 0$) raises water's internal energy ($\\Delta U > 0$) and produces steam whose expansion does mechanical work ($W > 0$) lifting the pot lid."
+    ]
   },
   {
     "id": "3.17",
@@ -610,7 +1104,7 @@
     "title": "Second Law",
     "objective": "State the Second Law of Thermodynamics in terms of heat engine directionality and entropy.",
     "keyFormula": "$$\\Delta S_{\\text{universe}} \\ge 0, \\quad \\Delta S = \\frac{Q_{\\text{rev}}}{T}$$",
-    "explanation": "The First Law allows energy to transform anywhere, but the **Second Law of Thermodynamics** gives nature a preferred arrow of time:\n- **Kelvin–Planck statement**: No cyclic heat engine can convert 100% of absorbed heat into mechanical work without rejecting waste heat to a colder reservoir.\n- **Clausius statement**: Heat never flows spontaneously from a colder body to a hotter body.\n- **Entropy ($S$)**: Total entropy (energy dispersal) of the universe never decreases ($\\Delta S_{\\text{universe}} \\ge 0$).\n\n[Teacher/Module Placeholder: Add reversible vs irreversible process examples.]",
+    "explanation": "The First Law conserves energy, yet never forbids a dropped ice cube from spontaneously freezing hotter while warming your drink! The **Second Law of Thermodynamics** explains why nature runs in one direction.\n\n### All You Need to Know\n- **Two Classic Statements (Both Equivalent)**:\n  - **Clausius Statement**: Heat flows spontaneously only from **hot to cold**—never from cold to hot without external work input (e.g., an electric compressor).\n  - **Kelvin–Planck Statement**: No cyclic heat engine can convert $100\\%$ of absorbed heat completely into mechanical work; **some waste heat** ($Q_C > 0$) **MUST be exhausted** to a cold reservoir!\n- **Entropy** ($S$): Measure of microscopic disorder or number of ways energy can spread out ($\\Delta S = \\frac{Q}{T}$ for reversible heat transfer at constant $T$ in kelvin).\n- **Entropy Form of the Second Law**: In every real (irreversible) natural process, the **total entropy of the universe increases** ($\\Delta S_{\\text{universe}} \\ge 0$). Locally a fridge can lower food entropy, only by dumping even more entropy into the warm kitchen air!",
     "workedExample": {
       "problem": "If $500\\text{ J}$ of heat enters a large water bath held at $T = 300\\text{ K}$, find its entropy change $\\Delta S$.",
       "solutionSteps": [
@@ -622,19 +1116,52 @@
       {
         "id": "3.17-q1",
         "prompt": "Can an engineer build a heat engine operating in a cycle with 100% thermal efficiency?",
-        "choices": ["No, some heat must always be rejected to a cold reservoir", "Yes, by removing all friction", "Yes, using water instead of air", "Only in space"],
+        "choices": [
+          "No, some heat must always be rejected to a cold reservoir",
+          "Yes, by removing all friction",
+          "Yes, using water instead of air",
+          "Only in space"
+        ],
         "correctIndex": 0,
         "explanation": "The Kelvin–Planck statement of the Second Law forbids a 100%-efficient cyclic heat engine."
       },
       {
         "id": "3.17-q2",
         "prompt": "What happens to total entropy during any real, irreversible natural process?",
-        "choices": ["It increases ($\\Delta S_{\\text{universe}} > 0$)", "It decreases", "It stays zero", "It becomes negative"],
+        "choices": [
+          "It increases ($\\Delta S_{\\text{universe}} > 0$)",
+          "It decreases",
+          "It stays zero",
+          "It becomes negative"
+        ],
         "correctIndex": 0,
         "explanation": "Every spontaneous irreversible process increases the total entropy of the universe."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "Second Law of Thermodynamics",
+        "definition": "Law establishing the direction of spontaneous processes: total entropy never decreases, heat flows hot-to-cold spontaneously, and no cyclic heat engine reaches $100\\%$ efficiency."
+      },
+      {
+        "term": "Entropy ($S$)",
+        "definition": "Thermodynamic measure of microscopic disorder and energy dispersal ($\\text{J/K}$)."
+      },
+      {
+        "term": "Irreversible Process",
+        "definition": "Any real natural process (friction, mixing, heat flow across finite $\\Delta T$) that increases total entropy and cannot reverse spontaneously."
+      },
+      {
+        "term": "Thermal Reservoir",
+        "definition": "A huge heat source or sink (like the ocean or atmosphere) that absorbs or supplies heat without changing its own temperature."
+      }
+    ],
+    "realWorldExamples": [
+      "Hot Coffee Cooling on a Table: Heat always spreads out from the $80^\\circ\\text{C}$ mug into the $25^\\circ\\text{C}$ classroom air (increasing entropy); a lukewarm mug never spontaneously concentrates room heat to boil again.",
+      "Power Plant Cooling Towers: Coal and geothermal plants must vent low-grade waste heat into rivers or cooling towers—not because of poor plumbing, but because the Second Law forbids $100\\%$ heat-to-work conversion.",
+      "Ink Drop Spreading in Water: A drop of food coloring spreads evenly through a glass (high entropy) and never gathers itself back into a single drop."
+    ]
   },
   {
     "id": "3.18",
@@ -645,7 +1172,7 @@
     "title": "Thermodynamic Processes in All Kinds of Engines",
     "objective": "Analyze isobaric, isochoric, isothermal, and adiabatic processes on a P-V diagram.",
     "keyFormula": "$$\\text{Isobaric: } W = P\\Delta V, \\quad \\text{Isochoric: } W = 0, \\quad \\text{Adiabatic: } Q = 0$$",
-    "explanation": "Real engines combine four idealized gas processes:\n- **Isobaric** (constant pressure $P$): horizontal line on P-V diagram; $W = P\\Delta V$.\n- **Isochoric / Isometric** (constant volume $V$): vertical line; $W = 0$ so $\\Delta U = Q$.\n- **Isothermal** (constant temperature $T$): hyperbola; $\\Delta U = 0$ so $Q = W$.\n- **Adiabatic** (no heat exchange, $Q = 0$): steep curve; $\\Delta U = -W$ (fast expansion cools, fast compression heats).\n\n[Teacher/Module Placeholder: Sketch the Otto and Diesel P-V curves here.]",
+    "explanation": "Heat engines cycle gases through expansion and compression steps. Physicists plot pressure ($P$) vs. volume ($V$) on a $P$-$V$ **diagram** and break cycles into **four classic processes**—each setting one quantity constant or zero!\n\n### All You Need to Know: The 4 Engine Processes\n1. **Isobaric** (constant pressure, horizontal line on $P$-$V$):\n   $W = P\\Delta V$, and $\\Delta U = Q - W$. Both $Q$ and $W$ are nonzero.\n2. **Isochoric / Isovolumetric** (constant volume, vertical line on $P$-$V$):\n   $\\Delta V = 0 \\implies W = 0$! All added heat changes internal energy directly: $\\Delta U = Q$.\n3. **Isothermal** (constant temperature, hyperbola $PV = \\text{const}$):\n   $\\Delta T = 0 \\implies \\Delta U = 0$ for an ideal gas! Therefore $Q = W = nRT\\ln(V_f/V_i)$ (all heat added escapes as expansion work).\n4. **Adiabatic** (no heat exchange, $Q = 0$, steeper curve $PV^\\gamma = \\text{const}$):\n   $Q = 0 \\implies \\Delta U = -W$. Rapid expansion cools the gas; rapid compression heats it sharply!",
     "workedExample": {
       "problem": "An ideal gas expands isobarically at $P = 2.0 \\times 10^5\\text{ Pa}$ from $V_1 = 0.010\\text{ m}^3$ to $V_2 = 0.030\\text{ m}^3$. How much work does it do?",
       "solutionSteps": [
@@ -657,19 +1184,52 @@
       {
         "id": "3.18-q1",
         "prompt": "In which thermodynamic process is mechanical work $W$ guaranteed to be zero?",
-        "choices": ["Isochoric (constant volume)", "Isobaric (constant pressure)", "Isothermal (constant temperature)", "Adiabatic expansion"],
+        "choices": [
+          "Isochoric (constant volume)",
+          "Isobaric (constant pressure)",
+          "Isothermal (constant temperature)",
+          "Adiabatic expansion"
+        ],
         "correctIndex": 0,
         "explanation": "Because $W = \\int P\\,dV$ and $\\Delta V = 0$ in an isochoric process, $W = 0$."
       },
       {
         "id": "3.18-q2",
         "prompt": "When a bicycle tire pump heats up during rapid pumping, which process best approximates the quick compression?",
-        "choices": ["Adiabatic compression ($Q \\approx 0$)", "Isobaric cooling", "Isochoric heating", "Phase transition"],
+        "choices": [
+          "Adiabatic compression ($Q \\approx 0$)",
+          "Isobaric cooling",
+          "Isochoric heating",
+          "Phase transition"
+        ],
         "correctIndex": 0,
         "explanation": "Fast compression leaves little time for heat to escape ($Q \\approx 0$), raising $\\Delta U$ and temperature."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "Isobaric Process",
+        "definition": "Thermodynamic change occurring at constant pressure ($W = P\\Delta V$)."
+      },
+      {
+        "term": "Isochoric Process",
+        "definition": "Thermodynamic change occurring at constant volume ($\\Delta V = 0$, $W = 0$, $\\Delta U = Q$)."
+      },
+      {
+        "term": "Isothermal Process",
+        "definition": "Thermodynamic change at constant temperature ($\\Delta U = 0$, $Q = W$ for an ideal gas)."
+      },
+      {
+        "term": "Adiabatic Process",
+        "definition": "Fast or insulated thermodynamic change with zero heat transfer ($Q = 0$, $\\Delta U = -W$)."
+      }
+    ],
+    "realWorldExamples": [
+      "Diesel Engine Ignition (Adiabatic Compression): Fuel injectors spray diesel into air compressed so rapidly ($Q \\approx 0$) that its temperature surges past $600^\\circ\\text{C}$—igniting fuel without spark plugs!",
+      "Pressure Cooker Warming Before Whistle (Isochoric): Sealed rigid walls lock volume constant ($W = 0$); every joule of stove heat raises internal pressure and boiling temperature inside.",
+      "Hot-Air Balloon Envelope Expansion (Isobaric): Heated air inside expands gently at steady local atmospheric pressure while lifting the balloon."
+    ]
   },
   {
     "id": "3.19",
@@ -680,7 +1240,7 @@
     "title": "Working Cycle and Efficiency of Heat Engines",
     "objective": "Compute net cycle work and thermal efficiency of heat engines including the Carnot upper bound.",
     "keyFormula": "$$W_{\\text{net}} = Q_H - Q_C, \\quad e = \\frac{W_{\\text{net}}}{Q_H} = 1 - \\frac{Q_C}{Q_H}, \\quad e_{\\text{Carnot}} = 1 - \\frac{T_C}{T_H}$$",
-    "explanation": "A **heat engine** runs in a closed loop on a P-V diagram. The area enclosed inside a clockwise cycle equals the **net work output** $W_{\\text{net}} = \\oint P\\,dV = Q_H - Q_C$.\n\nThermal efficiency $e = W_{\\text{net}} / Q_H$ measures the fraction of absorbed heat turned into useful work. No real engine operating between $T_H$ and $T_C$ (in Kelvin!) can exceed the **Carnot efficiency** $e_{\\text{Carnot}} = 1 - T_C / T_H$.\n\n[Teacher/Module Placeholder: Try adjusting $T_H$ and $T_C$ in the 3D Piston & PV visualizer.]",
+    "explanation": "A **heat engine** takes in heat $Q_H$ from a hot source (burning fuel or geothermal steam), converts part of it into useful mechanical work $W_{\\text{net}}$, and dumps leftover waste heat $Q_C$ to a cold sink.\n\n### All You Need to Know\n- **Cyclic Energy Balance**: After one complete closed loop on a $P$-$V$ diagram, the gas returns to its starting $(P, V, T)$, so $\\Delta U_{\\text{cycle}} = 0$. Therefore:\n  $$W_{\\text{net}} = Q_H - Q_C = \\text{enclosed area of loop on } P\\text{-}V \\text{ diagram}$$\n  Clockwise cycle = engine producing positive work ($W_{\\text{net}} > 0$); counterclockwise = refrigerator consuming work!\n- **Actual Thermal Efficiency** ($e$ **or** $\\eta$):\n  $$e = \\frac{W_{\\text{net}}}{Q_H} = 1 - \\frac{Q_C}{Q_H}$$\n- **Carnot Efficiency (Absolute Maximum Possible Limit)**:\n  $$e_{\\text{Carnot}} = 1 - \\frac{T_C}{T_H}$$\n  **CRITICAL RULE**: Temperatures $T_C$ and $T_H$ **MUST be in Kelvin** ($\\text{K}$)! Plugging in Celsius gives completely wrong numbers!",
     "workedExample": {
       "problem": "A geothermal steam turbine absorbs $Q_H = 1200\\text{ J}$ per cycle between $T_H = 600\\text{ K}$ and $T_C = 300\\text{ K}$, and rejects $Q_C = 780\\text{ J}$. Find its actual efficiency and Carnot max efficiency.",
       "solutionSteps": [
@@ -694,19 +1254,52 @@
       {
         "id": "3.19-q1",
         "prompt": "An engine takes in $500\\text{ J}$ of heat and does $150\\text{ J}$ of net work per cycle. What is its thermal efficiency?",
-        "choices": ["30%", "70%", "15%", "333%"],
+        "choices": [
+          "30%",
+          "70%",
+          "15%",
+          "333%"
+        ],
         "correctIndex": 0,
         "explanation": "$e = W_{\\text{net}}/Q_H = 150/500 = 0.30 = 30\\%$."
       },
       {
         "id": "3.19-q2",
         "prompt": "What is the Carnot maximum efficiency for reservoirs at $T_H = 800\\text{ K}$ and $T_C = 200\\text{ K}$?",
-        "choices": ["75%", "25%", "80%", "100%"],
+        "choices": [
+          "75%",
+          "25%",
+          "80%",
+          "100%"
+        ],
         "correctIndex": 0,
         "explanation": "$e_{\\text{Carnot}} = 1 - 200/800 = 0.75 = 75\\%$."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "Heat Engine",
+        "definition": "Cyclic device that absorbs heat $Q_H$, performs net mechanical work $W_{\\text{net}}$, and rejects waste heat $Q_C$."
+      },
+      {
+        "term": "Thermal Efficiency ($e$)",
+        "definition": "Dimensionless ratio of useful net work output to total heat input ($e = W_{\\text{net}}/Q_H$); always $< 1$ ($<100\\%$)."
+      },
+      {
+        "term": "Carnot Cycle",
+        "definition": "Idealized reversible engine cycle (2 isothermal + 2 adiabatic steps) setting nature's maximum possible efficiency between $T_H$ and $T_C$."
+      },
+      {
+        "term": "Net Cycle Work ($W_{\\text{net}}$)",
+        "definition": "Useful work per cycle equal to $Q_H - Q_C$ and geometrically equal to the area enclosed inside the $P$-$V$ loop."
+      }
+    ],
+    "realWorldExamples": [
+      "Car Internal Combustion Engine: Gasoline burns around $T_H \\approx 2000\\text{ K}$ and exhaust leaves around $T_C \\approx 700\\text{ K}$; real cars convert only ~25–30% of fuel energy into wheel motion while 70% heats radiator coolant and exhaust.",
+      "Geothermal Steam Turbines (Leyte / Tiwi): Underground steam ($T_H \\approx 500\\text{ K}$) drives turbines and exhausts into $300\\text{ K}$ air/water, giving a Carnot ceiling of $1 - 300/500 = 40\\%$!",
+      "Coal vs. Combined-Cycle Gas Power Plants: Raising combustion temperature $T_H$ pushes Carnot efficiency higher, saving fuel per megawatt-hour generated."
+    ]
   },
   {
     "id": "3.20",
@@ -717,7 +1310,7 @@
     "title": "Factors Affecting Engine Efficiency (Working Cycle, Friction, Material Limitations)",
     "objective": "Explain why practical engines achieve lower efficiency than ideal cycles due to friction, heat leaks, and material limits.",
     "keyFormula": "$$e_{\\text{real}} < e_{\\text{ideal}} \\le 1 - \\frac{T_C}{T_H}$$",
-    "explanation": "Real motorcycle, tricycle, and power-plant engines fall short of the Carnot ideal because of three practical constraints:\n1. **Working Cycle Choice**: Practical Otto/Diesel/Rankine cycles have finite-time heat transfer instead of slow isothermal steps.\n2. **Friction & Turbulence**: Piston ring friction, bearing drag, and fluid turbulence convert mechanical work back into waste heat.\n3. **Material Limitations**: Metals melt or weaken at extreme temperatures, capping the safe $T_H$ (typically below $\\sim 1800\\text{ K}$ in turbines without melting blades).\n\n[Teacher/Module Placeholder: Add automotive cooling-system or turbocharger discussion.]",
+    "explanation": "Even if a car engine operates between $2000\\text{ K}$ and $300\\text{ K}$ (giving a Carnot ceiling of $85\\%$), real engines on the road only reach $25\\%–35\\%$ efficiency. Why is there such a huge gap between theory and reality?\n\n### All You Need to Know: Real-World Efficiency Losses\n1. **Working Cycle Timing & Finite Speed**: Real pistons race up and down thousands of times per minute—far too fast for true isothermal heat transfer or complete fuel combustion, rounding off sharp $P$-$V$ corners and shrinking enclosed loop area $W_{\\text{net}}$.\n2. **Mechanical Friction**: Piston rings sliding against cylinder walls, crankshaft bearings, and valve trains convert useful mechanical work directly into unwanted heat.\n3. **Unintended Heat Leaks & Incomplete Expansion**: Heat escapes rapidly through cylinder walls into engine coolant before pushing the piston fully down.\n4. **Material Temperature Limits**: Engine metals (aluminum alloys, steel) warp or melt if $T_H$ runs too high; exhaust valves and turbine blades limit peak operating temperature and compression ratio (engine knock in gasoline engines).",
     "workedExample": {
       "problem": "A power plant operates with a Carnot ceiling of $55\\%$ at $T_H = 670\\text{ K}$, $T_C = 300\\text{ K}$, yet delivers $38\\%$ net electrical efficiency. List two causes for the $17\\%$ gap.",
       "solutionSteps": [
@@ -742,12 +1335,40 @@
       {
         "id": "3.20-q2",
         "prompt": "How does mechanical friction inside a piston cylinder affect thermal efficiency?",
-        "choices": ["It lowers net useful work output $W_{\\text{net}}$", "It raises Carnot limit", "It cools the exhaust", "It creates free work"],
+        "choices": [
+          "It lowers net useful work output $W_{\\text{net}}$",
+          "It raises Carnot limit",
+          "It cools the exhaust",
+          "It creates free work"
+        ],
         "correctIndex": 0,
         "explanation": "Friction dissipates mechanical work into heat, shrinking $W_{\\text{net}}/Q_H$."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "Irreversibility",
+        "definition": "Real losses such as friction, turbulence, and rapid heat conduction that reduce net work below the ideal Carnot value."
+      },
+      {
+        "term": "Mechanical Friction Loss",
+        "definition": "Work wasted overcoming sliding resistance in pistons, bearings, and transmission gears."
+      },
+      {
+        "term": "Thermal Stress & Melting Limit",
+        "definition": "Maximum safe $T_H$ imposed by structural strength and melting point of engine metals and ceramics."
+      },
+      {
+        "term": "Compression Ratio",
+        "definition": "Ratio of cylinder maximum volume to minimum compressed volume; higher ratios boost efficiency until limited by fuel knock."
+      }
+    ],
+    "realWorldExamples": [
+      "Engine Oil & Coolant Systems: Motorists change engine oil regularly because dirty, thin oil increases piston friction—dropping fuel economy and overheating metal bearings.",
+      "Jet Turbine Superalloys: Aerospace engineers coat nickel-titanium blades with thermal ceramics and internal air channels so engines can safely run hotter for higher efficiency without melting.",
+      "Hybrid Cars Recovering Waste Losses: Gasoline engines waste huge energy idling in Manila traffic; hybrids shut off the engine at stoplights and recover braking energy electrically."
+    ]
   },
   {
     "id": "3.21",
@@ -758,7 +1379,7 @@
     "title": "Refrigeration Systems",
     "objective": "Explain how refrigerators and air conditioners move heat from cold to hot spaces and calculate Coefficient of Performance.",
     "keyFormula": "$$Q_H = Q_C + W, \\quad \\text{COP}_{\\text{ref}} = \\frac{Q_C}{W}, \\quad \\text{COP}_{\\max} = \\frac{T_C}{T_H - T_C}$$",
-    "explanation": "A **refrigerator** or **air conditioner** is a heat engine running in reverse: electrical work $W$ drives a compressor that extracts heat $Q_C$ from the cold interior and exhausts $Q_H = Q_C + W$ into the warmer room or outdoors.\n\nInstead of efficiency, cooling performance is measured by the **Coefficient of Performance ($\\text{COP}$)** $= Q_C / W$, which can be greater than $1$ because it moves existing thermal energy rather than creating it.\n\n[Teacher/Module Placeholder: Add split-type inverter AC energy-saving guide.]",
+    "explanation": "How does a refrigerator keep ice cream frozen at $-15^\\circ\\text{C}$ inside a $32^\\circ\\text{C}$ kitchen when heat naturally flows from hot to cold? By running a heat engine **in reverse** using electrical work $W$!\n\n### All You Need to Know\n- **Energy Balance of a Refrigerator / Air Conditioner**:\n  A compressor uses electrical work $W$ to pump heat $Q_C$ out of the cold space and dump total heat $Q_H = Q_C + W$ into the warmer room!\n- **Why Leaving the Fridge Door Open Heats the Room**: Because $Q_H = Q_C + W$, a refrigerator always dumps **more** heat out its back coils than it removes from inside! Leaving the door open simply runs the compressor non-stop and warms your kitchen!\n- **Coefficient of Performance** ($\\text{COP}$) (measures cooling \"bang for the buck\", often $> 1$!):\n  $$\\text{COP}_{\\text{ref}} = \\frac{Q_C}{W} = \\frac{Q_C}{Q_H - Q_C}, \\quad \\text{COP}_{\\text{ideal}} = \\frac{T_C}{T_H - T_C}$$\n  *(Again, use **Kelvin** for $T_C$ and $T_H$ in $\\text{COP}_{\\text{ideal}}$!)*",
     "workedExample": {
       "problem": "An air conditioner uses $W = 400\\text{ J}$ of electrical work to remove $Q_C = 1400\\text{ J}$ of heat from a bedroom. Find its COP and heat exhausted outdoors $Q_H$.",
       "solutionSteps": [
@@ -771,7 +1392,12 @@
       {
         "id": "3.21-q1",
         "prompt": "If you leave a refrigerator door wide open inside a sealed, insulated kitchen, what happens to the room's temperature over time?",
-        "choices": ["The room warms up because $Q_H = Q_C + W > Q_C$", "The room freezes", "Temperature stays constant", "Electricity disappears"],
+        "choices": [
+          "The room warms up because $Q_H = Q_C + W > Q_C$",
+          "The room freezes",
+          "Temperature stays constant",
+          "Electricity disappears"
+        ],
         "correctIndex": 0,
         "explanation": "The compressor adds electrical work $W$ as extra heat into the same closed room."
       },
@@ -788,7 +1414,30 @@
         "explanation": "Pumping $3.5\\text{ J}$ of existing heat with $1\\text{ J}$ of work exhausts $4.5\\text{ J}$, fully obeying $Q_H = Q_C + W$."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "Refrigerator / Heat Pump",
+        "definition": "Cyclic thermodynamic device using external work $W$ to move heat $Q_C$ from a cold reservoir to a warmer environment ($Q_H = Q_C + W$)."
+      },
+      {
+        "term": "Coefficient of Performance ($\\text{COP}$)",
+        "definition": "Ratio of desired heat removed ($Q_C$) to electrical work input ($W$), typically ranging from $2$ to $5$."
+      },
+      {
+        "term": "Refrigerant",
+        "definition": "Volatile working fluid that absorbs heat by evaporating inside cold coils and releases heat by condensing outside."
+      },
+      {
+        "term": "Compressor & Expansion Valve",
+        "definition": "Components that raise refrigerant pressure/temperature outside and drop pressure/temperature before entering the evaporator."
+      }
+    ],
+    "realWorldExamples": [
+      "Split-Type Air Conditioners in Schools & Homes: The indoor evaporator absorbs room heat ($Q_C$) as refrigerant boils, while the outdoor condenser unit blows hot exhaust ($Q_H = Q_C + W$) outside.",
+      "Dusty Fridge Condenser Coils Raising Electric Bills: Blocked back/bottom coils raise outdoor condenser temperature $T_H$, shrinking $\\text{COP} = T_C / (T_H - T_C)$ and forcing the compressor to consume extra electricity.",
+      "Inverter vs. Non-Inverter Aircons: Inverter compressors adjust motor speed smoothly rather than slamming on/off, keeping $\\Delta T$ steady and improving real-world COP."
+    ]
   },
   {
     "id": "3.22",
@@ -799,7 +1448,7 @@
     "title": "Laws of Thermodynamics and Sustainable Energy Technologies",
     "objective": "Connect the laws of thermodynamics to Philippine sustainable energy systems such as geothermal, solar thermal, and cogeneration.",
     "keyFormula": "$$\\eta_{\\text{cogen}} = \\frac{W_{\\text{elec}} + Q_{\\text{useful}}}{Q_{\\text{in}}}, \\quad e_{\\max} = 1 - \\frac{T_C}{T_H}$$",
-    "explanation": "Understanding the First and Second Laws explains why **sustainable energy engineering** matters in the Philippines (where geothermal plants in Leyte and Laguna provide clean baseload power):\n- By the **Second Law**, every thermal power plant rejects waste heat $Q_C$. **Cogeneration (CHP)** captures that waste heat for industrial drying or building cooling instead of dumping it.\n- **Solar PV** and **hydro/wind turbines** bypass intermediate combustion heat-engine losses, while **heat pumps** move thermal energy efficiently ($\\text{COP} > 1$) for water heating and cooling.\n\n[Teacher/Module Placeholder: Add local renewable energy case study prompt here.]",
+    "explanation": "Sustainable energy isn't about breaking thermodynamic laws—it is about engineering smartly within the First and Second Laws to maximize useful electricity while cutting wasted fuel and emissions!\n\n### All You Need to Know\n- **Applying the First Law (Energy Accounting)**: Total electrical + useful thermal output can never exceed raw input energy (sunlight, geothermal steam, wind, falling water).\n- **Applying the Second Law (Maximizing Quality & Reducing Waste)**:\n  - **Geothermal Power (Philippines Top Renewable!)**: Deep volcanic heat warms underground water into high-$T_H$ steam driving turbines (Leyte, Mak-Ban, Tiwi, Palinpinon), exhausting cooled water to reinjection wells for long-term sustainability.\n  - **Cogeneration (Combined Heat & Power, CHP)**: Instead of dumping low-grade turbine exhaust $Q_C$ uselessly into a river, factories capture that leftover heat for drying crops, desalination, or industrial heating—pushing total energy utilization over $75\\%$!\n  - **Solar Photovoltaics vs. Solar Thermal**: PV panels skip the Carnot heat-engine step altogether by turning photons directly into electric current, while concentrated solar thermal heats molten salt for night-time steam turbines.",
     "workedExample": {
       "problem": "A cogeneration plant takes in $1000\\text{ MJ}$ of geothermal heat, generates $320\\text{ MJ}$ of electricity, and supplies $430\\text{ MJ}$ of waste steam for crop drying. Find its overall utilization efficiency.",
       "solutionSteps": [
@@ -824,11 +1473,39 @@
       {
         "id": "3.22-q2",
         "prompt": "Which Philippine renewable resource directly uses deep underground steam as a hot reservoir $T_H$ for steam turbines?",
-        "choices": ["Geothermal energy", "Tidal wave energy", "Wind energy", "Solar photovoltaic"],
+        "choices": [
+          "Geothermal energy",
+          "Tidal wave energy",
+          "Wind energy",
+          "Solar photovoltaic"
+        ],
         "correctIndex": 0,
         "explanation": "Geothermal plants use subterranean volcanic heat reservoirs to boil fluid and drive turbines."
       }
     ],
-    "suggestedSceneId": "p2-thermo"
+    "suggestedSceneId": "p2-thermo",
+    "keyTerms": [
+      {
+        "term": "Geothermal Energy",
+        "definition": "Thermal energy extracted from hot underground rock and steam reservoirs to spin power turbines."
+      },
+      {
+        "term": "Cogeneration (CHP)",
+        "definition": "Simultaneous production of electricity and useful process heat from a single fuel or thermal source, capturing waste $Q_C$."
+      },
+      {
+        "term": "Energy Efficiency & Conservation",
+        "definition": "Minimizing irreversible losses (friction, heat leaks, standby power) to deliver more useful output per joule of input."
+      },
+      {
+        "term": "Reinjection Well",
+        "definition": "Geothermal return pipe pumping cooled brine underground to sustain reservoir pressure and avoid thermal pollution."
+      }
+    ],
+    "realWorldExamples": [
+      "Leyte & Laguna Geothermal Power Plants: Providing clean baseload electricity across Luzon and Visayas 24/7 by harnessing volcanic heat along the Pacific Ring of Fire.",
+      "Sugar Mill Bagasse Cogeneration in Negros: Mills burn leftover sugarcane fiber (bagasse) to spin electric turbines and pipe the exhaust steam straight into sugar-boiling evaporators.",
+      "Solar Rooftop Microgrids + Energy Star Appliances: Pairing rooftop PV panels with high-COP inverter cooling lowers both household Meralco bills and regional grid heat waste."
+    ]
   }
 ]

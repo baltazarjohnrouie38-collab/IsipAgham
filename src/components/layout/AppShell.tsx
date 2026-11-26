@@ -19,6 +19,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { ALL_LESSONS } from '../../data/lessons';
 import type { PhysicsCourse } from '../../types';
 import { Logo } from '../ui/Logo';
 import { OfflineBanner } from '../ui/OfflineBanner';
@@ -276,7 +277,7 @@ export const AppShell: React.FC = () => {
                     to="/lessons"
                     className="inline-block font-semibold text-blue-700 dark:text-blue-400 hover:underline"
                   >
-                    Browse 47 Lessons
+                    Browse {ALL_LESSONS.length} Lessons
                   </Link>
                 )}
               </div>
@@ -304,7 +305,7 @@ export const AppShell: React.FC = () => {
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-slate-900 dark:text-neutral-100">Lessons Done</span>
               <span className="font-semibold text-slate-500 dark:text-neutral-400 tabular-nums">
-                {(profile?.lessonsCompleted || []).length}/47
+                {(profile?.lessonsCompleted || []).length}/{ALL_LESSONS.length}
               </span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-stone-200 dark:bg-neutral-800 overflow-hidden">
@@ -313,7 +314,7 @@ export const AppShell: React.FC = () => {
                 style={{
                   width: `${Math.min(
                     100,
-                    Math.round(((profile?.lessonsCompleted || []).length / 47) * 100)
+                    Math.round(((profile?.lessonsCompleted || []).length / ALL_LESSONS.length) * 100)
                   )}%`,
                 }}
               />

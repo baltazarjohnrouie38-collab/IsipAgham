@@ -1,48 +1,51 @@
 import term1Data from './term1.json';
 import term2Data from './term2.json';
 import term3Data from './term3.json';
-import type { BuiltInLesson } from '../../types';
+import physics3Data from './physics3.json';
+import type { BuiltInLesson, PhysicsCourse } from '../../types';
 
-export interface TermInfo {
-  term: 1 | 2 | 3;
-  course: 'Physics 1' | 'Physics 2';
+export interface CourseInfo {
+  course: PhysicsCourse;
   shortTitle: string;
   fullTitle: string;
   description: string;
 }
 
-export const TERMS_META: TermInfo[] = [
+export const COURSES_META: CourseInfo[] = [
   {
-    term: 1,
     course: 'Physics 1',
-    shortTitle: 'Term 1 · Physics 1',
-    fullTitle: 'Term 1 (Physics 1): Measurements and Translational Kinematics',
-    description: 'SI units, measurement uncertainty, 1D/2D kinematics, projectile, circular, and relative motion.',
+    shortTitle: 'Physics 1',
+    fullTitle: 'Physics 1: Measurements, Kinematics, and Dynamics',
+    description:
+      'SI units, measurement uncertainty, 1D/2D kinematics, projectile and circular motion, forces, work, energy, momentum, rotation, and SHM.',
   },
   {
-    term: 2,
-    course: 'Physics 1',
-    shortTitle: 'Term 2 · Physics 1',
-    fullTitle: 'Term 2 (Physics 1): Dynamics',
-    description: 'Forces, vectors, Newton’s laws, work, energy, momentum, rotation, torque, and SHM.',
-  },
-  {
-    term: 3,
     course: 'Physics 2',
-    shortTitle: 'Term 3 · Physics 2',
-    fullTitle: 'Term 3 (Physics 2): Gravity, Fluid Mechanics, Heat, and Thermodynamics',
-    description: 'Universal gravitation, fluids, heat transfer, thermal expansion, thermodynamic laws, and engines.',
+    shortTitle: 'Physics 2',
+    fullTitle: 'Physics 2: Gravity, Fluid Mechanics, Heat, and Thermodynamics',
+    description:
+      'Universal gravitation, hydrostatics, Pascal and Archimedes principles, Bernoulli equation, heat transfer, thermal expansion, and thermodynamic laws.',
+  },
+  {
+    course: 'Physics 3',
+    shortTitle: 'Physics 3',
+    fullTitle: 'Physics 3: Electricity and Electromagnetism',
+    description:
+      'Electrostatics, Coulomb’s law, electric fields, Gauss’s law, DC circuits, Kirchhoff’s rules, magnetic fields, electromagnetic induction, and Maxwell’s equations.',
   },
 ];
 
-export const TERM1_LESSONS = term1Data as BuiltInLesson[];
-export const TERM2_LESSONS = term2Data as BuiltInLesson[];
-export const TERM3_LESSONS = term3Data as BuiltInLesson[];
+export const PHYSICS1_LESSONS = [
+  ...(term1Data as BuiltInLesson[]),
+  ...(term2Data as BuiltInLesson[]),
+];
+export const PHYSICS2_LESSONS = term3Data as BuiltInLesson[];
+export const PHYSICS3_LESSONS = physics3Data as BuiltInLesson[];
 
 export const ALL_LESSONS: BuiltInLesson[] = [
-  ...TERM1_LESSONS,
-  ...TERM2_LESSONS,
-  ...TERM3_LESSONS,
+  ...PHYSICS1_LESSONS,
+  ...PHYSICS2_LESSONS,
+  ...PHYSICS3_LESSONS,
 ];
 
 export function getLessonById(id: string | undefined | null): BuiltInLesson | undefined {
@@ -50,8 +53,8 @@ export function getLessonById(id: string | undefined | null): BuiltInLesson | un
   return ALL_LESSONS.find((l) => l.id === id);
 }
 
-export function getLessonsByTerm(term: 1 | 2 | 3): BuiltInLesson[] {
-  return ALL_LESSONS.filter((l) => l.term === term);
+export function getLessonsByCourse(course: PhysicsCourse): BuiltInLesson[] {
+  return ALL_LESSONS.filter((l) => l.course === course);
 }
 
 export function getNextLesson(currentId: string): BuiltInLesson | undefined {
@@ -65,11 +68,32 @@ export function buildLessonStudyText(lesson: BuiltInLesson): string {
     .map((s, i) => `Step ${i + 1}: ${s}`)
     .join('\n');
 
-  return [
+  const sections = [
     `${lesson.code} ${lesson.title} (${lesson.course})`,
     `Objective: ${lesson.objective}`,
     `Key Formula: ${lesson.keyFormula}`,
     `Explanation:\n${lesson.explanation}`,
-    `Worked Example:\nProblem: ${lesson.workedExample.problem}\n${steps}\nAnswer: ${lesson.workedExample.finalAnswer}`,
-  ].join('\n\n');
+  ];
+
+  if (lesson.keyTerms?.length) {
+    sections.push(
+      `Key Definitions:\n${lesson.keyTerms
+        .map((kt) => `- ${kt.term}: ${kt.definition}`)
+        .join('\n')}`
+    );
+  }
+
+  if (lesson.realWorldExamples?.length) {
+    sections.push(
+      `Real-World Examples:\n${lesson.realWorldExamples
+        .map((ex) => `- ${ex}`)
+        .join('\n')}`
+    );
+  }
+
+  sections.push(
+    `Worked Example:\nProblem: ${lesson.workedExample.problem}\n${steps}\nAnswer: ${lesson.workedExample.finalAnswer}`
+  );
+
+  return sections.join('\n\n');
 }

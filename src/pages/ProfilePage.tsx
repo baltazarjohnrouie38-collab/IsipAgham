@@ -21,6 +21,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { ALL_LESSONS } from '../data/lessons';
 import { NATURAL_VOICE_OPTIONS, useSpeech } from '../hooks/useSpeech';
 import type { NaturalVoiceName } from '../lib/api';
 import { processAvatarImageFile } from '../lib/avatar';
@@ -387,7 +388,7 @@ export const ProfilePage: React.FC = () => {
                       Global Leadership Board &amp; XP
                     </p>
                     <p className="text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
-                      {(profile?.xp ?? 0).toLocaleString()} XP earned · {profile?.streakDays ?? 0}d streak · {(profile?.lessonsCompleted || []).length}/47 lessons
+                      {(profile?.xp ?? 0).toLocaleString()} XP earned · {profile?.streakDays ?? 0}d streak · {(profile?.lessonsCompleted || []).length}/{ALL_LESSONS.length} lessons
                     </p>
                   </div>
                 </div>

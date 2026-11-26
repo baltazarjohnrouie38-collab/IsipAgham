@@ -158,16 +158,23 @@ export interface LessonCheckQuestion {
   explanation: string;
 }
 
+export interface LessonKeyTerm {
+  term: string;
+  definition: string;
+}
+
 export interface BuiltInLesson {
   id: string;
   code: string;
-  term: 1 | 2 | 3;
-  termTitle: string;
+  term?: 1 | 2 | 3;
+  termTitle?: string;
   course: PhysicsCourse;
   title: string;
   objective: string;
   keyFormula: string;
   explanation: string;
+  keyTerms?: LessonKeyTerm[];
+  realWorldExamples?: string[];
   workedExample: {
     problem: string;
     solutionSteps: string[];

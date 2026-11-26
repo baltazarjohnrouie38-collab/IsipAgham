@@ -11,7 +11,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useAuth, getCurrentWeekKey, getLocalDateKey } from '../../contexts/AuthContext';
-import { TERMS_META, getLessonsByTerm } from '../../data/lessons';
+import { ALL_LESSONS, COURSES_META, getLessonsByCourse } from '../../data/lessons';
 import type { LeaderboardEntry, QuizAttempt, StudySession, StudySet } from '../../types';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -208,15 +208,15 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
         </Card>
       </div>
 
-      {/* Term 1, Term 2, Term 3 Curriculum Progress */}
+      {/* Physics 1, Physics 2, Physics 3 Curriculum Progress */}
       <Card className="space-y-4">
         <div className="flex items-center justify-between gap-2">
           <div>
             <h2 className="font-display text-lg font-bold text-slate-900 dark:text-neutral-100">
-              Lesson Completion by Term
+              Lesson Completion by Course
             </h2>
             <p className="text-xs text-slate-500 dark:text-neutral-400">
-              47 built-in lessons across Terms 1, 2, and 3
+              {ALL_LESSONS.length} built-in lessons across Physics 1, Physics 2, and Physics 3
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => navigate('/lessons')}>
@@ -225,17 +225,17 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {TERMS_META.map((term) => {
-            const lessons = getLessonsByTerm(term.term);
+          {COURSES_META.map((courseInfo) => {
+            const lessons = getLessonsByCourse(courseInfo.course);
             const done = lessons.filter((l) => completedLessonsSet.has(l.id)).length;
             const pct = Math.round((done / lessons.length) * 100);
             return (
               <div
-                key={term.term}
+                key={courseInfo.course}
                 className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 border border-stone-200 dark:border-neutral-800 p-3.5 space-y-2"
               >
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-blue-700 dark:text-blue-400">{term.shortTitle}</span>
+                  <span className="text-blue-700 dark:text-blue-400">{courseInfo.shortTitle}</span>
                   <span className="text-slate-700 dark:text-neutral-300 tabular-nums">
                     {done}/{lessons.length} ({pct}%)
                   </span>

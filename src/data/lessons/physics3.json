@@ -1,0 +1,1283 @@
+[
+  {
+    "id": "p3-1",
+    "code": "P3.1",
+    "course": "Physics 3",
+    "title": "Electric Charge and Charging Processes",
+    "objective": "Explain the nature of electric charge, charge conservation, and charging by friction, conduction, and induction.",
+    "keyFormula": "$$q = n e, \\quad e = 1.602 \\times 10^{-19}\\text{ C}$$",
+    "explanation": "Why do you get a tiny shock touching a metal doorknob after walking across a carpet, or see hair stand up toward a rubbed balloon? All electric phenomena start with **electric charge**!\n\n### All You Need to Know\n- **Nature & Quantization of Charge**: Matter contains positive **protons** ($+e$) and negative **electrons** ($-e$). In solids, protons stay locked inside nuclei while outer **electrons** move!\n  - SI Unit: **coulomb** ($\\text{C}$).\n  - Elementary charge: $e = 1.602 \\times 10^{-19}\\text{ C}$. Any isolated net charge is quantized: $q = n e$ ($n = \\text{integer}$).\n- **Law of Conservation of Charge**: Net electric charge in an isolated system is never created or destroyed—charging simply transfers electrons from one object to another!\n- **Conductors vs. Insulators**: Conductors (copper, aluminum, tap water) let electrons roam freely; insulators (rubber, plastic, dry glass) hold electrons tightly in place.\n- **Three Ways to Charge an Object**:\n  1. **Friction**: Rubbing two different insulators transfers electrons by electron affinity (balloon gains electrons from hair).\n  2. **Conduction (Contact)**: Touching a charged rod directly to a neutral conductor shares the same sign of charge.\n  3. **Induction**: Holding a charged rod near (without touching!) a conductor polarizes charges; grounding the far side leaves the conductor with the **opposite sign** of charge!",
+    "workedExample": {
+      "problem": "A plastic comb rubbed on dry hair acquires a net negative charge of $q = -3.204 \\times 10^{-11}\\text{ C}$. How many excess electrons did the comb gain?",
+      "solutionSteps": [
+        "Use charge quantization $q = n(-e)$, so $n = \\frac{|q|}{e}$.",
+        "Substitute $|q| = 3.204 \\times 10^{-11}\\text{ C}$ and $e = 1.602 \\times 10^{-19}\\text{ C}$.",
+        "Compute $n = \\frac{3.204 \\times 10^{-11}}{1.602 \\times 10^{-19}} = 2.0 \\times 10^8$."
+      ],
+      "finalAnswer": "$n = 2.0 \\times 10^8\\text{ excess electrons}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-1-q1",
+        "prompt": "Which charging process rearranges charges inside a conductor without the charged rod touching it?",
+        "choices": [
+          "Charging by induction",
+          "Charging by friction",
+          "Charging by conduction",
+          "Electrolysis"
+        ],
+        "correctIndex": 0,
+        "explanation": "Induction separates charges via electric attraction or repulsion from a nearby charged body without direct contact."
+      },
+      {
+        "id": "p3-1-q2",
+        "prompt": "What is the SI unit of electric charge?",
+        "choices": [
+          "Volt (V)",
+          "Ampere (A)",
+          "Coulomb (C)",
+          "Ohm (\\Omega)"
+        ],
+        "correctIndex": 2,
+        "explanation": "Electric charge is measured in coulombs ($\\text{C}$)."
+      }
+    ],
+    "suggestedSceneId": "p3-coulomb",
+    "keyTerms": [
+      {
+        "term": "Electric Charge ($q$)",
+        "definition": "Fundamental property of matter responsible for electric interactions, quantized in multiples of $e = 1.602 \\times 10^{-19}\\text{ C}$."
+      },
+      {
+        "term": "Conservation of Charge",
+        "definition": "Total net electric charge in any closed system remains constant; charging only moves existing electrons."
+      },
+      {
+        "term": "Conductor vs. Insulator",
+        "definition": "Materials that permit free electron movement (metals) versus materials whose electrons remain bound locally (plastics, glass)."
+      },
+      {
+        "term": "Charging by Induction",
+        "definition": "Creating a net opposite charge on a conductor using a nearby charged body and grounding without direct contact."
+      }
+    ],
+    "realWorldExamples": [
+      "Photocopiers & Laser Printers (Electrostatic Attraction): Toner powder is given an electric charge so it clings strictly to oppositely charged drum areas matching your text, then fuses onto paper.",
+      "Grounding Chains & Earthing Rods at Gas Stations: Fuel flowing through hoses builds static charge by friction; grounding straps safely drain excess electrons so sparks don't ignite fuel vapors.",
+      "Lightning Rods on Tall Buildings: Sharp grounded metal rods safely bleed induced storm charge between clouds and Earth to protect buildings from direct lightning strikes."
+    ]
+  },
+  {
+    "id": "p3-2",
+    "code": "P3.2",
+    "course": "Physics 3",
+    "title": "Coulomb's Law and Superposition in 1D and 2D",
+    "objective": "Calculate the net electrostatic force on a point charge due to a system of charges in one and two dimensions.",
+    "keyFormula": "$$F = k \\frac{|q_1 q_2|}{r^2}, \\quad k = 8.99 \\times 10^9\\text{ N}\\cdot\\text{m}^2/\\text{C}^2$$",
+    "explanation": "Unlike gravity (which only attracts), electric forces can both **attract** (opposite charges) and **repel** (like charges), and they are astonishingly strong compared to gravity!\n\n### All You Need to Know\n- **Coulomb's Law** (for stationary point charges or uniform spheres):\n  $$F = k \\frac{|q_1 q_2|}{r^2}, \\quad k = \\frac{1}{4\\pi\\varepsilon_0} \\approx 8.99 \\times 10^9\\text{ N}\\cdot\\text{m}^2/\\text{C}^2$$\n  - **Plug Magnitudes Only**: Drop negative signs inside $|q_1 q_2|$ so you get a positive magnitude $F$, then determine direction from physics: **like charges repel, opposites attract**!\n  - **Inverse-Square Scaling**: Doubling separation $r$ cuts force to $\\frac{1}{4}$; halving $r$ multiplies force by $4$.\n  - **SI Prefixes Trap**: $1\\text{ }\\mu\\text{C} = 10^{-6}\\text{ C}$, $1\\text{ nC} = 10^{-9}\\text{ C}$, $1\\text{ pC} = 10^{-12}\\text{ C}$. Always convert $\\text{cm} \\to \\text{m}$!\n- **Principle of Superposition (1D & 2D)**: The net force on charge $q_0$ is the **vector sum** of forces from every other charge acting independently: $\\vec{F}_{\\text{net}} = \\vec{F}_1 + \\vec{F}_2 + \\dots$ (use $F_x = \\sum F_{ix}$, $F_y = \\sum F_{iy}$, and $F = \\sqrt{F_x^2 + F_y^2}$).",
+    "workedExample": {
+      "problem": "Charge $q_1 = +4.0\\text{ }\\mu\\text{C}$ is at $x = 0$ and charge $q_2 = -2.0\\text{ }\\mu\\text{C}$ is at $x = 0.30\\text{ m}$. Find the magnitude of the electrostatic force between them.",
+      "solutionSteps": [
+        "Convert to SI units: $q_1 = 4.0 \\times 10^{-6}\\text{ C}$, $q_2 = 2.0 \\times 10^{-6}\\text{ C}$, $r = 0.30\\text{ m}$.",
+        "Apply $F = k\\frac{|q_1 q_2|}{r^2} = (8.99 \\times 10^9)\\frac{(4.0 \\times 10^{-6})(2.0 \\times 10^{-6})}{(0.30)^2}$.",
+        "Calculate numerator $(8.99 \\times 10^9)(8.0 \\times 10^{-12}) = 7.192 \\times 10^{-2}$ and divide by $0.090$."
+      ],
+      "finalAnswer": "$F = 0.80\\text{ N}$ (attractive)"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-2-q1",
+        "prompt": "If the distance between two point charges is doubled, what happens to the electrostatic force between them?",
+        "choices": [
+          "It becomes one-fourth as large",
+          "It becomes half as large",
+          "It doubles",
+          "It quadruples"
+        ],
+        "correctIndex": 0,
+        "explanation": "Force follows an inverse-square relationship ($F \\propto 1/r^2$), so doubling $r$ divides $F$ by $2^2 = 4$."
+      },
+      {
+        "id": "p3-2-q2",
+        "prompt": "How do you find the net force on one charge in a 2D arrangement of multiple charges?",
+        "choices": [
+          "Add only the largest force",
+          "Perform vector addition of individual Coulomb forces using x and y components",
+          "Multiply all charge magnitudes together",
+          "Average the distances"
+        ],
+        "correctIndex": 1,
+        "explanation": "Electrostatic forces obey vector superposition in both $x$ and $y$ directions."
+      }
+    ],
+    "suggestedSceneId": "p3-coulomb",
+    "keyTerms": [
+      {
+        "term": "Coulomb's Law",
+        "definition": "Electrostatic force magnitude between two point charges equals $k|q_1 q_2|/r^2$ along the line joining them."
+      },
+      {
+        "term": "Coulomb's Constant ($k$)",
+        "definition": "Electrostatic proportionality constant equal to $8.99 \\times 10^9\\text{ N}\\cdot\\text{m}^2/\\text{C}^2$ ($1/(4\\pi\\varepsilon_0)$)."
+      },
+      {
+        "term": "Principle of Superposition",
+        "definition": "Total electrostatic force on a charge equals the independent vector sum of forces from every surrounding charge."
+      },
+      {
+        "term": "Microcoulomb ($\\mu\\text{C}$)",
+        "definition": "Common practical charge unit equal to $10^{-6}\\text{ C}$."
+      }
+    ],
+    "realWorldExamples": [
+      "Electrostatic Spray Painting Cars & Jeepneys: Charged paint droplets repel one another into a fine even mist while being attracted directly to the grounded metal car frame—cutting paint waste dramatically.",
+      "Factory Smokestack Electrostatic Precipitators: Charged metal plates attract soot and ash particles out of industrial exhaust gas before smoke leaves the chimney.",
+      "Why Atoms Stay Bound: Electric attraction between positive protons and negative electrons is over $10^{39}$ times stronger than gravity, holding atoms, molecules, and crystals together."
+    ]
+  },
+  {
+    "id": "p3-3",
+    "code": "P3.3",
+    "course": "Physics 3",
+    "title": "Electric Field of a Single Point Charge",
+    "objective": "Describe the magnitude and direction of the electric field created by a single point charge.",
+    "keyFormula": "$$\\vec{E} = \\frac{\\vec{F}}{q_0}, \\quad E = k \\frac{|q|}{r^2}$$",
+    "explanation": "How does one charge \"feel\" another charge across empty space without touching? Source charges alter the space around them by creating an invisible **electric field** ($\\vec{E}$)!\n\n### All You Need to Know\n- **Definition of Electric Field** ($\\vec{E}$): Force per unit positive test charge:\n  $$\\vec{E} = \\frac{\\vec{F}}{q_0} \\quad \\left(\\text{SI units: N/C or V/m}\\right)$$\n- **Electric Field of a Single Point Charge** ($Q$):\n  $$E = k \\frac{|Q|}{r^2}$$\n  **Crucial Rule**: $E$ depends **only on the source charge** $Q$ **and distance** $r$—it exists at that location even if no test charge $q_0$ is placed there!\n- **Field Direction & Field-Line Rules**:\n  - $\\vec{E}$ points **radially OUTWARD (away)** from positive source charges ($+Q$).\n  - $\\vec{E}$ points **radially INWARD (toward)** negative source charges ($-Q$).\n  - Closer electric field lines = stronger field ($E$ larger); field lines **never cross**!",
+    "workedExample": {
+      "problem": "Find the electric field magnitude $0.50\\text{ m}$ away from a point charge $q = +5.0 \\times 10^{-6}\\text{ C}$.",
+      "solutionSteps": [
+        "Identify $q = 5.0 \\times 10^{-6}\\text{ C}$, $r = 0.50\\text{ m}$, and $k = 8.99 \\times 10^9\\text{ N}\\cdot\\text{m}^2/\\text{C}^2$.",
+        "Substitute into $E = k\\frac{|q|}{r^2} = (8.99 \\times 10^9)\\frac{5.0 \\times 10^{-6}}{(0.50)^2}$.",
+        "Compute $E = \\frac{4.495 \\times 10^4}{0.25} = 1.80 \\times 10^5\\text{ N/C}$."
+      ],
+      "finalAnswer": "$E = 1.8 \\times 10^5\\text{ N/C}$ radially outward"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-3-q1",
+        "prompt": "In which direction do electric field lines point near an isolated negative point charge?",
+        "choices": [
+          "Radially outward",
+          "Radially inward",
+          "In circles around the charge",
+          "Upward only"
+        ],
+        "correctIndex": 1,
+        "explanation": "Electric field lines point in the direction a positive test charge would move—toward a negative source charge."
+      },
+      {
+        "id": "p3-3-q2",
+        "prompt": "What are the SI units of electric field strength?",
+        "choices": [
+          "J/C",
+          "N/C",
+          "C/s",
+          "N\\cdot m"
+        ],
+        "correctIndex": 1,
+        "explanation": "Electric field is force per unit charge: $E = F/q_0$, giving units of $\\text{N/C}$."
+      }
+    ],
+    "suggestedSceneId": "p3-coulomb",
+    "keyTerms": [
+      {
+        "term": "Electric Field ($\\vec{E}$)",
+        "definition": "Force per unit positive test charge at a point in space ($\\vec{E} = \\vec{F}/q_0$), measured in $\\text{N/C}$ or $\\text{V/m}$."
+      },
+      {
+        "term": "Source Charge ($Q$)",
+        "definition": "The charge generating the surrounding electric field."
+      },
+      {
+        "term": "Test Charge ($q_0$)",
+        "definition": "A tiny positive probe charge used conceptually to measure $\\vec{E}$ without disturbing the source charges."
+      },
+      {
+        "term": "Electric Field Lines",
+        "definition": "Visual map whose tangent gives $\\vec{E}$ direction (out of $+$, into $-$) and whose spacing shows field strength."
+      }
+    ],
+    "realWorldExamples": [
+      "Medical Electrocardiogram (ECG / EKG): Heart muscle cells create tiny shifting electric fields across the chest; skin electrodes detect these micro-fields to graph every heartbeat safely.",
+      "Capacitive Smartphone Touchscreens: Your fingertip distorts the delicate grid of electric fields projected just above the glass display, pinpointing your exact tap coordinates.",
+      "Thunderstorm Atmospheric Fields: Before a lightning strike, storm clouds build electric fields exceeding $3 \\times 10^6\\text{ N/C}$, strong enough to rip electrons off air molecules (dielectric breakdown)."
+    ]
+  },
+  {
+    "id": "p3-4",
+    "code": "P3.4",
+    "course": "Physics 3",
+    "title": "Electrostatic Force in a Uniform Electric Field",
+    "objective": "Determine the magnitude and direction of the electrostatic force on a point charge in a constant electric field.",
+    "keyFormula": "$$\\vec{F} = q\\vec{E}, \\quad a = \\frac{|q|E}{m}$$",
+    "explanation": "Once you know the electric field $\\vec{E}$ at a point (such as the steady, uniform field between two parallel charged metal plates), finding the force on any particle placed there takes a single step!\n\n### All You Need to Know\n- **Force in an Electric Field**:\n  $$\\vec{F}_E = q \\vec{E}$$\n  - **Positive charge** ($q > 0$): $\\vec{F}_E$ pushes in the **SAME direction** as $\\vec{E}$.\n  - **Negative charge** ($q < 0$**, e.g., an electron!)**: $\\vec{F}_E$ pushes in the **OPPOSITE direction** to $\\vec{E}$!\n- **Acceleration Inside a Uniform Field**: Combining $\\vec{F}_E = q\\vec{E}$ with Newton's Second Law ($F = ma$) gives constant acceleration:\n  $$a = \\frac{|q|E}{m}$$\n  Wait—you can plug this constant $a$ straight back into the Physics 1 kinematic equations ($v_f = v_i + at$, $\\Delta x = v_i t + \\frac{1}{2}at^2$, or parabolic deflection)!\n- **Parallel-Plate Uniform Field**: Between oppositely charged flat plates separated by $d$ at voltage $V$, $\\vec{E}$ has uniform strength $E = \\frac{V}{d}$ everywhere inside, pointing from the $+$ plate to the $-$ plate.",
+    "workedExample": {
+      "problem": "An electron ($q = -1.60 \\times 10^{-19}\\text{ C}$) is placed in a uniform downward electric field of $E = 2.0 \\times 10^4\\text{ N/C}$. Find the magnitude and direction of the electric force on it.",
+      "solutionSteps": [
+        "Compute the magnitude using $F = |q|E = (1.60 \\times 10^{-19}\\text{ C})(2.0 \\times 10^4\\text{ N/C})$.",
+        "Obtain $F = 3.2 \\times 10^{-15}\\text{ N}$.",
+        "Because the electron has a negative charge, the force points opposite the downward electric field, which is upward."
+      ],
+      "finalAnswer": "$F = 3.2 \\times 10^{-15}\\text{ N}$ upward"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-4-q1",
+        "prompt": "A proton ($q > 0$) enters a uniform electric field pointing east. Which way does the electric force act on the proton?",
+        "choices": [
+          "West",
+          "East",
+          "North",
+          "Zero force"
+        ],
+        "correctIndex": 1,
+        "explanation": "For a positive charge, $\\vec{F} = q\\vec{E}$ is in the same direction as $\\vec{E}$ (east)."
+      },
+      {
+        "id": "p3-4-q2",
+        "prompt": "What force acts on a $+2.0\\text{ }\\mu\\text{C}$ charge in a uniform $500\\text{ N/C}$ electric field?",
+        "choices": [
+          "1.0 mN",
+          "250 N",
+          "0.004 N",
+          "1000 N"
+        ],
+        "correctIndex": 0,
+        "explanation": "$F = (2.0 \\times 10^{-6}\\text{ C})(500\\text{ N/C}) = 1.0 \\times 10^{-3}\\text{ N} = 1.0\\text{ mN}$."
+      }
+    ],
+    "suggestedSceneId": "p3-coulomb",
+    "keyTerms": [
+      {
+        "term": "Uniform Electric Field",
+        "definition": "An electric field having the same magnitude and direction at every point in a region (such as between parallel plates)."
+      },
+      {
+        "term": "Electrostatic Force ($\\vec{F}_E = q\\vec{E}$)",
+        "definition": "Force experienced by charge $q$ inside electric field $\\vec{E}$ (parallel to $\\vec{E}$ if $q>0$, opposite if $q<0$)."
+      },
+      {
+        "term": "Field–Voltage Relation ($E = V/d$)",
+        "definition": "Magnitude of a uniform electric field between parallel plates equals voltage difference divided by plate spacing ($\\text{V/m}$)."
+      }
+    ],
+    "realWorldExamples": [
+      "Inkjet Printer Droplet Steering: Tiny charged ink droplets fly between parallel deflection plates; varying the uniform electric field $E$ steers each droplet vertically onto exact letter pixels on paper.",
+      "Hospital X-Ray Tubes & Electron Guns: High-voltage parallel electric fields accelerate electrons ($q = -e$) toward a metal target at huge speeds to produce medical diagnostic X-rays.",
+      "Millikan Oil-Drop Balancing: Adjusting downward/upward uniform electric field force ($qE$) to exactly cancel gravity ($mg$) holds microscopic charged oil droplets motionless in mid-air."
+    ]
+  },
+  {
+    "id": "p3-5",
+    "code": "P3.5",
+    "course": "Physics 3",
+    "title": "Electric Potential vs. Electric Potential Energy",
+    "objective": "Explain the factors affecting electric potential and clearly distinguish electric potential from electric potential energy.",
+    "keyFormula": "$$V = \\frac{U_E}{q} = k\\frac{q_{\\text{source}}}{r}, \\quad \\Delta U_E = q \\Delta V$$",
+    "explanation": "Just as lifting a heavy box higher in gravity stores gravitational potential energy, pushing charges against electric forces stores **electric potential energy** ($U_E$)—and dividing out the test charge gives **voltage** ($V$)!\n\n### All You Need to Know: Never Confuse $U_E$ and $V$!\n- **Electric Potential Energy** ($U_E$) *(depends on BOTH charges, measured in **joules,** $\\text{J}$)*:\n  $$U_E = k \\frac{q_1 q_2}{r}$$\n  Work needed to assemble or move charge $q$ in a field: $W = -\\Delta U_E = -q\\Delta V$.\n- **Electric Potential / Voltage** ($V$) *(property of location alone, energy PER unit charge, measured in **volts**, $1\\text{ V} = 1\\text{ J/C}$)*:\n  $$V = \\frac{U_E}{q_0} = k \\frac{Q}{r}$$\n  - **Keep the Sign of** $Q$!: Positive $+Q$ creates positive potential ($V > 0$); negative $-Q$ creates negative potential ($V < 0$). Because $V$ is a **scalar**, total potential from multiple charges is just ordinary algebraic addition ($V_{\\text{total}} = \\sum V_i$—no vector components needed!).\n- **Natural Flow Rule**: Positive charges spontaneously move from **high** $V$ **to low** $V$ (like water rolling downhill); negative electrons spontaneously move from **low** $V$ **to high** $V$!",
+    "workedExample": {
+      "problem": "A charge of $q = +3.0\\text{ mC}$ moves from a point at $V_A = 12\\text{ V}$ to a point at $V_B = 4.0\\text{ V}$. How much electric potential energy does it lose?",
+      "solutionSteps": [
+        "Find the potential difference: $\\Delta V = V_B - V_A = 4.0\\text{ V} - 12\\text{ V} = -8.0\\text{ V}$.",
+        "Convert charge: $q = 3.0 \\times 10^{-3}\\text{ C}$.",
+        "Calculate $\\Delta U_E = q\\Delta V = (3.0 \\times 10^{-3}\\text{ C})(-8.0\\text{ V}) = -0.024\\text{ J}$."
+      ],
+      "finalAnswer": "$\\Delta U_E = -0.024\\text{ J}$ ($0.024\\text{ J}$ lost)"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-5-q1",
+        "prompt": "How is electric potential $V$ related to electric potential energy $U_E$?",
+        "choices": [
+          "$V$ is electric potential energy per unit charge ($U_E / q$)",
+          "$V$ is always equal to $U_E \\times q$",
+          "Both are measured in newtons",
+          "$V$ depends on the mass of the charge"
+        ],
+        "correctIndex": 0,
+        "explanation": "Electric potential is energy per coulomb ($1\\text{ V} = 1\\text{ J/C}$)."
+      },
+      {
+        "id": "p3-5-q2",
+        "prompt": "Two charges, $+1\\text{ }\\mu\\text{C}$ and $+3\\text{ }\\mu\\text{C}$, are placed at the same point where $V = 100\\text{ V}$. Which statement is true?",
+        "choices": [
+          "Both have the same electric potential energy",
+          "Both sit at the same electric potential, but the $+3\\text{ }\\mu\\text{C}$ charge has three times the potential energy",
+          "The $+1\\text{ }\\mu\\text{C}$ charge experiences triple the voltage",
+          "Voltage becomes zero"
+        ],
+        "correctIndex": 1,
+        "explanation": "Potential $V$ is a property of the location; potential energy $U_E = qV$ scales with the placed charge $q$."
+      }
+    ],
+    "suggestedSceneId": "p3-coulomb",
+    "keyTerms": [
+      {
+        "term": "Electric Potential Energy ($U_E$)",
+        "definition": "Energy stored by a charge configuration due to electrostatic repulsion or attraction ($\\text{J}$)."
+      },
+      {
+        "term": "Electric Potential / Voltage ($V$)",
+        "definition": "Electric potential energy per unit charge at a point in space ($V = U_E/q$), measured in volts ($1\\text{ V} = 1\\text{ J/C}$)."
+      },
+      {
+        "term": "Equipotential Surface",
+        "definition": "Surface on which every point shares the exact same electric potential $V$, always perpendicular to electric field lines ($W = 0$ along it)."
+      },
+      {
+        "term": "Electron-Volt ($\\text{eV}$)",
+        "definition": "Tiny energy unit equal to $1.602 \\times 10^{-19}\\text{ J}$, the energy gained by one electron crossing $1\\text{ V}$."
+      }
+    ],
+    "realWorldExamples": [
+      "AA Battery ($1.5\\text{ V}$) vs. Car Battery ($12\\text{ V}$): A $12\\text{ V}$ battery gives $12\\text{ J}$ of energy to every $1\\text{ C}$ of charge—8 times more energy per coulomb than a $1.5\\text{ V}$ AA cell, regardless of how much charge flows.",
+      "High-Voltage Power Lines & Birds: A bird perching on one $22{,}000\\text{ V}$ wire isn't shocked because both feet are at the exact same potential ($\\Delta V = 0$), so no current flows through its body.",
+      "Heart Defibrillator ($\\sim 3000\\text{ V}$): Delivers a controlled burst of stored electric potential energy across the chest to reset chaotic heart rhythms."
+    ]
+  },
+  {
+    "id": "p3-6",
+    "code": "P3.6",
+    "course": "Physics 3",
+    "title": "Ohm's Law in Series, Parallel, and Combination Circuits",
+    "objective": "Validate the graphical relationship among voltage, current, and resistance in series, parallel, and combination DC circuits.",
+    "keyFormula": "$$V = I R, \\quad R_{\\text{series}} = R_1 + R_2, \\quad \\frac{1}{R_{\\text{parallel}}} = \\frac{1}{R_1} + \\frac{1}{R_2}$$",
+    "explanation": "Electric circuits power everything from classroom LED bulbs to laptop motherboards. Three quantities rule every DC resistor circuit: **voltage** ($V$), **current** ($I$), and **resistance** ($R$).\n\n### All You Need to Know\n- **Ohm's Law**: For ohmic resistors at steady temperature, current is directly proportional to voltage ($I\\text{-}V$ graph is a straight line through the origin with slope $1/R$):\n  $$V = I R \\quad \\left(1\\text{ }\\Omega = 1\\text{ V/A}\\right)$$\n- **Series Circuits** (single loop path):\n  - **Current is identical everywhere**: $I_{\\text{total}} = I_1 = I_2 = \\dots$\n  - **Voltages add up**: $V_{\\text{total}} = V_1 + V_2 + \\dots$\n  - **Equivalent resistance adds directly**: $R_{\\text{eq}} = R_1 + R_2 + \\dots$ (always bigger than the largest individual resistor!).\n- **Parallel Circuits** (multiple branches sharing the same two nodes):\n  - **Voltage is identical across every branch**: $V_{\\text{total}} = V_1 = V_2 = \\dots$\n  - **Branch currents add up**: $I_{\\text{total}} = I_1 + I_2 + \\dots$\n  - **Reciprocals add**: $\\frac{1}{R_{\\text{eq}}} = \\frac{1}{R_1} + \\frac{1}{R_2} + \\dots$ (always smaller than the smallest individual resistor!).\n- **Combination Circuits**: Simplify inner parallel/series clusters step-by-step down to one $R_{\\text{eq}}$, find $I_{\\text{total}} = V/R_{\\text{eq}}$, then work backward!",
+    "workedExample": {
+      "problem": "Two resistors, $R_1 = 6.0\\text{ }\\Omega$ and $R_2 = 3.0\\text{ }\\Omega$, are connected in parallel across a $12\\text{ V}$ battery. Find the equivalent resistance and total current.",
+      "solutionSteps": [
+        "Use the parallel resistance rule: $\\frac{1}{R_{\\text{eq}}} = \\frac{1}{6.0\\text{ }\\Omega} + \\frac{1}{3.0\\text{ }\\Omega} = \\frac{1 + 2}{6.0} = \\frac{3}{6.0}$.",
+        "Invert to get $R_{\\text{eq}} = 2.0\\text{ }\\Omega$.",
+        "Apply Ohm's law: $I_{\\text{total}} = \\frac{V}{R_{\\text{eq}}} = \\frac{12\\text{ V}}{2.0\\text{ }\\Omega} = 6.0\\text{ A}$."
+      ],
+      "finalAnswer": "$R_{\\text{eq}} = 2.0\\text{ }\\Omega$, $I_{\\text{total}} = 6.0\\text{ A}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-6-q1",
+        "prompt": "On a graph of Voltage ($V$) vs. Current ($I$) for an ohmic resistor, what does the slope represent?",
+        "choices": [
+          "Electric charge",
+          "Resistance ($R$)",
+          "Electric power",
+          "Capacitance"
+        ],
+        "correctIndex": 1,
+        "explanation": "From $V = IR$, the slope $\\Delta V / \\Delta I$ equals the resistance $R$."
+      },
+      {
+        "id": "p3-6-q2",
+        "prompt": "What quantity is identical across every resistor connected in parallel?",
+        "choices": [
+          "Current",
+          "Voltage",
+          "Resistance",
+          "Power"
+        ],
+        "correctIndex": 1,
+        "explanation": "Parallel branches connect across the same two nodes, so they share the exact same potential difference (voltage)."
+      }
+    ],
+    "suggestedSceneId": "p3-circuits",
+    "keyTerms": [
+      {
+        "term": "Electric Current ($I$)",
+        "definition": "Rate of charge flow past a cross-section ($I = \\Delta Q/\\Delta t$), measured in amperes ($1\\text{ A} = 1\\text{ C/s}$)."
+      },
+      {
+        "term": "Resistance ($R$)",
+        "definition": "Opposition to electric current flow ($R = V/I$), measured in ohms ($\\Omega$)."
+      },
+      {
+        "term": "Ohm's Law ($V = IR$)",
+        "definition": "Linear relationship showing current through an ohmic conductor is proportional to applied voltage."
+      },
+      {
+        "term": "Series vs. Parallel",
+        "definition": "Series shares one path (same $I$, $V$ splits); parallel splits into branches across shared nodes (same $V$, $I$ splits)."
+      }
+    ],
+    "realWorldExamples": [
+      "Philippine Home Outlets ($220\\text{ V}$ Parallel Wiring): Every ceiling light, fan, and wall outlet is wired in **parallel** so each appliance gets full $220\\text{ V}$ and turning off one light doesn't kill the fridge!",
+      "Power Strip Overload Hazard: Plugging a rice cooker, electric kettle, and flat iron into one parallel strip keeps voltage $220\\text{ V}$ across each while dropping $R_{\\text{eq}}$—pulling dangerously high total current $I_{\\text{total}}$ until the breaker trips.",
+      "Old Christmas Lights Going Dark Together: Cheap series light strings break the single current loop if one bulb burns out, whereas modern parallel/shunted strings stay lit."
+    ]
+  },
+  {
+    "id": "p3-7",
+    "code": "P3.7",
+    "course": "Physics 3",
+    "title": "Capacitance and Parallel-Plate Geometry",
+    "objective": "Explain how plate area, plate separation, and dielectric material affect the capacitance of a capacitor.",
+    "keyFormula": "$$C = \\frac{Q}{V}, \\quad C = \\kappa \\varepsilon_0 \\frac{A}{d}$$",
+    "explanation": "Batteries store energy slowly through chemical reactions; **capacitors** store and release electrostatic energy almost instantaneously in electric fields between two facing metal plates!\n\n### All You Need to Know\n- **Definition of Capacitance** ($C$): Charge stored per volt across the plates:\n  $$C = \\frac{Q}{V} \\quad \\left(\\text{SI unit: farad, } 1\\text{ F} = 1\\text{ C/V}\\right)$$\n  (Practical values are usually tiny: $\\mu\\text{F} = 10^{-6}\\text{ F}$, $\\text{nF} = 10^{-9}\\text{ F}$, $\\text{pF} = 10^{-12}\\text{ F}$.)\n- **Parallel-Plate Geometry Formula**:\n  $$C = \\kappa \\varepsilon_0 \\frac{A}{d}$$\n  - $\\varepsilon_0 = 8.85 \\times 10^{-12}\\text{ F/m}$: permittivity of free space.\n  - $A$: overlapping plate area ($\\text{m}^2$) $\\implies$ **larger area** $A$ **increases** $C$.\n  - $d$: plate separation ($\\text{m}$) $\\implies$ **smaller gap** $d$ **increases** $C$.\n  - $\\kappa \\ge 1$: **dielectric constant** of the insulating sheet between plates (air/vacuum $\\kappa \\approx 1$, paper $\\approx 3.7$, ceramic/titania much higher) $\\implies$ **inserting a dielectric multiplies capacitance by** $\\kappa$ and prevents plates from arcing!\n- **Stored Energy**: $U_C = \\frac{1}{2}CV^2 = \\frac{1}{2}QV = \\frac{Q^2}{2C}$.",
+    "workedExample": {
+      "problem": "An air-filled parallel-plate capacitor ($\\kappa = 1$) has plate area $A = 0.040\\text{ m}^2$ and separation $d = 2.0 \\times 10^{-3}\\text{ m}$. Calculate its capacitance ($\\varepsilon_0 = 8.85 \\times 10^{-12}\\text{ F/m}$).",
+      "solutionSteps": [
+        "Write $C = \\varepsilon_0 \\frac{A}{d}$.",
+        "Substitute values: $C = (8.85 \\times 10^{-12}\\text{ F/m})\\frac{0.040\\text{ m}^2}{2.0 \\times 10^{-3}\\text{ m}}$.",
+        "Divide $\\frac{0.040}{2.0 \\times 10^{-3}} = 20$, then multiply $8.85 \\times 10^{-12} \\times 20 = 1.77 \\times 10^{-10}\\text{ F}$."
+      ],
+      "finalAnswer": "$C = 1.77 \\times 10^{-10}\\text{ F}$ ($177\\text{ pF}$)"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-7-q1",
+        "prompt": "If the distance $d$ between the plates of a capacitor is cut in half while plate area stays constant, what happens to the capacitance?",
+        "choices": [
+          "It halves",
+          "It doubles",
+          "It stays the same",
+          "It quadruples"
+        ],
+        "correctIndex": 1,
+        "explanation": "Since $C = \\varepsilon_0 A / d$, halving $d$ doubles $C$."
+      },
+      {
+        "id": "p3-7-q2",
+        "prompt": "Inserting an insulating dielectric ($\\kappa > 1$) between capacitor plates causes the capacitance to:",
+        "choices": [
+          "Increase by factor $\\kappa$",
+          "Drop to zero",
+          "Decrease by factor $\\kappa$",
+          "Become negative"
+        ],
+        "correctIndex": 0,
+        "explanation": "Dielectric polarization reduces the internal electric field for a given charge, raising capacitance to $C = \\kappa C_0$."
+      }
+    ],
+    "suggestedSceneId": "p3-circuits",
+    "keyTerms": [
+      {
+        "term": "Capacitor",
+        "definition": "Passive two-conductor component that stores electric charge and energy in an internal electric field."
+      },
+      {
+        "term": "Capacitance ($C$)",
+        "definition": "Ratio of stored charge to potential difference ($C = Q/V$), measured in farads ($\\text{F}$); depends strictly on geometry and dielectric."
+      },
+      {
+        "term": "Dielectric ($\\kappa$)",
+        "definition": "Insulating material placed between capacitor plates that polarizes, weakens the internal field, and boosts capacitance by factor $\\kappa$."
+      },
+      {
+        "term": "Permittivity of Free Space ($\\varepsilon_0$)",
+        "definition": "Vacuum electric constant equal to $8.85 \\times 10^{-12}\\text{ F/m}$."
+      }
+    ],
+    "realWorldExamples": [
+      "Phone Camera Flash & Defibrillators: A battery charges a high-voltage capacitor over a couple of seconds, then the capacitor dumps all stored energy ($\\frac{1}{2}CV^2$) in milliseconds for a bright flash or life-saving shock.",
+      "Mechanical vs. Capacitive Keyboards & Touchpads: Pressing a key changes the spacing $d$ or dielectric overlap between tiny PCB plates, shifting capacitance $C = \\varepsilon_0 A/d$ so the chip detects your keystroke instantly.",
+      "Power Supply Smoothing Caps: Inside phone chargers, electrolytic capacitors absorb voltage ripples after AC rectification so sensitive microchips receive smooth steady DC."
+    ]
+  },
+  {
+    "id": "p3-8",
+    "code": "P3.8",
+    "course": "Physics 3",
+    "title": "Series and Parallel Capacitor Combinations",
+    "objective": "Differentiate series and parallel capacitor networks and compute total equivalent capacitance.",
+    "keyFormula": "$$\\frac{1}{C_{\\text{series}}} = \\frac{1}{C_1} + \\frac{1}{C_2}, \\quad C_{\\text{parallel}} = C_1 + C_2$$",
+    "explanation": "Watch closely—**capacitor combination rules are the exact opposite of resistor rules**! Memorize why from charge and voltage physics so you never swap them on exams.\n\n### All You Need to Know\n- **Parallel Capacitors** (both plates tied across the same battery voltage $V$):\n  - **Voltage is identical across all**: $V_{\\text{total}} = V_1 = V_2 = \\dots$\n  - **Total stored charge adds**: $Q_{\\text{total}} = Q_1 + Q_2 + \\dots$\n  - **Equivalent capacitance ADDS directly**:\n    $$C_{\\text{eq}} = C_1 + C_2 + \\dots$$\n    (Physically like merging plates into a bigger total area $A$, increasing $C_{\\text{eq}}$!)\n- **Series Capacitors** (chained one after another along a single wire):\n  - **Charge magnitude is identical on every capacitor**: $Q_{\\text{total}} = Q_1 = Q_2 = \\dots$\n  - **Voltages split and add up**: $V_{\\text{total}} = V_1 + V_2 + \\dots$\n  - **Reciprocals add**:\n    $$\\frac{1}{C_{\\text{eq}}} = \\frac{1}{C_1} + \\frac{1}{C_2} + \\dots$$\n    *(Notice $C_{\\text{eq}}$ is ALWAYS **smaller** than the smallest capacitor in series—like increasing effective plate gap $d$!)*",
+    "workedExample": {
+      "problem": "Two capacitors, $C_1 = 4.0\\text{ }\\mu\\text{F}$ and $C_2 = 12\\text{ }\\mu\\text{F}$, are connected first in parallel and then in series. Find the total capacitance for each setup.",
+      "solutionSteps": [
+        "In parallel: $C_p = C_1 + C_2 = 4.0\\text{ }\\mu\\text{F} + 12\\text{ }\\mu\\text{F} = 16\\text{ }\\mu\\text{F}$.",
+        "In series: $\\frac{1}{C_s} = \\frac{1}{4.0} + \\frac{1}{12} = \\frac{3 + 1}{12} = \\frac{4}{12}$.",
+        "Invert to find $C_s = 3.0\\text{ }\\mu\\text{F}$."
+      ],
+      "finalAnswer": "$C_{\\text{parallel}} = 16\\text{ }\\mu\\text{F}$, $C_{\\text{series}} = 3.0\\text{ }\\mu\\text{F}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-8-q1",
+        "prompt": "Which configuration gives a larger total capacitance than any individual capacitor in the network?",
+        "choices": [
+          "Series",
+          "Parallel",
+          "Open circuit",
+          "Short circuit"
+        ],
+        "correctIndex": 1,
+        "explanation": "Capacitors in parallel add directly ($C_{\\text{total}} = C_1 + C_2$), increasing total charge storage."
+      },
+      {
+        "id": "p3-8-q2",
+        "prompt": "In a series combination of two different capacitors connected to a battery, what quantity is equal on both?",
+        "choices": [
+          "Voltage across each",
+          "Charge $Q$ stored on each",
+          "Electric field",
+          "Capacitance"
+        ],
+        "correctIndex": 1,
+        "explanation": "Inner plates are isolated together, so induced charges force the same magnitude of charge $Q$ onto every series capacitor."
+      }
+    ],
+    "suggestedSceneId": "p3-circuits",
+    "keyTerms": [
+      {
+        "term": "Parallel Capacitor Network",
+        "definition": "Capacitors sharing both terminals so all carry the same voltage $V$ and total capacitance adds ($C_{\\text{eq}} = \\sum C_i$)."
+      },
+      {
+        "term": "Series Capacitor Network",
+        "definition": "Capacitors chained end-to-end so all store identical charge $Q$ and total capacitance obeys $1/C_{\\text{eq}} = \\sum (1/C_i)$."
+      },
+      {
+        "term": "Equivalent Capacitance ($C_{\\text{eq}}$)",
+        "definition": "Single capacitance value storing the same total charge as an entire network at the same applied voltage."
+      }
+    ],
+    "realWorldExamples": [
+      "Supercapacitor Banks in Electric Buses & Solar Inverters: Wiring many supercapacitors in **parallel** boosts total charge capacity ($C_{\\text{eq}} = \\sum C_i$), while wiring cells in **series** allows surviving higher system voltage without dielectric breakdown.",
+      "Motherboard Decoupling Arrays: Engineers solder several ceramic capacitors in parallel near CPU pins so total capacitance responds ultra-fast to sudden processor power spikes.",
+      "High-Voltage Pulse Generators: Two $400\\text{ V}$-rated capacitors wired in series can safely handle nearly $800\\text{ V}$ total because the applied voltage splits across them."
+    ]
+  },
+  {
+    "id": "p3-9",
+    "code": "P3.9",
+    "course": "Physics 3",
+    "title": "Solving DC Circuit Problems: Ohm's Law, Resistance, and Capacitance",
+    "objective": "Solve multi-step DC circuit problems involving resistivity, Ohm's law, electric power, and steady-state capacitors.",
+    "keyFormula": "$$R = \\rho\\frac{L}{A}, \\quad P = I V = I^2 R = \\frac{V^2}{R}, \\quad Q = C V$$",
+    "explanation": "Real DC electronics combine wire resistivity, Ohm's law, electrical heating power, and steady-state capacitors into one unified circuit toolkit.\n\n### All You Need to Know\n- **Wire Resistance & Resistivity**: $R = \\rho \\frac{L}{A}$, where $\\rho$ is material resistivity ($\\Omega\\cdot\\text{m}$; small for copper, large for nichrome), $L$ is wire length, and $A = \\pi r^2$ is cross-sectional area. Long thin wires have high resistance!\n- **Electric Power** ($P$): Rate of electrical energy conversion in watts ($\\text{W} = \\text{J/s}$):\n  $$P = I V = I^2 R = \\frac{V^2}{R}$$\n  Energy consumed: $E = P \\cdot t$ ($\\text{J}$ or $\\text{kWh}$).\n- **DC Steady-State Capacitor Rule**: Once a capacitor is **fully charged** in a pure DC circuit, **zero current flows through the capacitor's branch** ($I_C = 0$ — it acts like an **open switch**!). Voltage across the capacitor simply equals the voltage across whatever parallel resistor branch it sits beside!",
+    "workedExample": {
+      "problem": "A $24\\text{ V}$ DC power supply feeds a $4.0\\text{ }\\Omega$ resistor in series with a parallel pair of $6.0\\text{ }\\Omega$ and $6.0\\text{ }\\Omega$ resistors, plus a $10\\text{ }\\mu\\text{F}$ capacitor wired directly across the $24\\text{ V}$ terminals. Find the total current through the $4.0\\text{ }\\Omega$ resistor and the charge on the capacitor.",
+      "solutionSteps": [
+        "Find equivalent resistance of the two $6.0\\text{ }\\Omega$ resistors in parallel: $R_p = \\frac{6.0}{2} = 3.0\\text{ }\\Omega$.",
+        "Add the series resistor: $R_{\\text{eq}} = 4.0\\text{ }\\Omega + 3.0\\text{ }\\Omega = 7.0\\text{ }\\Omega$ (at steady state, no DC current flows through the capacitor branch).",
+        "Find current: $I = \\frac{24\\text{ V}}{7.0\\text{ }\\Omega} \\approx 3.43\\text{ A}$.",
+        "Find capacitor charge: $Q = C V = (10 \\times 10^{-6}\\text{ F})(24\\text{ V}) = 2.4 \\times 10^{-4}\\text{ C}$."
+      ],
+      "finalAnswer": "$I \\approx 3.43\\text{ A}$, $Q = 240\\text{ }\\mu\\text{C}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-9-q1",
+        "prompt": "If a copper wire's length is doubled while its cross-sectional area stays the same, its resistance:",
+        "choices": [
+          "Halves",
+          "Doubles",
+          "Quadruples",
+          "Stays unchanged"
+        ],
+        "correctIndex": 1,
+        "explanation": "Resistance is directly proportional to length ($R = \\rho L / A$)."
+      },
+      {
+        "id": "p3-9-q2",
+        "prompt": "How much power does a $12\\text{ }\\Omega$ lamp use when drawing $2.0\\text{ A}$ of current?",
+        "choices": [
+          "24 W",
+          "48 W",
+          "6 W",
+          "144 W"
+        ],
+        "correctIndex": 1,
+        "explanation": "Using $P = I^2 R = (2.0\\text{ A})^2(12\\text{ }\\Omega) = 48\\text{ W}$."
+      }
+    ],
+    "suggestedSceneId": "p3-circuits",
+    "keyTerms": [
+      {
+        "term": "Resistivity ($\\rho$)",
+        "definition": "Intrinsic material property measuring opposition to current regardless of wire size ($\\Omega\\cdot\\text{m}$)."
+      },
+      {
+        "term": "Joule Heating ($P = I^2 R$)",
+        "definition": "Conversion of electrical energy into thermal heat as moving charges collide with atoms in a resistor."
+      },
+      {
+        "term": "DC Steady State",
+        "definition": "Condition long after a switch closes when capacitors are completely charged and draw zero branch current."
+      },
+      {
+        "term": "Kilowatt-Hour ($\\text{kWh}$)",
+        "definition": "Utility energy billing unit equal to $1000\\text{ W}$ used for $1\\text{ hour}$ ($3.6 \\times 10^6\\text{ J}$)."
+      }
+    ],
+    "realWorldExamples": [
+      "Why Thick Copper Cables Power Air Conditioners: Using thick wire (large area $A$) and low-resistivity copper ($\\rho$) keeps $R = \\rho L/A$ tiny so extension cords don't overheat from $I^2 R$ heating!",
+      "Electric Kettles & Flat Irons: Heating coils intentionally use high-resistivity nichrome wire to turn electrical power $P = I^2 R$ efficiently into thermal heat.",
+      "Reading a Meralco Electricity Bill: A $1500\\text{ W}$ ($1.5\\text{ kW}$) aircon running $6\\text{ hours}$ uses $1.5 \\times 6 = 9.0\\text{ kWh}$ per day."
+    ]
+  },
+  {
+    "id": "p3-10",
+    "code": "P3.10",
+    "course": "Physics 3",
+    "title": "Magnetic Domains and Magnetic Materials",
+    "objective": "Describe how the alignment of atomic magnetic domains produces magnetism in ferromagnetic and non-magnetic materials.",
+    "keyFormula": "$$\\vec{B}_{\\text{net}} = \\vec{B}_0 + \\vec{B}_{\\text{domains}}$$",
+    "explanation": "Why does a steel paperclip jump onto a magnet while a wooden pencil or copper coin doesn't? Magnetism starts deep inside atoms through **electron spin and magnetic domains**!\n\n### All You Need to Know\n- **Atomic Origin of Magnetism**: Every spinning and orbiting electron acts like a microscopic atomic magnet (magnetic dipole). In most materials, paired electrons spin in opposite directions and cancel out.\n- **Three Classes of Magnetic Materials**:\n  1. **Ferromagnetic** (iron, nickel, cobalt, neodymium alloys): Unpaired electrons lock together into microscopic regions called **magnetic domains**—billions of aligned atoms acting like tiny bar magnets.\n     - Unmagnetized iron: domains point in random directions, canceling overall.\n     - Magnetized iron: an external field rotates and grows aligned domains in one direction!\n  2. **Paramagnetic** (aluminum, oxygen, platinum): Weak attraction—tiny atomic dipoles align only slightly while an external magnet is present.\n  3. **Diamagnetic** (copper, water, bismuth, graphite): Very weak repulsion from any magnet.\n- **How Magnets Lose Strength**: **Heating** above the Curie temperature or **hammering/dropping** scrambles domain alignment back to random!",
+    "workedExample": {
+      "problem": "Explain why dropping a permanent bar magnet repeatedly on a concrete floor or heating it strongly can weaken its magnetic strength.",
+      "solutionSteps": [
+        "A permanent magnet gets its external field from millions of aligned magnetic domains pointing in the same direction.",
+        "Mechanical shock (hammering or dropping) or high thermal energy above the Curie temperature jostles the atoms.",
+        "This agitation randomizes domain orientations again, reducing the net magnetic field."
+      ],
+      "finalAnswer": "Thermal or mechanical energy randomizes magnetic domain alignment, weakening the net field."
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-10-q1",
+        "prompt": "What happens inside an iron nail when a strong magnet is brought close to it?",
+        "choices": [
+          "Its magnetic domains partially align with the external field",
+          "Its protons turn into electrons",
+          "It loses all electrons",
+          "Its mass increases"
+        ],
+        "correctIndex": 0,
+        "explanation": "External magnetic fields align ferromagnetic domains, turning the nail into a temporary magnet."
+      },
+      {
+        "id": "p3-10-q2",
+        "prompt": "Which group contains strictly ferromagnetic elements?",
+        "choices": [
+          "Iron, nickel, and cobalt",
+          "Copper, aluminum, and gold",
+          "Glass, rubber, and silicon",
+          "Oxygen, nitrogen, and helium"
+        ],
+        "correctIndex": 0,
+        "explanation": "Iron (Fe), nickel (Ni), and cobalt (Co) form strong magnetic domains at room temperature."
+      }
+    ],
+    "suggestedSceneId": "p3-magfield",
+    "keyTerms": [
+      {
+        "term": "Magnetic Domain",
+        "definition": "Microscopic region inside a ferromagnetic solid where billions of atomic magnetic dipoles point in the exact same direction."
+      },
+      {
+        "term": "Ferromagnetism",
+        "definition": "Strong magnetism (Fe, Ni, Co) caused by spontaneous domain alignment that can retain permanent magnetization."
+      },
+      {
+        "term": "Paramagnetism vs. Diamagnetism",
+        "definition": "Weak attraction (paramagnetic) versus very weak repulsion (diamagnetic) in materials without permanent magnetic domains."
+      },
+      {
+        "term": "Curie Temperature",
+        "definition": "Critical temperature above which thermal agitation breaks domain alignment and destroys ferromagnetism."
+      }
+    ],
+    "realWorldExamples": [
+      "Hard Drives & Magnetic Stripe Cards: Tiny iron-oxide domains on bank cards or hard disk platters are flipped North-South or South-North by a write head to store digital data.",
+      "Picking Up Nails with a Stroking Magnet: Repeatedly stroking an iron nail in one direction with a bar magnet aligns its internal domains, turning the nail into a temporary magnet.",
+      "Why Dropping or Heating Magnets Weakens Them: Hammering jars aligned domains loose and high heat shakes atoms randomly—demagnetizing workshop screwdrivers."
+    ]
+  },
+  {
+    "id": "p3-11",
+    "code": "P3.11",
+    "course": "Physics 3",
+    "title": "Earth's Magnetic Field, Navigation, and Living Organisms",
+    "objective": "Explain the origin, structure, and significance of Earth's magnetic field for navigation, protection, and living organisms.",
+    "keyFormula": "$$B_{\\text{Earth}} \\approx 2.5 \\times 10^{-5}\\text{ T to }6.5 \\times 10^{-5}\\text{ T}$$",
+    "explanation": "Earth itself behaves like a giant tilted bar magnet surrounded by a protective magnetic bubble—the **magnetosphere**!\n\n### All You Need to Know\n- **Origin of Earth's Field (Geodynamo)**: Swirling convection currents of molten liquid iron and nickel in Earth's **outer core** generate giant electric currents, producing Earth's dipolar magnetic field ($approx 30–60\\text{ }\\mu\\text{T}$ at the surface).\n- **Magnetic Poles Trap (Read Carefully!)**: Because the **north-seeking end** of a compass needle is attracted toward geographic North, Earth's **Geographic North Pole is actually a magnetic SOUTH pole**! Also, magnetic poles wander slowly over time and aren't identical to true geographic poles (magnetic declination).\n- **Protection from Solar Wind**: Earth's magnetosphere deflects high-speed charged protons and electrons streaming from the Sun (solar wind), shielding our atmosphere and satellites—while funneling some particles toward polar skies to create **auroras**.\n- **Magnetoreception in Living Organisms**: Migratory birds, sea turtles, salmon, and magnetotactic bacteria sense Earth's field lines to navigate thousands of kilometers across featureless oceans!",
+    "workedExample": {
+      "problem": "A hiker in Baguio uses a compass whose red north-seeking needle points toward geographic north. Which magnetic polarity actually lies near Earth's geographic North Pole?",
+      "solutionSteps": [
+        "Opposite magnetic poles attract each other.",
+        "Because the north pole of the compass needle is attracted toward geographic north, the Earth's internal pole near geographic north acts as a magnetic south pole.",
+        "Similarly, Earth's magnetic north pole lies near geographic south."
+      ],
+      "finalAnswer": "A magnetic south pole lies near Earth's geographic North Pole."
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-11-q1",
+        "prompt": "How does Earth's magnetosphere protect living organisms on the surface?",
+        "choices": [
+          "It deflects charged solar wind and cosmic radiation particles",
+          "It blocks all visible sunlight",
+          "It creates atmospheric gravity",
+          "It cools the oceans directly"
+        ],
+        "correctIndex": 0,
+        "explanation": "Moving charged particles in the solar wind experience magnetic Lorentz forces that deflect them around Earth."
+      },
+      {
+        "id": "p3-11-q2",
+        "prompt": "How do migratory sea turtles and birds use Earth's magnetic field?",
+        "choices": [
+          "For biological magnetoreception to orient and navigate across oceans",
+          "To generate electricity in their wings",
+          "To measure air humidity",
+          "To breathe underwater"
+        ],
+        "correctIndex": 0,
+        "explanation": "Many migratory species sense magnetic field inclination and intensity to navigate long distances."
+      }
+    ],
+    "suggestedSceneId": "p3-magfield",
+    "keyTerms": [
+      {
+        "term": "Geodynamo",
+        "definition": "Convection of electrically conducting molten iron in Earth's outer core that sustains Earth's planetary magnetic field."
+      },
+      {
+        "term": "Magnetosphere",
+        "definition": "Region of space around Earth dominated by Earth's magnetic field, deflecting charged solar wind particles."
+      },
+      {
+        "term": "Magnetic Declination",
+        "definition": "Angle between true geographic north and magnetic north shown by a compass at a given location."
+      },
+      {
+        "term": "Magnetoreception",
+        "definition": "Biological sense enabling birds, sea turtles, and certain bacteria to detect Earth's magnetic field direction and intensity."
+      }
+    ],
+    "realWorldExamples": [
+      "Hiker & Ship Compass Navigation: Compass needles align along local horizontal magnetic field lines; navigators apply local magnetic declination charts to steer true geographic headings.",
+      "Solar Storm Shielding for GPS & Power Grids: Without the magnetosphere, intense solar flares would strip Earth's ozone layer and fry communications satellites.",
+      "Sea Turtle Ocean Migrations: Hatchling turtles born on Philippine beaches use magnetic field strength and inclination angle like a natural GPS map to cross the Pacific and return decades later."
+    ]
+  },
+  {
+    "id": "p3-12",
+    "code": "P3.12",
+    "course": "Physics 3",
+    "title": "Magnetic Force on Moving Charges and Current-Carrying Wires",
+    "objective": "Calculate the magnetic force acting on a moving electric charge and a current-carrying conductor in a uniform magnetic field.",
+    "keyFormula": "$$F = |q| v B \\sin\\theta, \\quad F = I L B \\sin\\theta$$",
+    "explanation": "Unlike electric fields (which push stationary charges too), **magnetic fields ONLY exert forces on charges that are MOVING** (and not moving parallel to $\\vec{B}$)!\n\n### All You Need to Know\n- **Lorentz Magnetic Force on a Moving Charge** ($q$):\n  $$F = |q| v B \\sin\\theta \\quad \\left(\\text{SI unit of } B\\text{: tesla, } 1\\text{ T} = 1\\frac{\\text{N}}{\\text{A}\\cdot\\text{m}}\\right)$$\n  - $\\theta$: angle between velocity $\\vec{v}$ and magnetic field $\\vec{B}$.\n  - **Zero Force Cases**: If the charge is at rest ($v = 0$) OR moves parallel/antiparallel to $\\vec{B}$ ($\\theta = 0^\\circ$ or $180^\\circ$), $F = 0$!\n  - **Circular Path**: Because $\\vec{F}$ is always perpendicular to $\\vec{v}$, magnetic force does **zero work** (speed stays constant!) and bends charges into circles of radius $r = \\frac{mv}{|q|B}$.\n- **Magnetic Force on a Current-Carrying Wire** (length $L$, current $I$):\n  $$F = I L B \\sin\\theta$$\n- **Right-Hand Rule (RHR)**: Point fingers along $\\vec{v}$ (or conventional current $I$), curl toward $\\vec{B}$; thumb gives $\\vec{F}$ for a **positive charge** (flip opposite for an electron!).",
+    "workedExample": {
+      "problem": "A straight $0.80\\text{ m}$ wire carries $5.0\\text{ A}$ perpendicular ($\\theta = 90^\\circ$) to a uniform $0.40\\text{ T}$ magnetic field. Find the magnetic force on the wire.",
+      "solutionSteps": [
+        "Identify $I = 5.0\\text{ A}$, $L = 0.80\\text{ m}$, $B = 0.40\\text{ T}$, and $\\sin 90^\\circ = 1$.",
+        "Compute $F = ILB\\sin 90^\\circ = (5.0)(0.80)(0.40)(1)$.",
+        "Multiply: $(4.0)(0.40) = 1.6\\text{ N}$."
+      ],
+      "finalAnswer": "$F = 1.6\\text{ N}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-12-q1",
+        "prompt": "What is the magnetic force on a proton moving parallel ($\\theta = 0^\\circ$) to a uniform magnetic field?",
+        "choices": [
+          "Zero",
+          "Maximum force $qvB$",
+          "Half of $qvB$",
+          "Depends only on mass"
+        ],
+        "correctIndex": 0,
+        "explanation": "Since $\\sin 0^\\circ = 0$, $F = qvB\\sin 0^\\circ = 0$."
+      },
+      {
+        "id": "p3-12-q2",
+        "prompt": "A charge of $q = 2.0\\text{ }\\mu\\text{C}$ moves at $3.0 \\times 10^4\\text{ m/s}$ perpendicular to a $0.50\\text{ T}$ field. What is the magnetic force?",
+        "choices": [
+          "0.030 N",
+          "0.30 N",
+          "3.0 N",
+          "0.003 N"
+        ],
+        "correctIndex": 0,
+        "explanation": "$F = (2.0 \\times 10^{-6})(3.0 \\times 10^4)(0.50)(1) = 0.030\\text{ N}$."
+      }
+    ],
+    "suggestedSceneId": "p3-magfield",
+    "keyTerms": [
+      {
+        "term": "Tesla ($\\text{T}$)",
+        "definition": "SI unit of magnetic field strength: $1\\text{ T} = 1\\text{ N}/(\\text{A}\\cdot\\text{m})$."
+      },
+      {
+        "term": "Magnetic Lorentz Force",
+        "definition": "Perpendicular force ($F = qvB\\sin\\theta$) acting on a charge moving across magnetic field lines."
+      },
+      {
+        "term": "Right-Hand Rule",
+        "definition": "3D geometric convention giving the perpendicular direction of magnetic force or magnetic field."
+      },
+      {
+        "term": "Cyclotron Radius ($r = mv/(qB)$)",
+        "definition": "Circular orbit radius followed by a charge moving perpendicular to a uniform magnetic field."
+      }
+    ],
+    "realWorldExamples": [
+      "Mass Spectrometers in Forensics & Chemistry: Uniform magnetic fields bend speeding ionized molecules into circular paths ($r = mv/qB$); heavier ions curve less, separating isotopes or toxins by exact mass!",
+      "Speaker Voice Coils: Changing audio current $I$ inside a permanent magnet's field experiences oscillating $F = ILB$ force, pushing the speaker cone back and forth to create sound.",
+      "Northern & Southern Lights (Auroras): Solar protons spiral tightly along Earth's magnetic field lines toward the poles instead of hitting the equator."
+    ]
+  },
+  {
+    "id": "p3-13",
+    "code": "P3.13",
+    "course": "Physics 3",
+    "title": "Magnetic Fields of Straight Conductors and Solenoids",
+    "objective": "Interpret magnetic field patterns and formulas for long straight current-carrying wires and solenoids.",
+    "keyFormula": "$$B_{\\text{wire}} = \\frac{\\mu_0 I}{2\\pi r}, \\quad B_{\\text{solenoid}} = \\mu_0 n I = \\mu_0 \\frac{N}{L} I$$",
+    "explanation": "In 1820, Hans Christian Ørsted shocked scientists by noticing a compass needle deflect beside a live wire—proving that **moving electric charges (currents) create magnetic fields**!\n\n### All You Need to Know\n- **Right-Hand Grip Rule (for Straight Wire)**: Grab the wire mentally with your **right thumb pointing along conventional current** $I$; your **curled fingers** wrap around the wire in the direction of the circular magnetic field lines $\\vec{B}$!\n- **Long Straight Wire Field Magnitude** (at perpendicular distance $r$):\n  $$B_{\\text{wire}} = \\frac{\\mu_0 I}{2\\pi r}, \\quad \\mu_0 = 4\\pi \\times 10^{-7}\\text{ T}\\cdot\\text{m/A}$$\n  Stronger current $I$ increases $B$; moving farther ($r$ bigger) weakens $B$ as $1/r$.\n- **Solenoid (Electromagnet Coil)**: Wrapping wire into $N$ tight loops over length $L$ ($n = N/L$ turns per meter) adds loop fields together inside the hollow core into a **strong, nearly uniform field**:\n  $$B_{\\text{solenoid}} = \\mu_0 n I = \\mu_0 \\frac{N}{L} I$$\n  Inserting a soft iron core multiplies $B$ hundreds of times—creating a switchable electromagnet!",
+    "workedExample": {
+      "problem": "A solenoid $0.25\\text{ m}$ long has $500$ turns of wire carrying $2.0\\text{ A}$. Calculate the magnetic field inside its core.",
+      "solutionSteps": [
+        "Find turn density: $n = \\frac{N}{L} = \\frac{500}{0.25\\text{ m}} = 2000\\text{ turns/m}$.",
+        "Apply $B = \\mu_0 n I = (4\\pi \\times 10^{-7}\\text{ T}\\cdot\\text{m/A})(2000\\text{ m}^{-1})(2.0\\text{ A})$.",
+        "Calculate $B = 1.6\\pi \\times 10^{-3}\\text{ T} \\approx 5.03 \\times 10^{-3}\\text{ T}$."
+      ],
+      "finalAnswer": "$B \\approx 5.0 \\times 10^{-3}\\text{ T}$ ($5.0\\text{ mT}$)"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-13-q1",
+        "prompt": "What shape are the magnetic field lines surrounding a long straight current-carrying wire?",
+        "choices": [
+          "Concentric circles centered on the wire",
+          "Straight rays pointing outward",
+          "Parallel straight lines along the wire",
+          "Squares"
+        ],
+        "correctIndex": 0,
+        "explanation": "Ampere's law and the Right-Hand Grip Rule give concentric circular magnetic field lines around a straight wire."
+      },
+      {
+        "id": "p3-13-q2",
+        "prompt": "Inside an ideal solenoid, how does doubling both the current $I$ and the number of turns per meter $n$ affect $B$?",
+        "choices": [
+          "Quadruples $B$",
+          "Doubles $B$",
+          "Halves $B$",
+          "No change"
+        ],
+        "correctIndex": 0,
+        "explanation": "$B = \\mu_0 n I$, so doubling both $n$ and $I$ multiplies $B$ by $2 \\times 2 = 4$."
+      }
+    ],
+    "suggestedSceneId": "p3-magfield",
+    "keyTerms": [
+      {
+        "term": "Permeability of Free Space ($\\mu_0$)",
+        "definition": "Magnetic vacuum constant equal to $4\\pi \\times 10^{-7}\\text{ T}\\cdot\\text{m/A}$."
+      },
+      {
+        "term": "Right-Hand Grip Rule",
+        "definition": "Point right thumb in current $I$ direction; curled fingers show circular magnetic field $\\vec{B}$ around a wire (or curl fingers along coil current so thumb points to solenoid North pole)."
+      },
+      {
+        "term": "Solenoid",
+        "definition": "Long helical coil of wire producing a strong, uniform internal magnetic field when carrying current."
+      },
+      {
+        "term": "Turn Density ($n = N/L$)",
+        "definition": "Number of coil loops per meter of solenoid length ($\\text{m}^{-1}$)."
+      }
+    ],
+    "realWorldExamples": [
+      "Hospital MRI Scanners: Giant superconducting solenoids carry huge steady currents to generate ultra-uniform $1.5\\text{–}3.0\\text{ T}$ magnetic fields inside the patient tunnel for sharp soft-tissue imaging.",
+      "Scrapyard Lifting Electromagnets: Crane operators switch DC current ON to lift tons of scrap steel magnetically, then switch OFF to release the load cleanly.",
+      "Door Locks, Car Starter Relays & Pinball Bumpers: Small solenoids pull an iron plunger inward whenever a button closes the circuit."
+    ]
+  },
+  {
+    "id": "p3-14",
+    "code": "P3.14",
+    "course": "Physics 3",
+    "title": "Faraday's Law of Electromagnetic Induction",
+    "objective": "Explain how magnetic flux changes induce electromotive force (EMF) and identify the factors affecting its magnitude.",
+    "keyFormula": "$$\\Phi_B = B A \\cos\\theta, \\quad \\mathcal{E} = -N \\frac{\\Delta \\Phi_B}{\\Delta t}$$",
+    "explanation": "Current creates magnetism—can magnetism create electric current? Michael Faraday proved **YES**, with one essential rule: **a steady static magnet makes ZERO current—the magnetic flux MUST BE CHANGING**!\n\n### All You Need to Know\n- **Magnetic Flux** ($\\Phi_B$) (how much magnetic field pierces through a coil area $A$):\n  $$\\Phi_B = B A \\cos\\theta \\quad \\left(\\text{SI unit: weber, } 1\\text{ Wb} = 1\\text{ T}\\cdot\\text{m}^2\\right)$$\n  Here $\\theta$ is the angle between $\\vec{B}$ and the **area normal** (perpendicular to the loop face!).\n  - Face-on ($\\theta = 0^\\circ$): maximum flux $\\Phi_B = BA$.\n  - Edge-on ($\\theta = 90^\\circ$): zero flux!\n- **Faraday's Law of Electromagnetic Induction**: Induced electromotive force (voltage $\\mathcal{E}$) equals the number of coil turns $N$ times how fast flux changes:\n  $$|\\mathcal{E}| = N \\left|\\frac{\\Delta \\Phi_B}{\\Delta t}\\right|$$\n- **Three Ways to Change Flux** ($\\Phi_B = BA\\cos\\theta$):\n  1. Change magnetic field strength $B$ (move magnet closer/farther or vary electromagnet current).\n  2. Change loop area $A$ inside the field (pull coil out of field or stretch/shrink loop).\n  3. Change angle $\\theta$ (spin a coil inside a field—how every generator works!).",
+    "workedExample": {
+      "problem": "List three ways to double the induced EMF when pushing a bar magnet into a stationary wire coil.",
+      "solutionSteps": [
+        "Recall Faraday's law: $|\\mathcal{E}| = N\\frac{\\Delta(BA\\cos\\theta)}{\\Delta t}$.",
+        "Method 1: Double the number of coil turns $N$.",
+        "Method 2: Push the magnet twice as fast to cut $\\Delta t$ in half.",
+        "Method 3: Use a magnet with double the magnetic field strength $B$."
+      ],
+      "finalAnswer": "Double $N$, double $B$, or halve the time interval $\\Delta t$ by moving faster."
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-14-q1",
+        "prompt": "When a magnet is held completely motionless inside a stationary coil, the induced EMF is:",
+        "choices": [
+          "Zero",
+          "Maximum",
+          "Negative infinity",
+          "Equal to $N B A$"
+        ],
+        "correctIndex": 0,
+        "explanation": "Induced EMF requires a changing magnetic flux ($\\Delta\\Phi_B / \\Delta t \\neq 0$)."
+      },
+      {
+        "id": "p3-14-q2",
+        "prompt": "Which change increases induced EMF in a coil?",
+        "choices": [
+          "Moving the magnet more slowly",
+          "Increasing the number of turns $N$ and moving the magnet faster",
+          "Removing the coil from the circuit",
+          "Keeping $\\Phi_B$ constant"
+        ],
+        "correctIndex": 1,
+        "explanation": "More turns $N$ and faster flux change ($\\Delta\\Phi_B / \\Delta t$) directly increase $|\\mathcal{E}|$."
+      }
+    ],
+    "suggestedSceneId": "p3-induction",
+    "keyTerms": [
+      {
+        "term": "Magnetic Flux ($\\Phi_B$)",
+        "definition": "Measure of magnetic field passing perpendicularly through a surface area: $\\Phi_B = BA\\cos\\theta$ ($\\text{Wb}$)."
+      },
+      {
+        "term": "Electromagnetic Induction",
+        "definition": "Generation of an electric voltage (EMF) across a conductor whenever magnetic flux through it changes."
+      },
+      {
+        "term": "Faraday's Law",
+        "definition": "Induced EMF magnitude is proportional to coil turns $N$ and rate of change of magnetic flux ($N|\\Delta\\Phi_B / \\Delta t|$)."
+      },
+      {
+        "term": "Induced EMF ($\\mathcal{E}$)",
+        "definition": "Voltage driven around a circuit loop by a changing magnetic environment ($\\text{V}$)."
+      }
+    ],
+    "realWorldExamples": [
+      "Wireless Phone Charging Pads: An AC coil in the charger creates rapidly fluctuating magnetic flux; a flat coil inside your phone picks up that changing flux via Faraday's law to recharge the battery with zero cables!",
+      "Electric Guitar Pickups: Vibrating steel strings alter magnetic flux through tiny coil pickups underneath, inducing exact voltage waveforms amplified to speakers.",
+      "Induction Cooktops: High-frequency AC coils beneath ceramic glass send changing $\\Phi_B$ directly into an iron pan's base, inducing eddy currents that heat the pan directly while the glass stays cooler."
+    ]
+  },
+  {
+    "id": "p3-15",
+    "code": "P3.15",
+    "course": "Physics 3",
+    "title": "Lenz's Law and Conservation of Energy",
+    "objective": "Determine the direction of induced current using Lenz's law and explain why it follows conservation of energy.",
+    "keyFormula": "$$\\mathcal{E} = -N \\frac{\\Delta \\Phi_B}{\\Delta t}$$",
+    "explanation": "Faraday's Law gives the size of induced voltage; the minus sign in $\\mathcal{E} = -N\\frac{\\Delta \\Phi_B}{\\Delta t}$ is **Lenz's Law**, which tells you the **direction** of induced current!\n\n### All You Need to Know\n- **Statement of Lenz's Law**: *An induced current always flows in a direction whose OWN magnetic field **opposes the change in magnetic flux** that produced it.*\n- **Wait—Does It Oppose the Field or the Change in Flux?**: It opposes the **CHANGE**!\n  - **Flux Increasing** (magnet moving closer into coil): Induced $\\vec{B}_{\\text{ind}}$ points **OPPOSITE** to $\\vec{B}_{\\text{ext}}$ to push back against the incoming magnet (North approaching creates a North face repelling it!).\n  - **Flux Decreasing** (magnet moving away out of coil): Induced $\\vec{B}_{\\text{ind}}$ points in the **SAME direction** as $\\vec{B}_{\\text{ext}}$ to pull back and keep flux from dropping!\n- **Why Lenz's Law MUST Hold (Conservation of Energy)**: If induced current helped the magnet speed up instead of resisting it, a tiny nudge would accelerate a magnet endlessly for free energy! Instead, you must do mechanical work pushing against the opposing magnetic force—and that work becomes electrical energy!",
+    "workedExample": {
+      "problem": "You pull the North pole of a bar magnet rapidly away from the right face of a wire loop. What magnetic pole does the right face of the loop develop to oppose this motion?",
+      "solutionSteps": [
+        "As the North pole moves away, the rightward magnetic flux through the loop decreases.",
+        "By Lenz's law, the induced current acts to oppose that decrease by trying to pull the North pole back.",
+        "To attract the departing North pole, the right face of the loop becomes a **South pole**."
+      ],
+      "finalAnswer": "The near face becomes a South pole to oppose the magnet's departure."
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-15-q1",
+        "prompt": "If an induced current aided rather than opposed the magnet's motion into a coil, which physical law would be violated?",
+        "choices": [
+          "Conservation of energy",
+          "Pascal's principle",
+          "Ideal gas law",
+          "Boyle's law"
+        ],
+        "correctIndex": 0,
+        "explanation": "If the coil pulled the magnet in faster while generating current, free kinetic and electrical energy would be created from nothing."
+      },
+      {
+        "id": "p3-15-q2",
+        "prompt": "When a North pole is pushed toward a closed conducting loop, the loop's facing side becomes:",
+        "choices": [
+          "A North pole to repel it",
+          "A South pole to pull it in",
+          "Electrically neutral",
+          "Unmagnetized"
+        ],
+        "correctIndex": 0,
+        "explanation": "To oppose the increasing flux from the approaching North pole, the loop generates an opposing North pole."
+      }
+    ],
+    "suggestedSceneId": "p3-induction",
+    "keyTerms": [
+      {
+        "term": "Lenz's Law",
+        "definition": "Induced current generates a magnetic field that opposes the change in magnetic flux causing it."
+      },
+      {
+        "term": "Conservation of Energy Link",
+        "definition": "Magnetic braking opposition ensures mechanical work must be supplied to generate electrical energy."
+      },
+      {
+        "term": "Eddy Currents",
+        "definition": "Swirling induced loops of current inside solid metal sheets moving through magnetic fields, creating smooth magnetic damping."
+      }
+    ],
+    "realWorldExamples": [
+      "Magnet Dropped Through a Copper Pipe: Although copper isn't ferromagnetic, the falling magnet induces swirling eddy currents in the pipe walls; by Lenz's law, those currents create opposing magnetic poles that slow the magnet dramatically into a gentle float!",
+      "Roller Coaster & Shinkansen Magnetic Brakes: Metal fins passing strong magnets generate eddy-current braking drag with zero physical pad friction or wear.",
+      "Hard-to-Turn Hand-Crank Flashlight: Turning a hand generator connected to a bright bulb feels noticeably harder than spinning it disconnected because induced load current opposes your motion."
+    ]
+  },
+  {
+    "id": "p3-16",
+    "code": "P3.16",
+    "course": "Physics 3",
+    "title": "Quantitative Problems Using Faraday's Law",
+    "objective": "Analyze and solve context-rich quantitative problems using Faraday's law of electromagnetic induction.",
+    "keyFormula": "$$|\\mathcal{E}| = N \\frac{|\\Delta \\Phi_B|}{\\Delta t}, \\quad I_{\\text{induced}} = \\frac{|\\mathcal{E}|}{R}$$",
+    "explanation": "Solving numerical Faraday's Law problems cleanly comes down to spotting **which factor inside** $\\Phi_B = B A \\cos\\theta$ **is changing** over time $\\Delta t$, converting everything to SI units, and multiplying carefully!\n\n### All You Need to Know: Step-by-Step Faraday Formula Playbook\n1. **Compute Initial & Final Flux**:\n   $$\\Phi_{B,i} = B_i A_i \\cos\\theta_i, \\quad \\Phi_{B,f} = B_f A_f \\cos\\theta_f$$\n   - **Unit Check**: Convert $\\text{cm}^2 \\to \\text{m}^2$ ($div 10^4$), $\\text{mm}^2 \\to \\text{m}^2$ ($\\div 10^6$), and $\\text{mT} \\to \\text{T}$ ($\\div 10^3$).\n   - **Angle Check**: If the problem says \"plane of the coil makes $30^\\circ$ with $\\vec{B}$,\" then angle to the normal is $\\theta = 90^\\circ - 30^\\circ = 60^\\circ$! (\"Perpendicular to $\\vec{B}$\" means $\\theta = 0^\\circ$ and $\\cos 0^\\circ = 1$.)\n2. **Find Induced EMF**: $|\\mathcal{E}| = N \\frac{|\\Phi_{B,f} - \\Phi_{B,i}|}{\\Delta t}$.\n   - Flipping a coil $180^\\circ$ reverses flux from $+BA$ to $-BA$, so $|\\Delta\\Phi_B| = 2BA$ (double, not zero!).\n3. **Find Induced Current (if coil has resistance** $R$): $I_{\\text{ind}} = \\frac{|\\mathcal{E}|}{R}$, and induced power $P = \\mathcal{E}^2 / R$.\n4. **Motional EMF (Sliding Bar on Rails)**: $\\mathcal{E} = B L v$.",
+    "workedExample": {
+      "problem": "A $100$-turn circular coil of area $A = 0.020\\text{ m}^2$ and resistance $R = 4.0\\text{ }\\Omega$ sits perpendicular ($\\theta = 0^\\circ$) to a magnetic field that drops uniformly from $0.50\\text{ T}$ to $0.10\\text{ T}$ in $0.20\\text{ s}$. Find the magnitude of the induced EMF and induced current.",
+      "solutionSteps": [
+        "Compute flux change per turn: $\\Delta\\Phi_B = (B_f - B_i)A\\cos 0^\\circ = (0.10 - 0.50)(0.020)(1) = -0.0080\\text{ Wb}$.",
+        "Apply Faraday's law: $|\\mathcal{E}| = N\\frac{|\\Delta\\Phi_B|}{\\Delta t} = 100\\frac{0.0080}{0.20} = 4.0\\text{ V}$.",
+        "Find induced current using Ohm's law: $I = \\frac{|\\mathcal{E}|}{R} = \\frac{4.0\\text{ V}}{4.0\\text{ }\\Omega} = 1.0\\text{ A}$."
+      ],
+      "finalAnswer": "$|\\mathcal{E}| = 4.0\\text{ V}$, $I = 1.0\\text{ A}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-16-q1",
+        "prompt": "A $50$-turn coil experiences a magnetic flux change of $0.060\\text{ Wb}$ in $0.30\\text{ s}$. What is the magnitude of the induced EMF?",
+        "choices": [
+          "10 V",
+          "3.0 V",
+          "0.90 V",
+          "250 V"
+        ],
+        "correctIndex": 0,
+        "explanation": "$|\\mathcal{E}| = 50 \\times (0.060 / 0.30) = 50 \\times 0.20 = 10\\text{ V}$."
+      },
+      {
+        "id": "p3-16-q2",
+        "prompt": "What is the SI unit of magnetic flux $\\Phi_B$?",
+        "choices": [
+          "Tesla (T)",
+          "Weber (Wb)",
+          "Volt (V)",
+          "Henry (H)"
+        ],
+        "correctIndex": 1,
+        "explanation": "Magnetic flux is $\\Phi_B = BA\\cos\\theta$, measured in webers ($1\\text{ Wb} = 1\\text{ T}\\cdot\\text{m}^2$)."
+      }
+    ],
+    "suggestedSceneId": "p3-induction",
+    "keyTerms": [
+      {
+        "term": "Area Normal Angle ($\\theta$)",
+        "definition": "Angle between magnetic field $\\vec{B}$ and the line perpendicular to the coil surface used in $\\Phi_B = BA\\cos\\theta$."
+      },
+      {
+        "term": "Flux Reversal ($\\Delta\\Phi_B = 2BA$)",
+        "definition": "Total flux change when a coil flips $180^\\circ$ or a field reverses direction ($-BA - (+BA) = -2BA$)."
+      },
+      {
+        "term": "Motional EMF ($\\mathcal{E} = BLv$)",
+        "definition": "Induced voltage across a straight conductor of length $L$ sliding at speed $v$ perpendicular to magnetic field $B$."
+      },
+      {
+        "term": "Induced Current ($I = \\mathcal{E}/R$)",
+        "definition": "Current driven through a closed loop of total resistance $R$ by induced EMF."
+      }
+    ],
+    "realWorldExamples": [
+      "Tethered Space Satellite Power Generation: As an orbiting satellite sweeps a long conducting wire across Earth's magnetic field at $7.6\\text{ km/s}$, motional EMF ($\\mathcal{E} = BLv$) generates usable voltage in space.",
+      "Magnetic Speed Sensors in Bike Wheels & Anti-Lock Brakes: Tooth-wheel teeth sweep past a small sensor coil many times per second; faster wheel spin shrinks $\\Delta t$, creating larger induced voltage pulses.",
+      "High-Field MRI Quench Safety Calculations: Engineers calculate $N|\\Delta\\Phi_B/\\Delta t|$ to ensure nearby medical wires don't develop dangerous induced voltages if magnet currents shut down abruptly."
+    ]
+  },
+  {
+    "id": "p3-17",
+    "code": "P3.17",
+    "course": "Physics 3",
+    "title": "Direct Current (DC) vs. Alternating Current (AC)",
+    "objective": "Explain the difference between direct current (DC) and alternating current (AC) and their everyday applications.",
+    "keyFormula": "$$v(t) = V_{\\text{max}} \\sin(2\\pi f t), \\quad V_{\\text{rms}} = \\frac{V_{\\text{max}}}{\\sqrt{2}}$$",
+    "explanation": "Look at a AA battery vs. your classroom wall outlet—both deliver electrical power, yet they move charges in completely different ways: **Direct Current (DC)** vs. **Alternating Current (AC)**!\n\n### All You Need to Know\n- **Direct Current (DC)**: Electric charge flows consistently in **one single direction** (polarity $+$ and $-$ never swap). Produced by **batteries, solar PV panels, and phone adapters**. Voltage vs. time is flat (e.g., $5\\text{ V}$, $12\\text{ V}$).\n- **Alternating Current (AC)**: Electric charge oscillates back and forth, **reversing direction periodically** in a smooth sine wave! Produced by spinning **AC generators** at power plants.\n  - In the **Philippines**, standard wall outlets supply $220\\text{ V}$ **RMS at** $60\\text{ Hz}$ (meaning current reverses direction $120$ times every second!).\n- **Why AC Won the Power Grid (\"War of Currents\")**: Transformers ONLY work with changing magnetic flux (AC)! Raising AC to ultra-high voltage ($115{,}000\\text{–}500{,}000\\text{ V}$) slashes transmission line current $I = P/V$ and drastically cuts wasted $I^2 R$ heat losses across hundreds of kilometers—then local pole transformers step AC back down safely to $220\\text{ V}$!",
+    "workedExample": {
+      "problem": "Philippine residential outlets supply $V_{\\text{rms}} = 220\\text{ V}$ AC at $60\\text{ Hz}$. Calculate the peak voltage $V_{\\text{max}}$ and period $T$ of one cycle.",
+      "solutionSteps": [
+        "Relate peak and RMS voltage: $V_{\\text{max}} = V_{\\text{rms}}\\sqrt{2} = 220\\text{ V} \\times 1.414 \\approx 311\\text{ V}$.",
+        "Find period from frequency: $T = \\frac{1}{f} = \\frac{1}{60\\text{ Hz}} \\approx 0.0167\\text{ s}$ ($16.7\\text{ ms}$)."
+      ],
+      "finalAnswer": "$V_{\\text{max}} \\approx 311\\text{ V}$, $T \\approx 16.7\\text{ ms}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-17-q1",
+        "prompt": "Why is AC used rather than DC for long-distance power grid transmission lines?",
+        "choices": [
+          "AC voltage can be easily stepped up and down using transformers to minimize $I^2R$ heat loss",
+          "AC cannot shock humans",
+          "Batteries only produce AC",
+          "AC wires have zero resistance"
+        ],
+        "correctIndex": 0,
+        "explanation": "Transformers require changing magnetic flux (AC) to step voltage up, cutting current $I$ and resistive power loss $I^2R$."
+      },
+      {
+        "id": "p3-17-q2",
+        "prompt": "Which power source naturally supplies Direct Current (DC)?",
+        "choices": [
+          "A lithium-ion phone battery",
+          "A wall outlet",
+          "A hydro-turbine alternator",
+          "A step-down transformer"
+        ],
+        "correctIndex": 0,
+        "explanation": "Chemical batteries and photovoltaic solar panels push charge in one constant direction (DC)."
+      }
+    ],
+    "suggestedSceneId": "p3-motorgen",
+    "keyTerms": [
+      {
+        "term": "Direct Current (DC)",
+        "definition": "Electric current flowing steadily in one constant direction, supplied by batteries and solar panels."
+      },
+      {
+        "term": "Alternating Current (AC)",
+        "definition": "Electric current that periodically reverses direction sinusoidally ($60\\text{ Hz}$ in Philippine mains)."
+      },
+      {
+        "term": "RMS Voltage ($V_{\\text{rms}}$)",
+        "definition": "Effective DC-equivalent value of an AC waveform ($V_{\\text{rms}} = V_{\\text{peak}}/\\sqrt{2}$); $220\\text{ V}$ outlets actually peak near $311\\text{ V}$!"
+      },
+      {
+        "term": "Rectifier / Inverter",
+        "definition": "A rectifier converts AC to DC (inside phone chargers); an inverter converts DC to AC (for solar home systems)."
+      }
+    ],
+    "realWorldExamples": [
+      "Phone & Laptop Chargers (AC $\\to$ DC): Your wall brick uses a step-down transformer and diode rectifier to convert $220\\text{ V}$ AC into safe $5\\text{–}20\\text{ V}$ DC for lithium-ion batteries.",
+      "Rooftop Solar Inverter (DC $\\to$ AC): Solar panels produce DC electricity directly from sunlight, so an inverter converts it into synchronized $220\\text{ V}$, $60\\text{ Hz}$ AC for household appliances.",
+      "High-Voltage NGCP Transmission Towers: Stepping grid voltage up to $230\\text{ kV}$ or $500\\text{ kV}$ AC moves gigawatts from Luzon hydro/geothermal plants to Metro Manila with minimal cable heating."
+    ]
+  },
+  {
+    "id": "p3-18",
+    "code": "P3.18",
+    "course": "Physics 3",
+    "title": "Electric Motors, Generators, and Transformers",
+    "objective": "Explain the working principles of electric motors, generators, and transformers using electromagnetic induction.",
+    "keyFormula": "$$\\frac{V_s}{V_p} = \\frac{N_s}{N_p} = \\frac{I_p}{I_s}$$",
+    "explanation": "Three devices shaped the modern electrical world—all built from coils of wire, magnetic fields, and Faraday's & Lorentz's laws!\n\n### All You Need to Know\n1. **Electric Motor** (Electrical $\\to$ Mechanical Energy):\n   Current flowing through an armature coil inside a magnetic field experiences opposing magnetic forces ($F = ILB$) on opposite sides, creating torque that spins a shaft! (DC motors use a split-ring commutator to flip coil current every half-turn so torque keeps pushing the same way.)\n2. **Electric Generator** (Mechanical $\\to$ Electrical Energy):\n   External mechanical energy (falling water, steam, wind) spins a coil inside a magnetic field, continuously changing angle $\\theta$ in $\\Phi_B = BA\\cos(\\omega t)$ to induce sinusoidal AC EMF!\n3. **Transformer** (Steps AC Voltage Up or Down via Mutual Induction):\n   Two coils wound on a shared iron core obey the turns-ratio rule (with zero DC transfer!):\n   $$\\frac{V_s}{V_p} = \\frac{N_s}{N_p}, \\quad V_p I_p \\approx V_s I_s$$\n   - **Step-Up** ($N_s > N_p$): raises voltage, lowers current.\n   - **Step-Down** ($N_s < N_p$): lowers voltage, raises current.",
+    "workedExample": {
+      "problem": "An ideal step-down transformer reduces $220\\text{ V}$ AC primary voltage to $11\\text{ V}$ AC for a doorbell. If the primary coil has $N_p = 800$ turns, how many turns $N_s$ are on the secondary coil?",
+      "solutionSteps": [
+        "Apply the transformer turns ratio: $\\frac{V_s}{V_p} = \\frac{N_s}{N_p}$.",
+        "Solve for $N_s$: $N_s = N_p \\frac{V_s}{V_p} = 800 \\times \\frac{11\\text{ V}}{220\\text{ V}}$.",
+        "Simplify $\\frac{11}{220} = \\frac{1}{20}$, giving $N_s = \\frac{800}{20} = 40$ turns."
+      ],
+      "finalAnswer": "$N_s = 40\\text{ turns}$"
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-18-q1",
+        "prompt": "What energy conversion occurs inside an electric generator?",
+        "choices": [
+          "Mechanical energy into electrical energy",
+          "Electrical energy into mechanical energy",
+          "Chemical energy into thermal energy",
+          "Nuclear energy into sound"
+        ],
+        "correctIndex": 0,
+        "explanation": "Generators rotate a coil inside a magnetic field, turning mechanical work into induced electrical energy."
+      },
+      {
+        "id": "p3-18-q2",
+        "prompt": "Why does a transformer fail to step up a steady DC battery voltage?",
+        "choices": [
+          "Steady DC produces constant flux ($\\Delta\\Phi_B / \\Delta t = 0$), so no EMF is induced in the secondary coil",
+          "Iron cores melt under DC",
+          "DC has infinite frequency",
+          "Secondary coils block electrons"
+        ],
+        "correctIndex": 0,
+        "explanation": "Faraday's law requires a changing magnetic flux; steady DC produces a static magnetic field."
+      }
+    ],
+    "suggestedSceneId": "p3-motorgen",
+    "keyTerms": [
+      {
+        "term": "Electric Motor",
+        "definition": "Machine converting electrical energy into rotational mechanical work via magnetic torque on a current-carrying coil."
+      },
+      {
+        "term": "Electric Generator",
+        "definition": "Machine converting mechanical rotation into electrical energy via Faraday's law of electromagnetic induction."
+      },
+      {
+        "term": "Transformer",
+        "definition": "Static AC device using mutual magnetic flux in an iron core to step voltage up or down proportionally to turns ratio $N_s/N_p$."
+      },
+      {
+        "term": "Split-Ring Commutator",
+        "definition": "Rotating contact switch in DC motors that reverses coil current every $180^\\circ$ to maintain continuous rotation."
+      }
+    ],
+    "realWorldExamples": [
+      "Electric Fans, Blenders & E-Trikes (Motors): Household fans and electric tricycles use compact AC/brushless DC motors to convert wall or battery power directly into spinning blades and wheels.",
+      "Wind & Hydro Power Plant Turbines (Generators): Rotating blades turn giant multi-pole generators that supply 60 Hz electricity across entire provinces.",
+      "Neighborhood Pole Transformers (Step-Down): Cylindrical gray pole transformers step $13{,}800\\text{ V}$ street distribution lines safely down to $220\\text{ V}$ before entering homes."
+    ]
+  },
+  {
+    "id": "p3-19",
+    "code": "P3.19",
+    "course": "Physics 3",
+    "title": "Modern Applications of Electromagnetic Induction",
+    "objective": "Describe how electromagnetic induction powers maglev trains, metal detectors, traffic sensors, and magnetic cards.",
+    "keyFormula": "$$\\mathcal{E} = -N\\frac{\\Delta \\Phi_B}{\\Delta t}, \\quad F_{\\text{eddy}} \\propto v$$",
+    "explanation": "Beyond motors and power plants, electromagnetic induction quietly powers some of the fastest, smartest, and most convenient everyday technologies around us!\n\n### All You Need to Know: Modern Induction Applications\n- **Maglev (Magnetic Levitation) Trains**: Superconducting magnets on the train repel or attract track coils, lifting the train centimeters above the guideway** (zero wheel rolling friction!**) while traveling AC guideway coils propel it smoothly past $500\\text{ km/h}$ and eddy currents brake it cleanly.\n- **Airport & Mall Metal Detectors**: A transmitter coil pulses an alternating magnetic field; when a metal object passes through, changing flux induces eddy currents inside the metal—which create a secondary magnetic field detected by a receiver coil!\n- **Roadway Traffic Loop Sensors**: Wire loops buried beneath asphalt at intersections have a tiny inductance/resonant frequency that shifts immediately when a steel car chassis passes over, telling the traffic light a vehicle is waiting!\n- **Magnetic Stripe Cards & Credit/Beep™ Cards**: Traditional swipe cards store binary data in tiny iron-oxide magnetic strips read by an inductive head as you swipe ($\\Delta\\Phi_B/\\Delta t$ requires swiping speed!), while contactless NFC cards use close-range radio induction.",
+    "workedExample": {
+      "problem": "Why must you swipe a magnetic stripe ID or ATM card at a noticeable speed (rather than holding it still) in older swipe readers?",
+      "solutionSteps": [
+        "The card's stripe stores data as tiny north-south magnetic domains.",
+        "Inside the reader sits a miniature pickup coil.",
+        "By Faraday's law ($|\\mathcal{E}| \\propto \\Delta\\Phi_B / \\Delta t$), relative motion is required to create a changing magnetic flux and induce readable voltage pulses."
+      ],
+      "finalAnswer": "Motion creates changing magnetic flux ($\\Delta\\Phi_B / \\Delta t$), inducing the voltage signal read by the coil."
+    },
+    "checkQuestions": [
+      {
+        "id": "p3-19-q1",
+        "prompt": "How does an airport walk-through metal detector sense a metallic key or coin?",
+        "choices": [
+          "A changing magnetic field induces eddy currents in the metal, creating a detectable secondary magnetic field",
+          "It weighs the person's shoes",
+          "It sprays X-rays onto the floor",
+          "It measures static electricity only"
+        ],
+        "correctIndex": 0,
+        "explanation": "Pulsed magnetic fields induce eddy currents in conductors, which in turn induce a signal in the detector's sensor coil."
+      },
+      {
+        "id": "p3-19-q2",
+        "prompt": "What physical effect creates repulsive lift and braking forces in electromagnetic maglev systems?",
+        "choices": [
+          "Induced eddy currents opposing flux changes per Lenz's law",
+          "Buoyant air pressure",
+          "Static friction on rails",
+          "Thermal expansion"
+        ],
+        "correctIndex": 0,
+        "explanation": "Induced currents oppose the changing magnetic flux, producing magnetic levitation and smooth eddy-current braking."
+      }
+    ],
+    "suggestedSceneId": "p3-motorgen",
+    "keyTerms": [
+      {
+        "term": "Maglev Propulsion & Levitation",
+        "definition": "Frictionless high-speed train technology using superconducting magnets and synchronized track electromagnets."
+      },
+      {
+        "term": "Inductive Loop Detector",
+        "definition": "Buried wire coil whose magnetic inductance shifts when metallic vehicles enter its field, triggering traffic signals or parking gates."
+      },
+      {
+        "term": "Secondary Eddy-Current Detection",
+        "definition": "Method used by metal detectors to sense metallic objects from the opposing magnetic field of induced eddy currents."
+      },
+      {
+        "term": "Magnetic Read Head",
+        "definition": "Tiny coil sensor that converts moving magnetic domain patterns on a swiped card stripe into voltage pulses."
+      }
+    ],
+    "realWorldExamples": [
+      "Mall Entrance Walk-Through Metal Detectors: Detect hidden metal keys, coins, or weapons non-invasively because conductive metals disturb the doorway's alternating magnetic field via induced eddy currents.",
+      "Automated Toll & Parking Boom Barriers: Inductive wire loops embedded under the concrete lane sense when a vehicle arrives and closes cleanly only after the car clears the loop.",
+      "Contactless RFID/NFC School IDs & LRT Beep Cards: Holding the card near the reader lets the reader's AC coil induce enough power inside the card's tiny antenna coil to transmit your ID wirelessly—no battery inside the card!"
+    ]
+  }
+]

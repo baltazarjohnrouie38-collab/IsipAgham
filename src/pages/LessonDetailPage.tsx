@@ -3,10 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
+  BookMarked,
   Bot,
   Box,
   CheckCircle2,
   ClipboardList,
+  Globe2,
   Layers,
   Square,
   Volume2,
@@ -16,7 +18,6 @@ import {
   buildLessonStudyText,
   getLessonById,
   getNextLesson,
-  TERMS_META,
 } from '../data/lessons';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useSpeech } from '../hooks/useSpeech';
@@ -38,7 +39,6 @@ export const LessonDetailPage: React.FC = () => {
 
   const lesson = getLessonById(lessonId);
   const nextLesson = lesson ? getNextLesson(lesson.id) : undefined;
-  const termMeta = lesson ? TERMS_META.find((t) => t.term === lesson.term) : undefined;
 
   const [studySets, setStudySets] = useState<StudySet[]>([]);
   const [selectedChoices, setSelectedChoices] = useState<Record<number, number>>({});
@@ -70,7 +70,7 @@ export const LessonDetailPage: React.FC = () => {
           Lesson not found
         </h1>
         <p className="text-base text-slate-600 dark:text-neutral-400">
-          Choose any lesson from Terms 1, 2, or 3 to begin studying.
+          Choose any lesson from Physics 1, Physics 2, or Physics 3 to begin studying.
         </p>
         <div>
           <Link to="/lessons">
@@ -132,7 +132,13 @@ export const LessonDetailPage: React.FC = () => {
       stop();
       return;
     }
-    const cleanSpeech = `${lesson.code} ${lesson.title}. Objective: ${lesson.objective}. ${lesson.explanation}`;
+    const defsSpeech = lesson.keyTerms?.length
+      ? ` Key Definitions: ${lesson.keyTerms.map((t) => `${t.term}: ${t.definition}`).join('. ')}.`
+      : '';
+    const realWorldSpeech = lesson.realWorldExamples?.length
+      ? ` Real-World Examples: ${lesson.realWorldExamples.join('. ')}.`
+      : '';
+    const cleanSpeech = `${lesson.code} ${lesson.title}. Objective: ${lesson.objective}. ${lesson.explanation}${defsSpeech}${realWorldSpeech}`;
     speak(cleanSpeech);
     void toggleChecklistItem('try_tts_darkmode', true);
   };
@@ -166,7 +172,7 @@ export const LessonDetailPage: React.FC = () => {
       {/* Header & Objective */}
       <header className="space-y-3">
         <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
-          <span>{termMeta?.shortTitle || lesson.course}</span>
+          <span>{lesson.course}</span>
           <span>·</span>
           <span>Lesson {lesson.code}</span>
         </div>
@@ -254,13 +260,64 @@ export const LessonDetailPage: React.FC = () => {
       {/* Clear Explanation (Humanist Serif >= 16px) */}
       <Card className="space-y-4">
         <h2 className="font-display text-lg font-bold text-slate-950 dark:text-neutral-100">
-          Concept Explanation
+          Concept Explanation &amp; All You Need to Know
         </h2>
         <MathText
           text={lesson.explanation}
           className="font-lesson text-base sm:text-[17px] text-slate-800 dark:text-neutral-200 leading-[1.75]"
         />
       </Card>
+
+      {/* Key Definitions & Terms */}
+      {lesson.keyTerms && lesson.keyTerms.length > 0 && (
+        <Card className="space-y-4">
+          <div className="flex items-center gap-2">
+            <BookMarked className="h-5 w-5 text-blue-700 dark:text-blue-400 shrink-0" aria-hidden="true" />
+            <h2 className="font-display text-lg font-bold text-slate-950 dark:text-neutral-100">
+              Key Definitions &amp; Terms
+            </h2>
+          </div>
+          <dl className="divide-y divide-stone-200/80 dark:divide-neutral-800">
+            {lesson.keyTerms.map((item, idx) => (
+              <div key={idx} className="py-3 first:pt-0 last:pb-0 space-y-1">
+                <dt className="text-sm sm:text-base font-bold text-slate-950 dark:text-neutral-100">
+                  <MathInline text={item.term} />
+                </dt>
+                <dd className="font-lesson text-base text-slate-700 dark:text-neutral-300 leading-relaxed">
+                  <MathInline text={item.definition} />
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </Card>
+      )}
+
+      {/* Real-World Explanations & Everyday Examples */}
+      {lesson.realWorldExamples && lesson.realWorldExamples.length > 0 && (
+        <Card className="space-y-4 border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/25 dark:bg-emerald-950/10">
+          <div className="flex items-center gap-2">
+            <Globe2 className="h-5 w-5 text-emerald-700 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+            <h2 className="font-display text-lg font-bold text-slate-950 dark:text-neutral-100">
+              Real-World Explanations &amp; Applications
+            </h2>
+          </div>
+          <ul className="space-y-3">
+            {lesson.realWorldExamples.map((example, idx) => (
+              <li
+                key={idx}
+                className="flex items-start gap-3 font-lesson text-base text-slate-800 dark:text-neutral-200 leading-relaxed"
+              >
+                <span className="h-6 w-6 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 tabular-nums">
+                  {idx + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <MathInline text={example} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       {/* Worked Example */}
       <Card className="space-y-4">
