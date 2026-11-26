@@ -19,7 +19,7 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div
-      className={`liquid-glass rounded-[24px] transition-[transform,border-color,box-shadow] duration-250 [transition-timing-function:cubic-bezier(0.22,1.25,0.36,1)] ${PADDING_CLASSES[padding]} ${className}`}
+      className={`apple-surface rounded-[22px] transition-[transform,border-color,box-shadow] duration-200 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${PADDING_CLASSES[padding]} ${className}`}
       {...props}
     >
       {children}

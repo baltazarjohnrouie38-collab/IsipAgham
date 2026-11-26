@@ -15,6 +15,7 @@ export type UiSoundKind =
   | 'success';
 
 let sharedAudioCtx: AudioContext | null = null;
+let cachedNoiseBuffer: AudioBuffer | null = null;
 let lastPlayTimestamp = 0;
 
 function getAudioContext(): AudioContext | null {
@@ -30,6 +31,20 @@ function getAudioContext(): AudioContext | null {
     void sharedAudioCtx.resume().catch(() => undefined);
   }
   return sharedAudioCtx;
+}
+
+function getNoiseBuffer(ctx: AudioContext): AudioBuffer {
+  if (cachedNoiseBuffer && cachedNoiseBuffer.sampleRate === ctx.sampleRate) {
+    return cachedNoiseBuffer;
+  }
+  const length = Math.max(1, Math.floor(ctx.sampleRate * 0.08));
+  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  const channel = buffer.getChannelData(0);
+  for (let i = 0; i < length; i += 1) {
+    channel[i] = (Math.random() * 2 - 1) * Math.exp(-i / (length * 0.25));
+  }
+  cachedNoiseBuffer = buffer;
+  return buffer;
 }
 
 export function isSoundEnabled(): boolean {
@@ -52,35 +67,85 @@ export function setSoundEnabled(enabled: boolean): void {
   window.dispatchEvent(new CustomEvent(SOUND_EVENT_NAME, { detail: enabled }));
 }
 
-function playTone(
+// Soft iOS-style organic percussive noise transient (like iOS keyboard Tock / Lock / Switch)
+function playTactileImpulse(
+  ctx: AudioContext,
+  opts: {
+    centerFreq: number;
+    q: number;
+    duration: number;
+    gain: number;
+    startOffset?: number;
+  }
+) {
+  const start = ctx.currentTime + (opts.startOffset ?? 0);
+  const source = ctx.createBufferSource();
+  source.buffer = getNoiseBuffer(ctx);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(opts.centerFreq, start);
+  filter.Q.setValueAtTime(opts.q, start);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.linearRampToValueAtTime(opts.gain, start + 0.0015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + opts.duration);
+
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  source.start(start);
+  source.stop(start + opts.duration + 0.01);
+}
+
+// Warm iOS marimba / glass-bell sine resonance
+function playGlassTone(
   ctx: AudioContext,
   opts: {
     freq: number;
     endFreq?: number;
-    type?: OscillatorType;
     startOffset?: number;
     duration: number;
     peakGain: number;
+    addOvertone?: boolean;
   }
 ) {
   const start = ctx.currentTime + (opts.startOffset ?? 0);
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
 
-  osc.type = opts.type ?? 'sine';
+  osc.type = 'sine';
   osc.frequency.setValueAtTime(opts.freq, start);
   if (opts.endFreq) {
     osc.frequency.exponentialRampToValueAtTime(opts.endFreq, start + opts.duration);
   }
 
-  gain.gain.setValueAtTime(0.0008, start);
-  gain.gain.linearRampToValueAtTime(opts.peakGain, start + Math.min(0.012, opts.duration * 0.25));
-  gain.gain.exponentialRampToValueAtTime(0.0006, start + opts.duration);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.linearRampToValueAtTime(opts.peakGain, start + Math.min(0.006, opts.duration * 0.2));
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + opts.duration);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
   osc.start(start);
-  osc.stop(start + opts.duration + 0.01);
+  osc.stop(start + opts.duration + 0.015);
+
+  if (opts.addOvertone) {
+    const overtone = ctx.createOscillator();
+    const overtoneGain = ctx.createGain();
+    overtone.type = 'sine';
+    overtone.frequency.setValueAtTime(opts.freq * 2, start);
+
+    overtoneGain.gain.setValueAtTime(0.0001, start);
+    overtoneGain.gain.linearRampToValueAtTime(opts.peakGain * 0.22, start + 0.004);
+    overtoneGain.gain.exponentialRampToValueAtTime(0.0001, start + opts.duration * 0.55);
+
+    overtone.connect(overtoneGain);
+    overtoneGain.connect(ctx.destination);
+    overtone.start(start);
+    overtone.stop(start + opts.duration * 0.6);
+  }
 }
 
 export function playUiSound(kind: UiSoundKind = 'click', forcePlay = false): void {
@@ -96,112 +161,69 @@ export function playUiSound(kind: UiSoundKind = 'click', forcePlay = false): voi
   if (!ctx || ctx.state === 'suspended') return;
 
   if (kind === 'tab') {
-    // Gentle two-note glass/marimba step for switching tabs & nav items
-    playTone(ctx, { freq: 523.25, duration: 0.048, peakGain: 0.045, type: 'sine' });
-    playTone(ctx, {
-      freq: 698.46,
-      duration: 0.075,
-      peakGain: 0.05,
-      type: 'triangle',
-      startOffset: 0.028,
-    });
+    // Subtle iOS Liquid Glass dock / tab tap: crisp damped transient + warm body thump
+    playTactileImpulse(ctx, { centerFreq: 2150, q: 2.2, duration: 0.014, gain: 0.045 });
+    playGlassTone(ctx, { freq: 310, endFreq: 195, duration: 0.026, peakGain: 0.032 });
     return;
   }
 
   if (kind === 'toggle') {
-    // Silky iOS glass switch pop
-    playTone(ctx, {
-      freq: 440,
-      endFreq: 760,
-      duration: 0.046,
-      peakGain: 0.048,
-      type: 'sine',
-    });
+    // Authentic iOS UISwitch micro-tock (soft tactile snap)
+    playTactileImpulse(ctx, { centerFreq: 2600, q: 2.8, duration: 0.012, gain: 0.05 });
+    playGlassTone(ctx, { freq: 380, endFreq: 520, duration: 0.024, peakGain: 0.024 });
     return;
   }
 
   if (kind === 'flip') {
-    playTone(ctx, {
-      freq: 340,
-      endFreq: 610,
-      duration: 0.058,
-      peakGain: 0.052,
-      type: 'triangle',
-    });
+    // Soft airy iOS card swipe / breath
+    playTactileImpulse(ctx, { centerFreq: 1350, q: 0.9, duration: 0.045, gain: 0.042 });
+    playGlassTone(ctx, { freq: 240, endFreq: 340, duration: 0.032, peakGain: 0.018 });
     return;
   }
 
   if (kind === 'correct' || kind === 'success') {
-    // Bright rewarding major chord chime (C5 -> E5 -> G5)
-    playTone(ctx, { freq: 523.25, duration: 0.14, peakGain: 0.058, type: 'triangle' });
-    playTone(ctx, {
-      freq: 659.25,
-      duration: 0.16,
-      peakGain: 0.058,
-      type: 'triangle',
-      startOffset: 0.065,
+    // Gentle Apple Pay / iOS Glass Bell confirmation chime (F5 -> C6)
+    playGlassTone(ctx, {
+      freq: 698.46,
+      duration: 0.19,
+      peakGain: 0.042,
+      addOvertone: true,
     });
-    playTone(ctx, {
-      freq: 783.99,
-      duration: 0.22,
-      peakGain: 0.05,
-      type: 'sine',
-      startOffset: 0.13,
+    playGlassTone(ctx, {
+      freq: 1046.5,
+      duration: 0.28,
+      peakGain: 0.045,
+      startOffset: 0.085,
+      addOvertone: true,
     });
     return;
   }
 
   if (kind === 'celebrate') {
-    // Joyful 4-note ascending arpeggio (C5 -> E5 -> G5 -> C6)
-    const notes = [523.25, 659.25, 783.99, 1046.5];
+    // Warm Apple glass marimba flourish (F5 -> A5 -> C6 -> F6)
+    const notes = [698.46, 880.0, 1046.5, 1396.91];
     notes.forEach((freq, idx) => {
-      playTone(ctx, {
+      playGlassTone(ctx, {
         freq,
-        duration: idx === 3 ? 0.3 : 0.14,
-        peakGain: idx === 3 ? 0.062 : 0.052,
-        type: idx === 3 ? 'sine' : 'triangle',
-        startOffset: idx * 0.07,
+        duration: idx === 3 ? 0.36 : 0.16,
+        peakGain: idx === 3 ? 0.048 : 0.038,
+        startOffset: idx * 0.075,
+        addOvertone: true,
       });
     });
     return;
   }
 
   if (kind === 'wrong') {
-    // Soft, gentle low wood tap (encouraging, never harsh)
-    playTone(ctx, {
-      freq: 270,
-      endFreq: 185,
-      duration: 0.11,
-      peakGain: 0.052,
-      type: 'triangle',
-    });
+    // Soft muted iOS haptic nudge (warm low thump, zero harsh buzz)
+    playGlassTone(ctx, { freq: 155, endFreq: 95, duration: 0.07, peakGain: 0.05 });
+    playTactileImpulse(ctx, { centerFreq: 680, q: 1.5, duration: 0.02, gain: 0.03 });
     return;
   }
 
-  // Default tactile click
-  const t = ctx.currentTime;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  const filter = ctx.createBiquadFilter();
-
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(1180, t);
-  filter.Q.setValueAtTime(1.1, t);
-
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(880, t);
-  osc.frequency.exponentialRampToValueAtTime(340, t + 0.024);
-
-  gain.gain.setValueAtTime(0.001, t);
-  gain.gain.linearRampToValueAtTime(0.065, t + 0.003);
-  gain.gain.exponentialRampToValueAtTime(0.0008, t + 0.026);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start(t);
-  osc.stop(t + 0.03);
+  // Default tactile iOS Tock (organic damped wood/glass tap — never a retro beep)
+  playTactileImpulse(ctx, { centerFreq: 1950, q: 2.0, duration: 0.012, gain: 0.046 });
+  playGlassTone(ctx, { freq: 210, endFreq: 120, duration: 0.02, peakGain: 0.028 });
 }
 
 export function useSoundSettings() {
@@ -239,7 +261,7 @@ export function useSoundSettings() {
     setEnabledState(next);
     if (next) {
       getAudioContext();
-      window.setTimeout(() => playUiSound('click', true), 15);
+      window.setTimeout(() => playUiSound('toggle', true), 15);
     }
   }, []);
 

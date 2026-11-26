@@ -36,7 +36,6 @@ import {
 import { PWAInstallButton } from '../ui/PWAInstallButton';
 import { UserAvatar } from '../ui/UserAvatar';
 import sidebarLogoUrl from '../../assets/images/regenerated_image_1795533932091.jpg';
-import liquidBackdropUrl from '../../assets/images/ios_liquid_backdrop_1795687710854.jpg';
 
 interface NavItem {
   to: string;
@@ -180,26 +179,11 @@ export const AppShell: React.FC = () => {
 
   return (
     <div className="relative min-h-screen text-slate-950 dark:text-slate-50 flex flex-col lg:flex-row">
-      {/* iOS 27 Ambient Liquid Glass Spatial Backdrop */}
-      <div className="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
-        <img
-          src={liquidBackdropUrl}
-          alt=""
-          className={`h-full w-full object-cover transition-[filter] duration-500 ${
-            darkMode
-              ? 'brightness-[0.3] contrast-125 saturate-125 hue-rotate-[8deg]'
-              : 'brightness-105 saturate-110'
-          }`}
-          referrerPolicy="no-referrer"
-        />
-        <div
-          className={`absolute inset-0 ${
-            darkMode
-              ? 'bg-[radial-gradient(circle_at_20%_15%,rgba(56,189,248,0.16),transparent_45%),radial-gradient(circle_at_85%_75%,rgba(59,130,246,0.18),transparent_48%),linear-gradient(180deg,rgba(6,9,19,0.58)_0%,rgba(6,9,19,0.82)_100%)]'
-              : 'bg-[radial-gradient(circle_at_15%_15%,rgba(255,255,255,0.68),transparent_52%),linear-gradient(180deg,rgba(238,243,250,0.42)_0%,rgba(229,238,252,0.62)_100%)]'
-          }`}
-        />
-      </div>
+      {/* Apple iOS System Grouped Canvas Background */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none select-none ios-app-canvas"
+        aria-hidden="true"
+      />
 
       <OfflineBanner />
 
@@ -357,8 +341,8 @@ export const AppShell: React.FC = () => {
         </div>
       </aside>
 
-      {/* Mobile Compact Liquid Glass Sticky Header */}
-      <header className="lg:hidden sticky top-0 z-30 h-14 liquid-glass rounded-none border-x-0 border-t-0 px-3 sm:px-4 flex items-center justify-between">
+      {/* Mobile Compact Header */}
+      <header className="lg:hidden sticky top-2 mx-3 z-30 h-13 liquid-glass rounded-full px-3 sm:px-4 flex items-center justify-between">
         <NavLink to="/" className="focus-visible:outline-none">
           <Logo size="sm" src={sidebarLogoUrl} />
         </NavLink>
@@ -581,17 +565,17 @@ export const AppShell: React.FC = () => {
         </header>
 
         {/* Main Content Viewport */}
-        <main className="flex-1 pb-24 lg:pb-10">
+        <main className="flex-1 pb-28 lg:pb-12">
           <div key={location.pathname} className="animate-enter max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <Outlet />
           </div>
         </main>
       </div>
 
-      {/* Mobile Floating iOS 27 Liquid Glass Dock */}
+      {/* Mobile Floating Curved Liquid Glass Navigator — always pinned without scrolling */}
       <nav
         aria-label="Mobile bottom navigation"
-        className="lg:hidden fixed bottom-2 left-3 right-3 z-30 liquid-dock rounded-[28px] pb-safe"
+        className="lg:hidden fixed bottom-3 left-3 right-3 z-30 liquid-dock rounded-full pb-safe"
       >
         <div className="grid grid-cols-5 h-15 p-1.5 gap-1">
           {MOBILE_NAV.map(({ to, mobileLabel, icon: Icon, end }) => (
@@ -600,10 +584,10 @@ export const AppShell: React.FC = () => {
               to={to}
               end={end}
               className={({ isActive }) =>
-                `group flex flex-col items-center justify-center gap-0.5 rounded-[22px] min-h-[44px] text-[10px] font-semibold transition-all duration-200 [transition-timing-function:cubic-bezier(0.22,1.25,0.36,1)] active:scale-[0.92] ${
+                `group flex flex-col items-center justify-center gap-0.5 rounded-full min-h-[44px] text-[10px] font-semibold transition-all duration-200 [transition-timing-function:cubic-bezier(0.22,1.25,0.36,1)] active:scale-[0.92] ${
                   isActive
                     ? 'liquid-lens-active'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white'
+                    : 'text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white'
                 }`
               }
             >

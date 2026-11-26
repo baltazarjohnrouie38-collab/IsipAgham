@@ -25,7 +25,6 @@ import { Input, Select } from '../components/ui/Input';
 import { OfflineBanner } from '../components/ui/OfflineBanner';
 import { PWAInstallButton } from '../components/ui/PWAInstallButton';
 import authHeroLogoUrl from '../assets/images/regenerated_image_1795555562184.jpg';
-import liquidBackdropUrl from '../assets/images/ios_liquid_backdrop_1795687710854.jpg';
 
 const GoogleMark: React.FC = () => (
   <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
@@ -168,25 +167,10 @@ export const AuthPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen text-slate-950 dark:text-slate-50 flex flex-col">
-      <div className="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
-        <img
-          src={liquidBackdropUrl}
-          alt=""
-          className={`h-full w-full object-cover transition-[filter] duration-500 ${
-            darkMode
-              ? 'brightness-[0.3] contrast-125 saturate-125 hue-rotate-[8deg]'
-              : 'brightness-105 saturate-110'
-          }`}
-          referrerPolicy="no-referrer"
-        />
-        <div
-          className={`absolute inset-0 ${
-            darkMode
-              ? 'bg-[radial-gradient(circle_at_20%_15%,rgba(56,189,248,0.16),transparent_45%),radial-gradient(circle_at_85%_75%,rgba(59,130,246,0.18),transparent_48%),linear-gradient(180deg,rgba(6,9,19,0.58)_0%,rgba(6,9,19,0.82)_100%)]'
-              : 'bg-[radial-gradient(circle_at_15%_15%,rgba(255,255,255,0.68),transparent_52%),linear-gradient(180deg,rgba(238,243,250,0.42)_0%,rgba(229,238,252,0.62)_100%)]'
-          }`}
-        />
-      </div>
+      <div
+        className="fixed inset-0 z-0 pointer-events-none select-none ios-app-canvas"
+        aria-hidden="true"
+      />
 
       <OfflineBanner />
 

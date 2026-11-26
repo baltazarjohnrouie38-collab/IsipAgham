@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface IosIslandPayload {
   title: string;
@@ -16,6 +16,47 @@ export function triggerIosIsland(payload: IosIslandPayload): void {
 function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function prefersReducedTransparency(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(prefers-reduced-transparency: reduce)').matches;
+}
+
+export function useTabBarScrollMinimize(): boolean {
+  const [minimized, setMinimized] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || prefersReducedMotion()) return;
+
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY;
+      if (y <= 32) {
+        setMinimized(false);
+      } else if (y - lastY > 14 && y > 96) {
+        setMinimized(true);
+      } else if (lastY - y > 12) {
+        setMinimized(false);
+      }
+      lastY = y;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return minimized;
 }
 
 export function useIosInteractiveEffects(): void {
@@ -44,7 +85,8 @@ export function useIosInteractiveEffects(): void {
         return;
       }
 
-      if (e.pointerType === 'touch' && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      const isTouch = e.pointerType === 'touch';
+      if (isTouch && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
         try {
           navigator.vibrate(6);
         } catch {
@@ -52,21 +94,21 @@ export function useIosInteractiveEffects(): void {
         }
       }
 
-      if (prefersReducedMotion()) return;
+      if (prefersReducedMotion() || prefersReducedTransparency()) return;
 
       const x = e.clientX;
       const y = e.clientY;
       if (!Number.isFinite(x) || !Number.isFinite(y) || (x === 0 && y === 0)) return;
 
       const ripple = document.createElement('span');
-      ripple.className = 'ios-touch-ripple';
+      ripple.className = isTouch ? 'ios-touch-ripple' : 'ios-touch-ripple ios-touch-ripple-fine';
       ripple.style.left = `${x}px`;
       ripple.style.top = `${y}px`;
       document.body.appendChild(ripple);
 
       window.setTimeout(() => {
         ripple.remove();
-      }, 440);
+      }, 400);
     };
 
     const flushSpotlight = () => {
@@ -78,7 +120,9 @@ export function useIosInteractiveEffects(): void {
     };
 
     const handlePointerMove = (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse' || prefersReducedMotion()) return;
+      if (e.pointerType !== 'mouse' || prefersReducedMotion() || prefersReducedTransparency()) {
+        return;
+      }
       const target = e.target as HTMLElement | null;
       if (!target) return;
 

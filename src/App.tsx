@@ -27,102 +27,96 @@ const AppRoutes: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#EEF3FA] dark:bg-[#060913] p-6 max-w-5xl mx-auto">
+      <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#000000] p-6 max-w-5xl mx-auto">
         <PageSkeleton />
       </div>
     );
   }
 
   if (!user) {
-    return (
-      <div key="auth-open" className="ios-app-open">
-        <AuthPage />
-      </div>
-    );
+    return <AuthPage />;
   }
 
   return (
-    <div key="workspace-open" className="ios-app-open">
-      <NotificationProvider>
-        <Routes>
-          <Route element={<AppShell />}>
-            <Route
-              path="/"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <HomePage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/lessons"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <LessonsPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/lessons/:lessonId"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <LessonDetailPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/study"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <StudyPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/visualizer"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <VisualizerPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/ai"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <AiTutorPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <ProfilePage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/checklist"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <ChecklistPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/notifications"
-              element={
-                <Suspense fallback={<PageSkeleton />}>
-                  <NotificationsPage />
-                </Suspense>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
-      </NotificationProvider>
-    </div>
+    <NotificationProvider>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route
+            path="/"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <HomePage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/lessons"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <LessonsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/lessons/:lessonId"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <LessonDetailPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/study"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <StudyPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/visualizer"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <VisualizerPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/ai"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <AiTutorPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <ProfilePage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/checklist"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <ChecklistPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <NotificationsPage />
+              </Suspense>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </NotificationProvider>
   );
 };
 

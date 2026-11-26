@@ -250,7 +250,7 @@ export const HomePage: React.FC = () => {
               </p>
             </div>
           </div>
-          <span className="liquid-btn-primary inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0">
+          <span className="bg-slate-900/6 dark:bg-white/14 text-slate-900 dark:text-white inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0">
             <span className="hidden sm:inline">View all</span>
             <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
@@ -376,7 +376,7 @@ export const HomePage: React.FC = () => {
                 <Link
                   key={set.id}
                   to={`/study?tab=flashcards&setId=${encodeURIComponent(set.id)}`}
-                  className="liquid-glass group rounded-[22px] p-4 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] transition-[transform,box-shadow,border-color] duration-200 flex items-center gap-3.5"
+                  className="apple-surface group rounded-[20px] p-4 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98] transition-[transform,box-shadow,border-color] duration-200 flex items-center gap-3.5"
                 >
                   <ProgressRing percent={pct} colorClass={ringColor} />
                   <div className="min-w-0">

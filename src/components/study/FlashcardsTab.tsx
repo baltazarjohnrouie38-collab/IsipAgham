@@ -717,7 +717,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
               return (
                 <div
                   key={set.id}
-                  className="liquid-glass rounded-[22px] hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 overflow-hidden flex flex-col justify-between"
+                  className="apple-surface rounded-[22px] hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 overflow-hidden flex flex-col justify-between"
                 >
                   <div>
                     <div className={`h-12 ${bannerClass} px-4 flex items-center justify-end`}>
@@ -991,7 +991,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   }`}
                 >
                   {/* Front Face (Question) */}
-                  <div className="flip-card-face liquid-glass-strong rounded-[26px] p-6 sm:p-10 min-h-[260px] flex flex-col justify-between transition-colors">
+                  <div className="flip-card-face apple-surface rounded-[24px] p-6 sm:p-10 min-h-[260px] flex flex-col justify-between transition-colors">
                     <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
                       <div className="flex flex-wrap items-center gap-2">
                         <span>Question · {activeItem.setTitle}</span>
@@ -1052,7 +1052,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   </div>
 
                   {/* Back Face (Answer) */}
-                  <div className="flip-card-face flip-card-back liquid-glass-strong rounded-[26px] border border-[#007AFF]/35 dark:border-[#4DA3FF]/35 p-6 sm:p-10 min-h-[260px] flex flex-col justify-between">
+                  <div className="flip-card-face flip-card-back apple-surface rounded-[24px] border-[#007AFF]/35 dark:border-[#4DA3FF]/35 p-6 sm:p-10 min-h-[260px] flex flex-col justify-between">
                     <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-blue-700 dark:text-blue-400 font-semibold tabular-nums">
                       <span>Answer · {activeItem.setTitle}</span>
                       <span>
