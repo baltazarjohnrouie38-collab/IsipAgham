@@ -42,14 +42,20 @@ async function parseJsonResponse<T>(response: Response, fallbackError: string): 
   const text = await response.text();
   if (!text) {
     if (!response.ok) {
-      throw new Error(fallbackError);
+      throw new Error(`${fallbackError} (HTTP ${response.status})`);
     }
     return {} as T & { error?: string };
+  }
+  const trimmed = text.trim();
+  if (trimmed.startsWith('<')) {
+    throw new Error(
+      `API route not found (${response.url.includes('/api/ai-chat') ? '/api/ai-chat' : 'server'} returned HTML instead of JSON, HTTP ${response.status}). Make sure functions/api/ai-chat.ts is deployed.`
+    );
   }
   try {
     return JSON.parse(text) as T & { error?: string };
   } catch {
-    throw new Error(fallbackError);
+    throw new Error(`${fallbackError} (HTTP ${response.status})`);
   }
 }
 
@@ -119,9 +125,11 @@ export async function askPhysicsTutorApi(params: {
   };
 }): Promise<string> {
   const authHeaders = await getAuthHeader();
+  const customAiEndpoint = (import.meta.env.VITE_AI_API_URL || '').trim();
+  const endpoint = customAiEndpoint || '/api/ai-chat';
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    const response = await fetch('/api/ai-chat', {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         ...authHeaders,

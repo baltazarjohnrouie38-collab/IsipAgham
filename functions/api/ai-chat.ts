@@ -1,6 +1,6 @@
 interface Env {
   GEMINI_API_KEY: string;
-  FIREBASE_API_KEY?: string;
+  FIREBASE_PROJECT_ID?: string;
 }
 
 interface TutorContext {
@@ -8,8 +8,7 @@ interface TutorContext {
   env: Env;
 }
 
-// Public Firebase Web API key from firebase-applet-config.json (used as fallback if FIREBASE_API_KEY env var is not set in Cloudflare)
-const DEFAULT_FIREBASE_WEB_API_KEY = "AIzaSyAQtHBRr4_RhX-3U3mb2n67IeR-qGcEEr8";
+const DEFAULT_FIREBASE_PROJECT_ID = "gen-lang-client-0535882452";
 
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -34,43 +33,145 @@ function redact(text: string): string {
     .replace(/\b(?:\+?63|0)9\d{9}\b/g, "[redacted-phone]");
 }
 
+function base64UrlToUint8Array(segment: string): Uint8Array<ArrayBuffer> {
+  const normalized = segment.replace(/-/g, "+").replace(/_/g, "/");
+  const pad =
+    normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+  const binary = atob(normalized + pad);
+  const buffer = new ArrayBuffer(binary.length);
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+function decodeBase64UrlJson<T>(segment: string): T {
+  const bytes = base64UrlToUint8Array(segment);
+  const text = new TextDecoder().decode(bytes);
+  return JSON.parse(text) as T;
+}
+
+interface JwkEntry extends JsonWebKey {
+  kid?: string;
+}
+
+let cachedJwks: JwkEntry[] = [];
+let jwksExpiryMs = 0;
+
+async function getFirebaseJwks(forceRefresh = false): Promise<JwkEntry[]> {
+  if (!forceRefresh && Date.now() < jwksExpiryMs && cachedJwks.length > 0) {
+    return cachedJwks;
+  }
+
+  const res = await fetch(
+    "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
+  );
+  if (!res.ok) {
+    throw new Error(`Failed to fetch Firebase public keys (${res.status}).`);
+  }
+
+  const cacheControl = res.headers.get("cache-control") || "";
+  const maxAgeMatch = cacheControl.match(/max-age=(\d+)/);
+  const maxAgeSec = maxAgeMatch ? Number(maxAgeMatch[1]) : 3600;
+  const data = (await res.json()) as { keys?: JwkEntry[] };
+  cachedJwks = Array.isArray(data.keys) ? data.keys : [];
+  jwksExpiryMs = Date.now() + maxAgeSec * 1000;
+  return cachedJwks;
+}
+
 async function verifyUser(
   request: Request,
-  firebaseApiKey: string
+  projectId: string
 ): Promise<{ ok: boolean; error?: string }> {
   const authorization = request.headers.get("Authorization") || "";
   if (!authorization.startsWith("Bearer ")) {
     return { ok: false, error: "Authentication required. Please sign in." };
   }
 
-  const idToken = authorization.slice(7).trim();
-  if (!idToken) {
+  const token = authorization.slice(7).trim();
+  if (!token) {
     return { ok: false, error: "Missing authentication token." };
   }
 
-  const response = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(firebaseApiKey)}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
+  const parts = token.split(".");
+  if (parts.length !== 3) {
+    return { ok: false, error: "Invalid session token format. Please sign in again." };
+  }
+
+  try {
+    const [headerB64, payloadB64, signatureB64] = parts;
+    const header = decodeBase64UrlJson<{ alg?: string; kid?: string }>(headerB64);
+    const payload = decodeBase64UrlJson<{
+      iss?: string;
+      aud?: string;
+      sub?: string;
+      exp?: number;
+      iat?: number;
+    }>(payloadB64);
+
+    if (header.alg !== "RS256" || !header.kid) {
+      return { ok: false, error: "Invalid session token algorithm." };
     }
-  );
 
-  if (!response.ok) {
-    return { ok: false, error: "Session expired. Please sign in again." };
+    const nowSec = Math.floor(Date.now() / 1000);
+    if (!payload.exp || payload.exp <= nowSec) {
+      return { ok: false, error: "Session expired. Please sign in again." };
+    }
+    if (!payload.iat || payload.iat > nowSec + 300) {
+      return { ok: false, error: "Invalid session timestamp. Check your device clock." };
+    }
+    if (payload.aud !== projectId) {
+      return { ok: false, error: "Session project mismatch. Please sign in again." };
+    }
+    if (payload.iss !== `https://securetoken.google.com/${projectId}`) {
+      return { ok: false, error: "Session issuer mismatch. Please sign in again." };
+    }
+    if (!payload.sub || typeof payload.sub !== "string" || payload.sub.length > 128) {
+      return { ok: false, error: "Invalid user session. Please sign in again." };
+    }
+
+    let jwks = await getFirebaseJwks(false);
+    let jwk = jwks.find((k) => k.kid === header.kid);
+    if (!jwk) {
+      jwks = await getFirebaseJwks(true);
+      jwk = jwks.find((k) => k.kid === header.kid);
+    }
+    if (!jwk) {
+      return { ok: false, error: "Matching Firebase signing key not found." };
+    }
+
+    const cryptoKey = await crypto.subtle.importKey(
+      "jwk",
+      jwk,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["verify"]
+    );
+
+    const dataBytes = new TextEncoder().encode(`${headerB64}.${payloadB64}`);
+    const sigBytes = base64UrlToUint8Array(signatureB64);
+    const valid = await crypto.subtle.verify(
+      "RSASSA-PKCS1-v1_5",
+      cryptoKey,
+      sigBytes,
+      dataBytes
+    );
+
+    if (!valid) {
+      return { ok: false, error: "Invalid session signature. Please sign in again." };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error:
+        err instanceof Error
+          ? `Session verification failed: ${err.message}`
+          : "Session verification failed. Please sign in again.",
+    };
   }
-
-  const data = (await response.json()) as {
-    users?: Array<{ localId?: string; disabled?: boolean }>;
-  };
-
-  const user = data.users?.[0];
-  if (!user?.localId || user.disabled) {
-    return { ok: false, error: "Session expired. Please sign in again." };
-  }
-
-  return { ok: true };
 }
 
 function sleep(ms: number): Promise<void> {
@@ -78,16 +179,15 @@ function sleep(ms: number): Promise<void> {
 }
 
 export async function onRequestOptions(): Promise<Response> {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS,
-  });
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
-export async function onRequestGet(): Promise<Response> {
+export async function onRequestGet({ env }: { env?: Env }): Promise<Response> {
+  const hasGeminiKey = Boolean((env?.GEMINI_API_KEY || "").trim());
   return json({
     ok: true,
     service: "IsipAgham AI Tutor",
+    configured: hasGeminiKey,
   });
 }
 
@@ -95,34 +195,31 @@ export async function onRequestPost({
   request,
   env,
 }: TutorContext): Promise<Response> {
-  const geminiApiKey = (env.GEMINI_API_KEY || "").trim();
+  const geminiApiKey = (env?.GEMINI_API_KEY || "").trim();
   if (!geminiApiKey) {
     return json(
       {
         error:
-          "AI service is not configured. Add GEMINI_API_KEY in Cloudflare Pages > Settings > Environment variables.",
+          "GEMINI_API_KEY is missing in Cloudflare Settings > Variables and Secrets.",
         retryable: false,
       },
       503
     );
   }
 
-  const firebaseApiKey = (
-    env.FIREBASE_API_KEY || DEFAULT_FIREBASE_WEB_API_KEY
+  const projectId = (
+    env?.FIREBASE_PROJECT_ID || DEFAULT_FIREBASE_PROJECT_ID
   ).trim();
 
   try {
-    const authResult = await verifyUser(request, firebaseApiKey);
+    const authResult = await verifyUser(request, projectId);
     if (!authResult.ok) {
       return json({ error: authResult.error || "Unauthorized." }, 401);
     }
 
     let body: {
       question?: unknown;
-      history?: Array<{
-        role?: string;
-        content?: unknown;
-      }>;
+      history?: Array<{ role?: string; content?: unknown }>;
       simpleMode?: unknown;
       materialContext?: {
         title?: unknown;
@@ -222,9 +319,7 @@ Rules you MUST follow strictly:
 
     for (let i = 0; i < attempts.length; i += 1) {
       const attempt = attempts[i];
-      if (attempt.delayMs > 0) {
-        await sleep(attempt.delayMs);
-      }
+      if (attempt.delayMs > 0) await sleep(attempt.delayMs);
 
       let response: Response;
       try {
@@ -238,29 +333,19 @@ Rules you MUST follow strictly:
               "User-Agent": "aistudio-build",
             },
             body: JSON.stringify({
-              systemInstruction: {
-                parts: [{ text: systemInstruction }],
-              },
+              systemInstruction: { parts: [{ text: systemInstruction }] },
               contents: [
-                {
-                  role: "user",
-                  parts: [{ text: promptParts.join("\n\n") }],
-                },
+                { role: "user", parts: [{ text: promptParts.join("\n\n") }] },
               ],
             }),
           }
         );
-      } catch (networkErr) {
+      } catch {
         lastStatus = 503;
-        lastErrorMessage =
-          networkErr instanceof Error
-            ? networkErr.message
-            : "Network error reaching Gemini API.";
         if (i < attempts.length - 1) continue;
         return json(
           {
-            error:
-              "Could not reach the AI Tutor right now. Please try again in a moment.",
+            error: "Network error connecting to Gemini API. Please try again.",
             retryable: true,
           },
           503
@@ -269,12 +354,8 @@ Rules you MUST follow strictly:
 
       const rawText = await response.text();
       let result: {
-        candidates?: Array<{
-          content?: {
-            parts?: Array<{ text?: string }>;
-          };
-        }>;
-        error?: { code?: number; status?: string; message?: string };
+        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+        error?: { message?: string };
       } = {};
 
       if (rawText) {
@@ -309,32 +390,28 @@ Rules you MUST follow strictly:
       const isRetryableStatus = [404, 408, 429, 500, 502, 503, 504].includes(
         response.status
       );
-      if (isRetryableStatus && i < attempts.length - 1) {
-        continue;
-      }
+      if (isRetryableStatus && i < attempts.length - 1) continue;
 
       if (response.status === 401 || response.status === 403) {
         return json(
           {
             error:
-              "The Gemini API key in Cloudflare environment variables is invalid or lacks permission.",
+              `Gemini API key rejected (${response.status}): ${lastErrorMessage}`,
             retryable: false,
           },
           403
         );
       }
-
       if (response.status === 429) {
         return json(
           {
             error:
-              "AI request limit reached for the moment. Please wait a short while and try again.",
+              "Gemini usage limit reached right now. Please wait a moment and try again.",
             retryable: true,
           },
           429
         );
       }
-
       if (response.status === 503) {
         return json(
           {
@@ -346,22 +423,10 @@ Rules you MUST follow strictly:
         );
       }
 
-      if (response.status === 400) {
-        return json(
-          {
-            error:
-              "The AI Tutor could not process that request. Try shortening your question or uploaded excerpt.",
-            retryable: false,
-          },
-          400
-        );
-      }
-
       return json(
         {
-          error:
-            "Could not reach the AI Tutor right now. Please try again in a moment.",
-          retryable: true,
+          error: `Gemini error (${response.status}): ${lastErrorMessage}`,
+          retryable: response.status >= 500,
         },
         lastStatus >= 400 ? lastStatus : 502
       );
@@ -372,10 +437,29 @@ Rules you MUST follow strictly:
     console.error("AI Tutor error:", error);
     return json(
       {
-        error: "The AI Tutor could not complete the request.",
+        error:
+          error instanceof Error
+            ? `AI Tutor error: ${error.message}`
+            : "The AI Tutor could not complete the request.",
         retryable: true,
       },
       500
     );
   }
 }
+
+// Standalone Cloudflare Worker compatibility handler (if pasted directly into a Cloudflare Worker)
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    if (request.method === "OPTIONS") {
+      return onRequestOptions();
+    }
+    if (request.method === "GET") {
+      return onRequestGet({ env });
+    }
+    if (request.method === "POST") {
+      return onRequestPost({ request, env });
+    }
+    return json({ error: "Method not allowed." }, 405);
+  },
+};

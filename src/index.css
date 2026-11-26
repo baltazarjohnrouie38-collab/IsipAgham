@@ -488,28 +488,128 @@
 @keyframes ios-launch-spring {
   0% {
     opacity: 0;
-    transform: scale(0.72) translate3d(0, 12px, 0);
+    transform: scale(0.62) translate3d(0, 18px, 0);
+    filter: blur(8px);
   }
-  65% {
+  52% {
     opacity: 1;
-    transform: scale(1.03) translate3d(0, -1px, 0);
+    transform: scale(1.06) translate3d(0, -3px, 0);
+    filter: blur(0px);
+  }
+  78% {
+    transform: scale(0.985) translate3d(0, 1px, 0);
   }
   100% {
     opacity: 1;
     transform: scale(1) translate3d(0, 0, 0);
+    filter: blur(0px);
+  }
+}
+
+@keyframes ios-launch-orb-drift {
+  0% {
+    opacity: 0;
+    transform: scale(0.75) translate3d(0, 12px, 0);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.05) translate3d(0, -6px, 0);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes ios-pulse-wave {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.76);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.45);
+  }
+}
+
+@keyframes ios-orbit-cw {
+  0% {
+    opacity: 0;
+    transform: scale(0.72) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1) rotate(32deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+@keyframes ios-orbit-ccw {
+  0% {
+    opacity: 0;
+    transform: scale(0.74) rotate(0deg);
+  }
+  25% {
+    opacity: 0.9;
+    transform: scale(1) rotate(-36deg);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1) rotate(-360deg);
+  }
+}
+
+@keyframes ios-launch-halo {
+  0%, 100% {
+    opacity: 0.52;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes ios-launch-title-reveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.96);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes ios-launch-progress {
+  0% {
+    transform: scaleX(0.06);
+    opacity: 0.5;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
   }
 }
 
 @keyframes ios-sheen-sweep {
   0% {
-    transform: translate3d(-120%, -20%, 0) rotate(22deg);
+    transform: translate3d(-140%, -25%, 0) rotate(24deg);
     opacity: 0;
   }
   25% {
-    opacity: 0.72;
+    opacity: 0.88;
   }
   100% {
-    transform: translate3d(160%, 30%, 0) rotate(22deg);
+    transform: translate3d(185%, 35%, 0) rotate(24deg);
     opacity: 0;
   }
 }
@@ -587,20 +687,73 @@
   animation: ios-app-zoom-in 260ms var(--ease-out-expo) both;
 }
 
+.ios-launch-orb {
+  animation: ios-launch-orb-drift 1.5s var(--ease-out-expo) both;
+}
+
+.ios-launch-pulse {
+  animation: ios-pulse-wave 1.15s var(--ease-out-expo) 120ms both;
+}
+
+.ios-launch-pulse-delayed {
+  animation: ios-pulse-wave 1.25s var(--ease-out-expo) 420ms both;
+}
+
+.ios-launch-orbit-cw {
+  animation: ios-orbit-cw 8s linear both;
+}
+
+.ios-launch-orbit-ccw {
+  animation: ios-orbit-ccw 6.5s linear both;
+}
+
+.ios-launch-halo {
+  animation: ios-launch-halo 1.6s ease-in-out infinite;
+}
+
 .ios-launch-icon {
-  animation: ios-launch-spring 380ms var(--ease-spring-ios) both;
+  animation: ios-launch-spring 680ms var(--ease-spring-ios) both;
 }
 
 .ios-launch-sheen {
-  width: 60%;
-  height: 150%;
+  width: 65%;
+  height: 165%;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.72) 50%,
+    rgba(255, 255, 255, 0.85) 50%,
     transparent 100%
   );
-  animation: ios-sheen-sweep 620ms var(--ease-out-expo) 80ms both;
+  animation: ios-sheen-sweep 850ms var(--ease-out-expo) 220ms both;
+}
+
+.ios-launch-sheen-second {
+  width: 45%;
+  height: 165%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(191, 219, 254, 0.65) 50%,
+    transparent 100%
+  );
+  animation: ios-sheen-sweep 820ms var(--ease-out-expo) 620ms both;
+}
+
+.ios-launch-title {
+  animation: ios-launch-title-reveal 560ms var(--ease-out-expo) 260ms both;
+}
+
+.ios-launch-subtitle {
+  animation: ios-launch-title-reveal 560ms var(--ease-out-expo) 400ms both;
+}
+
+.ios-launch-progress-track {
+  animation: ios-launch-title-reveal 460ms var(--ease-out-expo) 460ms both;
+}
+
+.ios-launch-progress-fill {
+  transform-origin: left center;
+  animation: ios-launch-progress 1080ms var(--ease-out-expo) 480ms both;
 }
 
 .ios-island-enter {
@@ -747,8 +900,19 @@ html.dark .ios-touch-ripple {
   .animate-pop,
   .animate-float-gentle,
   .ios-app-open,
+  .ios-launch-orb,
+  .ios-launch-pulse,
+  .ios-launch-pulse-delayed,
+  .ios-launch-orbit-cw,
+  .ios-launch-orbit-ccw,
+  .ios-launch-halo,
   .ios-launch-icon,
   .ios-launch-sheen,
+  .ios-launch-sheen-second,
+  .ios-launch-title,
+  .ios-launch-subtitle,
+  .ios-launch-progress-track,
+  .ios-launch-progress-fill,
   .ios-island-enter,
   .liquid-lens-active {
     animation: none !important;
