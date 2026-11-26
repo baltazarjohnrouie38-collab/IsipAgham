@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { IosAuthTransition } from './components/ui/IosAuthTransition';
 import { IosDynamicIsland } from './components/ui/IosDynamicIsland';
 import { IosLaunchEffect } from './components/ui/IosLaunchEffect';
 import { PageSkeleton } from './components/ui/Skeleton';
@@ -133,6 +134,7 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <IosLaunchEffect />
+          <IosAuthTransition />
           <IosDynamicIsland />
           <BrowserRouter>
             <AppRoutes />

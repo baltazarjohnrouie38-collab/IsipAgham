@@ -566,7 +566,7 @@ export const AppShell: React.FC = () => {
 
         {/* Main Content Viewport */}
         <main className="flex-1 pb-28 lg:pb-12">
-          <div key={location.pathname} className="animate-enter max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div key={location.pathname} className="ios-workspace-enter max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <Outlet />
           </div>
         </main>

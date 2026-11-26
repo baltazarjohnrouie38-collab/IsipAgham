@@ -9,6 +9,8 @@ export type UiSoundKind =
   | 'tab'
   | 'toggle'
   | 'flip'
+  | 'login'
+  | 'lock'
   | 'correct'
   | 'wrong'
   | 'celebrate'
@@ -153,7 +155,12 @@ export function playUiSound(kind: UiSoundKind = 'click', forcePlay = false): voi
   if (!forcePlay && !isSoundEnabled()) return;
 
   const nowMs = performance.now();
-  const isPriorityTone = kind === 'correct' || kind === 'wrong' || kind === 'celebrate';
+  const isPriorityTone =
+    kind === 'correct' ||
+    kind === 'wrong' ||
+    kind === 'celebrate' ||
+    kind === 'login' ||
+    kind === 'lock';
   if (!isPriorityTone && nowMs - lastPlayTimestamp < 22) return;
   lastPlayTimestamp = nowMs;
 
@@ -178,6 +185,48 @@ export function playUiSound(kind: UiSoundKind = 'click', forcePlay = false): voi
     // Soft airy iOS card swipe / breath
     playTactileImpulse(ctx, { centerFreq: 1350, q: 0.9, duration: 0.045, gain: 0.042 });
     playGlassTone(ctx, { freq: 240, endFreq: 340, duration: 0.032, peakGain: 0.018 });
+    return;
+  }
+
+  if (kind === 'login') {
+    // Crisp Apple Face ID / glass unlock chime (E5 -> A5 -> C#6)
+    playTactileImpulse(ctx, { centerFreq: 2200, q: 1.8, duration: 0.016, gain: 0.032 });
+    playGlassTone(ctx, { freq: 659.25, duration: 0.16, peakGain: 0.038, addOvertone: true });
+    playGlassTone(ctx, {
+      freq: 880.0,
+      duration: 0.18,
+      peakGain: 0.04,
+      startOffset: 0.075,
+      addOvertone: true,
+    });
+    playGlassTone(ctx, {
+      freq: 1108.73,
+      duration: 0.28,
+      peakGain: 0.044,
+      startOffset: 0.15,
+      addOvertone: true,
+    });
+    return;
+  }
+
+  if (kind === 'lock') {
+    // Authentic iOS Lock / Sign-out soft dual mechanical glass click
+    playTactileImpulse(ctx, { centerFreq: 1850, q: 2.4, duration: 0.016, gain: 0.055 });
+    playGlassTone(ctx, { freq: 280, endFreq: 140, duration: 0.035, peakGain: 0.03 });
+    playTactileImpulse(ctx, {
+      centerFreq: 1350,
+      q: 2.0,
+      duration: 0.018,
+      gain: 0.04,
+      startOffset: 0.055,
+    });
+    playGlassTone(ctx, {
+      freq: 190,
+      endFreq: 105,
+      duration: 0.045,
+      peakGain: 0.026,
+      startOffset: 0.055,
+    });
     return;
   }
 

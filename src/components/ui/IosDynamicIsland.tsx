@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, Moon, Sparkles, Sun, Volume2 } from 'lucide-react';
+import { CheckCircle2, Lock, LogIn, Moon, Sparkles, Sun, Trophy, Volume2 } from 'lucide-react';
 import { IOS_ISLAND_EVENT, type IosIslandPayload } from '../../lib/iosEffects';
 
 export const IosDynamicIsland: React.FC = () => {
@@ -16,7 +16,7 @@ export const IosDynamicIsland: React.FC = () => {
       if (hideTimer !== null) window.clearTimeout(hideTimer);
       hideTimer = window.setTimeout(() => {
         setActive(null);
-      }, 2200);
+      }, 2400);
     };
 
     window.addEventListener(IOS_ISLAND_EVENT, handleEvent);
@@ -28,18 +28,24 @@ export const IosDynamicIsland: React.FC = () => {
 
   if (!active) return null;
 
-  const icon =
-    active.title.toLowerCase().includes('dark') ? (
-      <Moon className="h-4 w-4 text-sky-400 shrink-0" aria-hidden="true" />
-    ) : active.title.toLowerCase().includes('light') ? (
-      <Sun className="h-4 w-4 text-amber-300 shrink-0" aria-hidden="true" />
-    ) : active.title.toLowerCase().includes('sound') ? (
-      <Volume2 className="h-4 w-4 text-sky-400 shrink-0" aria-hidden="true" />
-    ) : active.tone === 'emerald' ? (
-      <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" aria-hidden="true" />
-    ) : (
-      <Sparkles className="h-4 w-4 text-sky-400 shrink-0" aria-hidden="true" />
-    );
+  const lower = active.title.toLowerCase();
+  const icon = lower.includes('dark') ? (
+    <Moon className="h-4 w-4 text-sky-400 shrink-0" aria-hidden="true" />
+  ) : lower.includes('light') ? (
+    <Sun className="h-4 w-4 text-amber-300 shrink-0" aria-hidden="true" />
+  ) : lower.includes('sound') ? (
+    <Volume2 className="h-4 w-4 text-sky-400 shrink-0" aria-hidden="true" />
+  ) : lower.includes('signed out') ? (
+    <Lock className="h-4 w-4 text-sky-300 shrink-0" aria-hidden="true" />
+  ) : lower.includes('welcome') || lower.includes('signed in') || lower.includes('account') ? (
+    <LogIn className="h-4 w-4 text-emerald-400 shrink-0" aria-hidden="true" />
+  ) : lower.includes('xp') ? (
+    <Trophy className="h-4 w-4 text-amber-400 shrink-0" aria-hidden="true" />
+  ) : active.tone === 'emerald' ? (
+    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" aria-hidden="true" />
+  ) : (
+    <Sparkles className="h-4 w-4 text-sky-400 shrink-0" aria-hidden="true" />
+  );
 
   return (
     <div

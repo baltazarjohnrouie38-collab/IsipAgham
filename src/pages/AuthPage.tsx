@@ -196,7 +196,7 @@ export const AuthPage: React.FC = () => {
       </div>
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-10">
-        <div className="w-full max-w-[460px] liquid-glass-strong rounded-[32px] p-6 sm:p-9 space-y-6">
+        <div className="ios-card-spring w-full max-w-[460px] liquid-glass-strong rounded-[32px] p-6 sm:p-9 space-y-6">
           <div className="flex flex-col items-center text-center space-y-3">
             <div className="inline-flex items-center gap-2.5">
               <img
@@ -260,7 +260,7 @@ export const AuthPage: React.FC = () => {
           )}
 
           {!showCredentialsForm ? (
-            <div className="space-y-3.5">
+            <div key={`options-${mode}`} className="animate-enter space-y-3.5">
               <button
                 type="button"
                 disabled={submitting}
@@ -305,7 +305,7 @@ export const AuthPage: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div key={`form-${mode}`} className="animate-enter space-y-4">
               <button
                 type="button"
                 onClick={() => {

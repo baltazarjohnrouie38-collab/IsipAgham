@@ -233,6 +233,8 @@ export function useSpeech() {
 
   const activeSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const activeUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const fallbackTimerRef = useRef<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const seqRef = useRef(0);
   const rateRef = useRef(1);
@@ -264,6 +266,10 @@ export function useSpeech() {
 
   const stop = useCallback(() => {
     seqRef.current += 1;
+    if (fallbackTimerRef.current !== null) {
+      window.clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = null;
+    }
     if (abortRef.current) {
       abortRef.current.abort();
       abortRef.current = null;
@@ -283,6 +289,12 @@ export function useSpeech() {
       activeAudioRef.current.currentTime = 0;
       activeAudioRef.current = null;
     }
+    if (activeUtteranceRef.current) {
+      activeUtteranceRef.current.onstart = null;
+      activeUtteranceRef.current.onend = null;
+      activeUtteranceRef.current.onerror = null;
+      activeUtteranceRef.current = null;
+    }
     if (browserSupported) {
       window.speechSynthesis.cancel();
     }
@@ -291,42 +303,76 @@ export function useSpeech() {
   }, [browserSupported]);
 
   const speakWithBrowserFallback = useCallback(
-    (cleanedText: string, requestSeq: number) => {
+    (cleanedText: string, requestSeq: number, errorOnFailure?: string): boolean => {
       if (!browserSupported || seqRef.current !== requestSeq) {
         setLoading(false);
         setSpeaking(false);
-        return;
+        return false;
+      }
+
+      const browserChunks = splitIntoSpeechChunks(cleanedText, 210);
+      if (browserChunks.length === 0) {
+        setLoading(false);
+        setSpeaking(false);
+        return false;
       }
 
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(cleanedText);
-      const bestVoice = pickBestNaturalBrowserVoice();
-      if (bestVoice) {
-        utterance.voice = bestVoice;
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
       }
-      utterance.lang = bestVoice?.lang || 'en-US';
-      utterance.rate = rateRef.current;
-      utterance.pitch = 1.0;
 
-      utterance.onstart = () => {
-        if (seqRef.current === requestSeq) {
-          setLoading(false);
-          setSpeaking(true);
-        }
-      };
-      utterance.onend = () => {
-        if (seqRef.current === requestSeq) {
+      const speakChunkAt = (chunkIdx: number) => {
+        if (seqRef.current !== requestSeq) return;
+        if (chunkIdx >= browserChunks.length) {
+          activeUtteranceRef.current = null;
           setLoading(false);
           setSpeaking(false);
+          return;
         }
-      };
-      utterance.onerror = () => {
-        if (seqRef.current === requestSeq) {
+
+        const utterance = new SpeechSynthesisUtterance(browserChunks[chunkIdx]);
+        activeUtteranceRef.current = utterance;
+        const bestVoice = pickBestNaturalBrowserVoice();
+        if (bestVoice) {
+          utterance.voice = bestVoice;
+        }
+        utterance.lang = bestVoice?.lang || 'en-US';
+        utterance.rate = rateRef.current;
+        utterance.pitch = 1.0;
+
+        utterance.onstart = () => {
+          if (seqRef.current === requestSeq) {
+            setLoading(false);
+            setSpeaking(true);
+          }
+        };
+        utterance.onend = () => {
+          if (seqRef.current === requestSeq) {
+            speakChunkAt(chunkIdx + 1);
+          }
+        };
+        utterance.onerror = (event) => {
+          if (seqRef.current !== requestSeq) return;
+          activeUtteranceRef.current = null;
           setLoading(false);
           setSpeaking(false);
-        }
+          if (event.error !== 'interrupted' && event.error !== 'canceled') {
+            setSpeechError(
+              errorOnFailure || 'Could not play voice audio on this browser.'
+            );
+          }
+        };
+
+        window.speechSynthesis.speak(utterance);
       };
-      window.speechSynthesis.speak(utterance);
+
+      // Defer slightly after cancel() so Chromium does not cancel the newly queued utterance
+      fallbackTimerRef.current = window.setTimeout(() => {
+        fallbackTimerRef.current = null;
+        speakChunkAt(0);
+      }, 35);
+      return true;
     },
     [browserSupported]
   );
@@ -481,6 +527,7 @@ export function useSpeech() {
       setLoading(true);
 
       void (async () => {
+        let playedAnyApiChunk = false;
         try {
           let nextPromise: Promise<{ bytes: Uint8Array; mimeType: string }> | null =
             fetchChunkAudio(chunks[0], chosenVoice, controller.signal);
@@ -497,6 +544,7 @@ export function useSpeech() {
                 : null;
 
             await playAudioBytes(currentEntry, requestSeq);
+            playedAnyApiChunk = true;
           }
 
           if (seqRef.current === requestSeq) {
@@ -508,17 +556,33 @@ export function useSpeech() {
           if (seqRef.current !== requestSeq) return;
           if (err instanceof DOMException && err.name === 'AbortError') return;
           abortRef.current = null;
-          setLoading(false);
-          setSpeaking(false);
-          setSpeechError(
+
+          const errMessage =
             err instanceof Error
               ? err.message
-              : 'Could not play natural voice audio right now.'
-          );
+              : 'Could not play natural voice audio right now.';
+
+          // Automatically fall back to browser Web Speech if cloud TTS failed before playing
+          if (!playedAnyApiChunk && browserSupported) {
+            const started = speakWithBrowserFallback(cleaned, requestSeq, errMessage);
+            if (started) return;
+          }
+
+          setLoading(false);
+          setSpeaking(false);
+          setSpeechError(errMessage);
         }
       })();
     },
-    [supported, stop, voice, fetchChunkAudio, playAudioBytes, speakWithBrowserFallback]
+    [
+      supported,
+      browserSupported,
+      stop,
+      voice,
+      fetchChunkAudio,
+      playAudioBytes,
+      speakWithBrowserFallback,
+    ]
   );
 
   useEffect(() => {

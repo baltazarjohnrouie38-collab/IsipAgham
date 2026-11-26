@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { triggerIosIsland } from '../../lib/iosEffects';
 import { playUiSound } from '../../lib/sound';
 import { saveQuizAttempt } from '../../lib/studyService';
 import type { QuizQuestion, StudySet } from '../../types';
@@ -144,6 +145,11 @@ export const QuizTab: React.FC<QuizTabProps> = ({
       setLastXp(xpEarned);
       setSubmitted(true);
       playUiSound(percentage >= 70 ? 'celebrate' : score > 0 ? 'correct' : 'wrong');
+      triggerIosIsland({
+        title: percentage >= 70 ? 'Quiz Complete' : 'Quiz Submitted',
+        subtitle: `${score}/${questions.length} correct · +${xpEarned} XP`,
+        tone: percentage >= 70 ? 'emerald' : 'blue',
+      });
     } finally {
       setSaving(false);
     }

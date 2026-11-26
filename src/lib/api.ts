@@ -49,7 +49,7 @@ async function parseJsonResponse<T>(response: Response, fallbackError: string): 
   const trimmed = text.trim();
   if (trimmed.startsWith('<')) {
     throw new Error(
-      `API route not found (${response.url.includes('/api/ai-chat') ? '/api/ai-chat' : 'server'} returned HTML instead of JSON, HTTP ${response.status}). Make sure functions/api/ai-chat.ts is deployed.`
+      `API route not found (${new URL(response.url || 'http://localhost/api', 'http://localhost').pathname} returned HTML instead of JSON, HTTP ${response.status}). Make sure your Worker or backend server is deployed.`
     );
   }
   try {

@@ -11,6 +11,7 @@ import {
   VolumeX,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { triggerIosIsland } from '../../lib/iosEffects';
 import { saveStudySession } from '../../lib/studyService';
 import type { StudySession } from '../../types';
 import { AlertBanner } from '../ui/AlertBanner';
@@ -95,6 +96,11 @@ export const TimerTab: React.FC<TimerTabProps> = ({ sessions = [] }) => {
     await awardXp(xpEarned, { studySeconds: studiedSeconds });
     void toggleChecklistItem('use_timer_sr', true);
     setStatusMsg(`Logged ${mins} min focus session · +${xpEarned} XP`);
+    triggerIosIsland({
+      title: 'Focus Session Complete',
+      subtitle: `+${xpEarned} XP earned (${mins}m)`,
+      tone: 'emerald',
+    });
   };
 
   useEffect(() => {

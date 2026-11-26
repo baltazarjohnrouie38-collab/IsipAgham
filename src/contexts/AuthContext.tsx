@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
   createUserWithEmailAndPassword,
   deleteUser,
@@ -25,7 +25,8 @@ import {
 import { evaluatePasswordStrength, validateEmail, validateUsername } from '../lib/authValidation';
 import { isValidAvatarUrl } from '../lib/avatar';
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { triggerIosIsland } from '../lib/iosEffects';
+import { triggerIosAuthTransition, triggerIosIsland } from '../lib/iosEffects';
+import { playUiSound } from '../lib/sound';
 import type { ChecklistKey, PhysicsCourse, UserProfile } from '../types';
 import { useTheme } from './ThemeContext';
 
@@ -132,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const { darkMode, setDarkMode } = useTheme();
+  const signingOutRef = useRef(false);
 
   const clearAuthError = () => setAuthError(null);
 
@@ -330,6 +332,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: emailCheck.normalized,
         course: params.course || 'Physics 1',
       });
+      triggerIosAuthTransition({ mode: 'signup', username: usernameCheck.clean });
+      playUiSound('login', true);
+      triggerIosIsland({
+        title: 'Account Created',
+        subtitle: `Welcome, ${usernameCheck.clean}`,
+        tone: 'emerald',
+      });
     } catch (err) {
       const msg = formatAuthError(err);
       setAuthError(msg);
@@ -347,6 +356,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await ensureUserDocuments(cred.user, {
         username: raw.includes('@') ? raw.split('@')[0] : raw,
       });
+      const displayLabel = sanitizeUsername(
+        cred.user.displayName || (raw.includes('@') ? raw.split('@')[0] : raw)
+      );
+      triggerIosAuthTransition({ mode: 'login', username: displayLabel });
+      playUiSound('login', true);
+      triggerIosIsland({
+        title: 'Signed In',
+        subtitle: `Welcome back, ${displayLabel}`,
+        tone: 'emerald',
+      });
     } catch (err) {
       const msg = formatAuthError(err);
       setAuthError(msg);
@@ -360,6 +379,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
       await ensureUserDocuments(cred.user);
+      const rawLabel = cred.user.displayName || cred.user.email?.split('@')[0] || '';
+      const displayLabel = rawLabel ? sanitizeUsername(rawLabel) : undefined;
+      triggerIosAuthTransition({ mode: 'login', username: displayLabel });
+      playUiSound('login', true);
+      triggerIosIsland({
+        title: 'Signed In',
+        subtitle: displayLabel ? `Welcome back, ${displayLabel}` : 'Google account connected',
+        tone: 'emerald',
+      });
     } catch (err) {
       const msg = formatAuthError(err);
       setAuthError(msg);
@@ -368,7 +396,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOutUser = async () => {
-    await signOut(auth);
+    if (signingOutRef.current) return;
+    signingOutRef.current = true;
+    try {
+      const currentName = profile?.nickname || profile?.username || user?.displayName || undefined;
+      triggerIosAuthTransition({ mode: 'logout', username: currentName });
+      playUiSound('lock', true);
+      triggerIosIsland({
+        title: 'Signed Out',
+        subtitle: 'Session secured',
+        tone: 'neutral',
+      });
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 460);
+      });
+      await signOut(auth);
+    } finally {
+      signingOutRef.current = false;
+    }
   };
 
   const updateUserProfile = async (updates: Partial<UserProfile>) => {

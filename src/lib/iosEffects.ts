@@ -6,11 +6,24 @@ export interface IosIslandPayload {
   tone?: 'blue' | 'emerald' | 'amber' | 'neutral';
 }
 
+export interface IosAuthTransitionPayload {
+  mode: 'login' | 'signup' | 'logout';
+  username?: string;
+}
+
 export const IOS_ISLAND_EVENT = 'isipagham:ios-island';
+export const IOS_AUTH_TRANSITION_EVENT = 'isipagham:ios-auth-transition';
 
 export function triggerIosIsland(payload: IosIslandPayload): void {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent<IosIslandPayload>(IOS_ISLAND_EVENT, { detail: payload }));
+}
+
+export function triggerIosAuthTransition(payload: IosAuthTransitionPayload): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(
+    new CustomEvent<IosAuthTransitionPayload>(IOS_AUTH_TRANSITION_EVENT, { detail: payload })
+  );
 }
 
 function prefersReducedMotion(): boolean {
@@ -64,9 +77,28 @@ export function useIosInteractiveEffects(): void {
     if (typeof window === 'undefined') return;
 
     let rafId: number | null = null;
+    let scrollRafId: number | null = null;
     let activeCard: HTMLElement | null = null;
     let pendingX = 50;
     let pendingY = 50;
+
+    const updateScrollAttr = () => {
+      scrollRafId = null;
+      const scrolled = window.scrollY > 18;
+      if (scrolled) {
+        document.documentElement.dataset.iosScrolled = 'true';
+      } else {
+        delete document.documentElement.dataset.iosScrolled;
+      }
+    };
+
+    const handleScroll = () => {
+      if (scrollRafId === null) {
+        scrollRafId = window.requestAnimationFrame(updateScrollAttr);
+      }
+    };
+
+    updateScrollAttr();
 
     const handlePointerDown = (e: PointerEvent) => {
       if (e.button > 0) return;
@@ -108,7 +140,7 @@ export function useIosInteractiveEffects(): void {
 
       window.setTimeout(() => {
         ripple.remove();
-      }, 400);
+      }, 420);
     };
 
     const flushSpotlight = () => {
@@ -127,7 +159,7 @@ export function useIosInteractiveEffects(): void {
       if (!target) return;
 
       const card = target.closest(
-        '.liquid-glass, .liquid-glass-strong, .liquid-btn-primary, .liquid-btn-outline'
+        '.liquid-glass, .liquid-glass-strong, .liquid-dock, .liquid-btn-primary, .liquid-btn-outline, .apple-surface'
       ) as HTMLElement | null;
 
       if (!card) {
@@ -158,15 +190,19 @@ export function useIosInteractiveEffects(): void {
 
     document.addEventListener('pointerdown', handlePointerDown, { passive: true, capture: true });
     document.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown, { capture: true });
       document.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('scroll', handleScroll);
       if (rafId !== null) window.cancelAnimationFrame(rafId);
+      if (scrollRafId !== null) window.cancelAnimationFrame(scrollRafId);
       if (activeCard) {
         activeCard.style.removeProperty('--glass-mx');
         activeCard.style.removeProperty('--glass-my');
       }
+      delete document.documentElement.dataset.iosScrolled;
     };
   }, []);
 }

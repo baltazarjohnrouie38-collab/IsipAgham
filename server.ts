@@ -299,12 +299,19 @@ app.post('/api/tts', requireAuth, ttsLimiter, async (req: AuthenticatedRequest, 
     const safeVoiceName = typeof voiceName === 'string' ? voiceName : undefined;
 
     if (isElevenLabsConfigured()) {
-      const result = await synthesizeElevenLabsTts({
-        text,
-        voiceName: safeVoiceName,
-      });
-      res.json(result);
-      return;
+      try {
+        const result = await synthesizeElevenLabsTts({
+          text,
+          voiceName: safeVoiceName,
+        });
+        res.json(result);
+        return;
+      } catch (elevenErr) {
+        if (!process.env.GEMINI_API_KEY?.trim()) {
+          throw elevenErr;
+        }
+        console.warn('ElevenLabs TTS failed, falling back to Gemini TTS:', elevenErr);
+      }
     }
 
     const fallbackResult = await synthesizeSpeechTts({

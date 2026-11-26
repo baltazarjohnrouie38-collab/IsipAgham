@@ -156,6 +156,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     supported: ttsSupported,
     speaking,
     loading: ttsLoading,
+    speechError,
     rate,
     setRate,
     voice,
@@ -843,6 +844,11 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
               </div>
             )}
           </div>
+          {speechError && (
+            <AlertBanner tone="warning" title="Voice Notice">
+              {speechError}
+            </AlertBanner>
+          )}
           <MathText
             text={activeSet.reviewerSummary}
             className="font-lesson text-base sm:text-[17px] text-slate-800 dark:text-neutral-200 leading-[1.75]"

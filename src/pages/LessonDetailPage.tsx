@@ -35,7 +35,14 @@ export const LessonDetailPage: React.FC = () => {
   const { user, profile, toggleLessonCompleted, toggleChecklistItem } = useAuth();
   const navigate = useNavigate();
   const isOnline = useOnlineStatus();
-  const { supported: ttsSupported, speaking, loading: ttsLoading, speak, stop } = useSpeech();
+  const {
+    supported: ttsSupported,
+    speaking,
+    loading: ttsLoading,
+    speechError,
+    speak,
+    stop,
+  } = useSpeech();
 
   const lesson = getLessonById(lessonId);
   const nextLesson = lesson ? getNextLesson(lesson.id) : undefined;
@@ -254,6 +261,11 @@ export const LessonDetailPage: React.FC = () => {
       {actionError && (
         <AlertBanner tone="error" title="Could not open study set">
           {actionError}
+        </AlertBanner>
+      )}
+      {speechError && (
+        <AlertBanner tone="warning" title="Voice Notice">
+          {speechError}
         </AlertBanner>
       )}
 
