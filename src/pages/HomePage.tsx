@@ -140,20 +140,20 @@ export const HomePage: React.FC = () => {
       {/* Mascot Hero Prompt Section */}
       <section className="pt-2 pb-1 flex flex-col items-center text-center space-y-5">
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="animate-float-gentle h-18 w-18 rounded-3xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_2px_10px_rgba(15,23,42,0.05)] flex items-center justify-center shrink-0">
+          <div className="animate-float-gentle h-18 w-18 rounded-[24px] liquid-glass-strong flex items-center justify-center shrink-0">
             <Logo size="lg" showText={false} src={heroMascotUrl} />
           </div>
           <div className="sm:text-left space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-neutral-400">
+            <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
               Kumusta, {displayName} · Grade 12 {profile?.course || 'Physics 1'} · Kaya mo &apos;yan!
             </p>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 dark:text-neutral-100 text-balance">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 dark:text-white text-balance">
               What shall we study?
             </h1>
           </div>
         </div>
 
-        {/* Prompt Search / Ask AI Bar */}
+        {/* Prompt Search / Ask AI Liquid Glass Pill */}
         <form
           onSubmit={handlePromptSubmit}
           className="w-full max-w-2xl flex items-center gap-2"
@@ -162,7 +162,7 @@ export const HomePage: React.FC = () => {
             to="/study?tab=materials"
             aria-label="Upload new study material"
             title="Upload PDF, PPTX, DOCX, or photo"
-            className="h-12 w-12 rounded-full bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_3px_rgba(15,23,42,0.04)] text-slate-700 dark:text-neutral-200 hover:bg-stone-50 dark:hover:bg-neutral-800 inline-flex items-center justify-center shrink-0 transition-colors"
+            className="liquid-glass h-12 w-12 rounded-full text-slate-700 dark:text-slate-100 hover:-translate-y-0.5 active:scale-[0.95] inline-flex items-center justify-center shrink-0 transition-all"
           >
             <Plus className="h-5 w-5" aria-hidden="true" />
           </Link>
@@ -174,23 +174,23 @@ export const HomePage: React.FC = () => {
               onChange={(e) => setPromptInput(e.target.value)}
               placeholder="Ask a Physics question (e.g., projectile motion, Bernoulli's principle)..."
               aria-label="Ask AI Physics Tutor a question"
-              className="w-full h-12 pl-5 pr-12 rounded-full bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_3px_rgba(15,23,42,0.04)] text-base text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full h-12 pl-5 pr-12 rounded-full liquid-glass-strong text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-[#007AFF]/20"
             />
             <button
               type="submit"
               aria-label="Ask Physics Question"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 inline-flex items-center justify-center transition-colors cursor-pointer"
+              className="liquid-btn-primary absolute right-1.5 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full inline-flex items-center justify-center transition-all active:scale-[0.94] cursor-pointer"
             >
               <Send className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         </form>
 
-        {/* Quick Action Buttons */}
+        {/* Quick Action Liquid Glass Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-2.5">
           <Link
             to="/lessons"
-            className="min-h-[44px] px-4 rounded-2xl bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 shadow-xs text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color] duration-150 whitespace-nowrap shrink-0"
+            className="liquid-btn-primary min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center gap-2 transition-[transform,filter] duration-200 whitespace-nowrap shrink-0"
           >
             <LessonsGraphicIcon className="h-5 w-5" />
             <span>{ALL_LESSONS.length} Lessons</span>
@@ -198,7 +198,7 @@ export const HomePage: React.FC = () => {
 
           <Link
             to="/study?tab=materials"
-            className="min-h-[44px] px-4 rounded-2xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
+            className="liquid-btn-outline min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
           >
             <UploadGraphicIcon className="h-5 w-5" />
             <span>Upload File</span>
@@ -206,7 +206,7 @@ export const HomePage: React.FC = () => {
 
           <Link
             to="/study?tab=materials&mode=text"
-            className="min-h-[44px] px-4 rounded-2xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
+            className="liquid-btn-outline min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
           >
             <NotesGraphicIcon className="h-5 w-5" />
             <span>Paste Notes</span>
@@ -214,7 +214,7 @@ export const HomePage: React.FC = () => {
 
           <Link
             to="/visualizer"
-            className="min-h-[44px] px-4 rounded-2xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] text-xs sm:text-sm font-semibold text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-150 whitespace-nowrap shrink-0"
+            className="liquid-btn-outline min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
           >
             <VisualizerGraphicIcon className="h-5 w-5" />
             <span>3D Visualizer</span>
@@ -222,35 +222,35 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Home Screen Unread Notification Banner -> Opens Notifications Tab */}
+      {/* iOS 27 Notification Glass Stack Banner -> Opens Notifications Tab */}
       {latestUnread && unreadCount > 0 && (
         <button
           type="button"
           onClick={() => {
             openBellWithNotification(latestUnread.id);
           }}
-          className="w-full text-left rounded-2xl bg-white dark:bg-[#141416] border border-blue-200 dark:border-blue-900/70 p-3.5 sm:px-5 shadow-[0_2px_10px_rgba(37,99,235,0.06)] hover:border-blue-400 dark:hover:border-blue-700 hover:-translate-y-0.5 transition-[transform,border-color,box-shadow] duration-150 flex items-center justify-between gap-3 cursor-pointer"
+          className="liquid-glass-strong w-full text-left rounded-[22px] p-3.5 sm:px-5 hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 flex items-center justify-between gap-3 cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="relative h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
+            <div className="relative h-10 w-10 rounded-[14px] bg-[#007AFF]/12 dark:bg-sky-400/15 border border-[#007AFF]/20 dark:border-sky-300/20 text-[#007AFF] dark:text-sky-300 flex items-center justify-center shrink-0">
               <Bell className="h-5 w-5" aria-hidden="true" />
-              <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center tabular-nums">
+              <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#FF3B30] text-white text-[10px] font-bold flex items-center justify-center tabular-nums shadow-xs">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-blue-700 dark:text-blue-400">
+              <p className="text-xs font-bold text-[#007AFF] dark:text-sky-300">
                 {unreadCount} New Notification{unreadCount === 1 ? '' : 's'} · Tap to view in Notifications
               </p>
-              <p className="text-sm font-bold text-slate-900 dark:text-neutral-100 truncate">
+              <p className="text-sm font-bold text-slate-950 dark:text-white truncate">
                 {latestUnread.title}
               </p>
-              <p className="text-xs text-slate-600 dark:text-neutral-400 truncate">
+              <p className="text-xs text-slate-600 dark:text-slate-300 truncate">
                 {latestUnread.message}
               </p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-blue-700 text-white dark:bg-blue-600 text-xs font-semibold shrink-0">
+          <span className="liquid-btn-primary inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0">
             <span className="hidden sm:inline">View all</span>
             <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
@@ -260,29 +260,29 @@ export const HomePage: React.FC = () => {
       {/* Daily Goal + Streak + Quick Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card padding="sm" className="space-y-1.5">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-neutral-400">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
             <StreakGraphicIcon className="h-4.5 w-4.5" />
             <span>Study Streak</span>
           </div>
-          <p className="font-display text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
+          <p className="font-display text-2xl font-bold text-slate-950 dark:text-white tabular-nums">
             {profile?.streakDays ?? 0} day{(profile?.streakDays ?? 0) === 1 ? '' : 's'}
           </p>
         </Card>
 
         <Card padding="sm" className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-neutral-400">
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
             <span>Daily Goal</span>
-            <span className="tabular-nums text-blue-700 dark:text-blue-400">
+            <span className="tabular-nums text-[#007AFF] dark:text-sky-400">
               {todayMinutes}/{dailyGoalMinutes}m
             </span>
           </div>
-          <div className="h-2 w-full rounded-full bg-stone-200 dark:bg-neutral-800 overflow-hidden">
+          <div className="liquid-progress-track h-2.5 w-full overflow-hidden">
             <div
-              className="h-full bg-blue-700 dark:bg-blue-500 transition-all duration-300"
+              className="liquid-progress-fill h-full transition-all duration-300"
               style={{ width: `${goalPct}%` }}
             />
           </div>
-          <p className="text-xs text-slate-500 dark:text-neutral-400">
+          <p className="text-xs text-slate-600 dark:text-slate-300">
             {goalPct >= 100 ? 'Goal met today!' : `${Math.max(0, dailyGoalMinutes - todayMinutes)}m left today`}
           </p>
         </Card>
@@ -376,7 +376,7 @@ export const HomePage: React.FC = () => {
                 <Link
                   key={set.id}
                   to={`/study?tab=flashcards&setId=${encodeURIComponent(set.id)}`}
-                  className="group rounded-2xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-blue-300 dark:hover:border-blue-700 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] transition-[transform,box-shadow,border-color] duration-200 flex items-center gap-3.5"
+                  className="liquid-glass group rounded-[22px] p-4 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] transition-[transform,box-shadow,border-color] duration-200 flex items-center gap-3.5"
                 >
                   <ProgressRing percent={pct} colorClass={ringColor} />
                   <div className="min-w-0">

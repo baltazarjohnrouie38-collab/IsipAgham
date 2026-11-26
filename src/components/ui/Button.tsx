@@ -13,16 +13,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary:
-    'bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500 border border-transparent shadow-xs',
-  secondary:
-    'bg-[#0F172A] text-white hover:bg-[#1E293B] dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white border border-transparent',
-  outline:
-    'bg-white text-slate-800 hover:bg-stone-50 border border-stone-300 dark:bg-neutral-900 dark:text-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800',
+  primary: 'liquid-btn-primary',
+  secondary: 'liquid-btn-secondary',
+  outline: 'liquid-btn-outline',
   ghost:
-    'bg-transparent text-slate-700 hover:bg-stone-100 dark:text-neutral-300 dark:hover:bg-neutral-800 border border-transparent',
+    'bg-transparent text-slate-700 hover:bg-white/55 dark:text-slate-200 dark:hover:bg-white/10 border border-transparent',
   danger:
-    'bg-red-600 text-white hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-500 border border-transparent',
+    'bg-gradient-to-b from-[#FF5E57] to-[#E02424] text-white hover:brightness-105 border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.45),0_8px_18px_-6px_rgba(224,36,36,0.45)]',
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
@@ -47,7 +44,7 @@ export const Button: React.FC<ButtonProps> = ({
     <button
       type={type}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap shrink-0 transition-[transform,background-color,color,border-color,box-shadow] duration-150 ease-out active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${fullWidth ? 'w-full' : ''} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap shrink-0 transition-[transform,filter,background-color,color,border-color,box-shadow] duration-200 [transition-timing-function:cubic-bezier(0.22,1.25,0.36,1)] active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${fullWidth ? 'w-full' : ''} ${className}`}
       {...props}
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden="true" /> : icon}

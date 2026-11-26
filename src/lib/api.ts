@@ -189,3 +189,103 @@ export async function synthesizeSpeechApi(params: {
   };
 }
 
+export async function sendEmailVerificationCodeApi(params: {
+  email: string;
+  username: string;
+}): Promise<{
+  challengeToken: string;
+  maskedEmail: string;
+  expiresInSeconds: number;
+  cooldownSeconds: number;
+}> {
+  const response = await fetch('/api/auth/send-verification-code', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+
+  const data = await parseJsonResponse<{
+    challengeToken?: string;
+    maskedEmail?: string;
+    expiresInSeconds?: number;
+    cooldownSeconds?: number;
+  }>(response, 'Could not send verification code right now.');
+
+  if (!response.ok || !data.challengeToken) {
+    throw new Error(cleanErrorMessage(data.error, 'Could not send verification code right now.'));
+  }
+
+  return {
+    challengeToken: data.challengeToken,
+    maskedEmail: data.maskedEmail || params.email,
+    expiresInSeconds: data.expiresInSeconds || 600,
+    cooldownSeconds: data.cooldownSeconds || 60,
+  };
+}
+
+export async function verifyEmailCodeApi(params: {
+  email: string;
+  code: string;
+  challengeToken: string;
+}): Promise<{
+  verified: true;
+  verificationToken: string;
+  expiresInSeconds: number;
+}> {
+  const response = await fetch('/api/auth/verify-code', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+
+  const data = await parseJsonResponse<{
+    verified?: boolean;
+    verificationToken?: string;
+    expiresInSeconds?: number;
+  }>(response, 'Could not verify the code.');
+
+  if (!response.ok || !data.verified || !data.verificationToken) {
+    throw new Error(cleanErrorMessage(data.error, 'Could not verify the code.'));
+  }
+
+  return {
+    verified: true,
+    verificationToken: data.verificationToken,
+    expiresInSeconds: data.expiresInSeconds || 900,
+  };
+}
+
+export async function validateSignupApi(params: {
+  email: string;
+  username: string;
+  password: string;
+  verificationToken: string;
+}): Promise<{ ok: true; email: string; username: string }> {
+  const response = await fetch('/api/auth/validate-signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+
+  const data = await parseJsonResponse<{
+    ok?: boolean;
+    email?: string;
+    username?: string;
+  }>(response, 'Could not validate signup details.');
+
+  if (!response.ok || !data.ok || !data.email || !data.username) {
+    throw new Error(cleanErrorMessage(data.error, 'Could not validate signup details.'));
+  }
+
+  return {
+    ok: true,
+    email: data.email,
+    username: data.username,
+  };
+}

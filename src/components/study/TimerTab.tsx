@@ -184,7 +184,7 @@ export const TimerTab: React.FC<TimerTabProps> = ({ sessions = [] }) => {
           role="dialog"
           aria-modal="true"
           aria-label="Calm focus timer screen"
-          className="fixed inset-0 z-50 bg-[#FAF9F6] dark:bg-[#0B0B0C] text-slate-900 dark:text-neutral-100 flex flex-col items-center justify-between p-6 sm:p-10"
+          className="fixed inset-0 z-50 bg-[#EEF3FA]/95 dark:bg-[#060913]/95 backdrop-blur-3xl text-slate-950 dark:text-slate-50 flex flex-col items-center justify-between p-6 sm:p-10"
         >
           <div className="w-full max-w-2xl flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">

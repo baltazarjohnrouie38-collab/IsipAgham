@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updateProfile,
   type User,
 } from 'firebase/auth';
 import {
@@ -21,8 +22,10 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+import { evaluatePasswordStrength, validateEmail, validateUsername } from '../lib/authValidation';
 import { isValidAvatarUrl } from '../lib/avatar';
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { triggerIosIsland } from '../lib/iosEffects';
 import type { ChecklistKey, PhysicsCourse, UserProfile } from '../types';
 import { useTheme } from './ThemeContext';
 
@@ -34,8 +37,8 @@ interface AuthContextValue {
   clearAuthError: () => void;
   signUpWithAccount: (params: {
     username: string;
+    email: string;
     password: string;
-    email?: string;
     course?: PhysicsCourse;
   }) => Promise<void>;
   signInWithAccount: (params: { identifier: string; password: string }) => Promise<void>;
@@ -96,23 +99,23 @@ function usernameToAuthEmail(username: string): string {
 function formatAuthError(err: unknown): string {
   const code = (err as { code?: string })?.code ?? '';
   if (code === 'auth/operation-not-allowed') {
-    return 'Username/Password sign-in is not enabled yet in Firebase Console. Enable Email/Password under Authentication -> Sign-in method, or use Google Sign-In below.';
+    return 'Email/Password sign-in is not enabled yet in Firebase Console. Enable Email/Password under Authentication -> Sign-in method, or use Google Sign-In.';
   }
   if (code === 'auth/email-already-in-use') {
-    return 'That username or email is already registered. Try signing in or picking another username.';
+    return 'That email address is already registered. Try signing in instead.';
   }
   if (
     code === 'auth/invalid-credential' ||
     code === 'auth/wrong-password' ||
     code === 'auth/user-not-found'
   ) {
-    return 'Incorrect username/email or password. Please check and try again.';
+    return 'Incorrect email or password. Please check and try again.';
   }
   if (code === 'auth/weak-password') {
-    return 'Password should be at least 6 characters long.';
+    return 'Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.';
   }
   if (code === 'auth/invalid-email') {
-    return 'Please enter a valid username or email address.';
+    return 'Please enter a valid email address.';
   }
   if (code === 'auth/popup-closed-by-user') {
     return 'Sign-in window was closed before completing.';
@@ -289,20 +292,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUpWithAccount = async (params: {
     username: string;
+    email: string;
     password: string;
-    email?: string;
     course?: PhysicsCourse;
   }) => {
     setAuthError(null);
-    const cleanUser = sanitizeUsername(params.username);
-    const optionalEmail = params.email?.trim() || '';
-    const authEmail = optionalEmail ? optionalEmail : usernameToAuthEmail(cleanUser);
+
+    const usernameCheck = validateUsername(params.username);
+    if (!usernameCheck.valid) {
+      const msg = usernameCheck.error || 'Please choose a valid username.';
+      setAuthError(msg);
+      throw new Error(msg);
+    }
+
+    const emailCheck = validateEmail(params.email);
+    if (!emailCheck.valid) {
+      const msg = emailCheck.error || 'Please enter a valid email address.';
+      setAuthError(msg);
+      throw new Error(msg);
+    }
+
+    const passwordCheck = evaluatePasswordStrength(params.password, {
+      username: usernameCheck.clean,
+      email: emailCheck.normalized,
+    });
+    if (!passwordCheck.valid) {
+      const msg = passwordCheck.errors[0] || 'Please choose a stronger, authentic password.';
+      setAuthError(msg);
+      throw new Error(msg);
+    }
 
     try {
-      const cred = await createUserWithEmailAndPassword(auth, authEmail, params.password);
+      const cred = await createUserWithEmailAndPassword(auth, emailCheck.normalized, params.password);
+      await updateProfile(cred.user, { displayName: usernameCheck.clean }).catch(() => undefined);
       await ensureUserDocuments(cred.user, {
-        username: cleanUser,
-        email: optionalEmail,
+        username: usernameCheck.clean,
+        email: emailCheck.normalized,
         course: params.course || 'Physics 1',
       });
     } catch (err) {
@@ -502,6 +527,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (shouldBeDone) {
       await updateUserProfile({ lessonsCompleted: nextList });
       await awardXp(15, { studySeconds: 180 });
+      triggerIosIsland({
+        title: 'Lesson Completed',
+        subtitle: '+15 XP earned',
+        tone: 'emerald',
+      });
     } else {
       await updateUserProfile({ lessonsCompleted: nextList });
     }

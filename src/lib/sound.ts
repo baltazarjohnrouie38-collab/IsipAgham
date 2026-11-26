@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { triggerIosIsland } from './iosEffects';
 
 const SOUND_STORAGE_KEY = 'isipagham_sound_enabled';
 const SOUND_EVENT_NAME = 'isipagham:sound-pref';
@@ -6,6 +7,7 @@ const SOUND_EVENT_NAME = 'isipagham:sound-pref';
 export type UiSoundKind =
   | 'click'
   | 'tab'
+  | 'toggle'
   | 'flip'
   | 'correct'
   | 'wrong'
@@ -102,6 +104,18 @@ export function playUiSound(kind: UiSoundKind = 'click', forcePlay = false): voi
       peakGain: 0.05,
       type: 'triangle',
       startOffset: 0.028,
+    });
+    return;
+  }
+
+  if (kind === 'toggle') {
+    // Silky iOS glass switch pop
+    playTone(ctx, {
+      freq: 440,
+      endFreq: 760,
+      duration: 0.046,
+      peakGain: 0.048,
+      type: 'sine',
     });
     return;
   }
@@ -210,9 +224,13 @@ export function useSoundSettings() {
     const next = !isSoundEnabled();
     setSoundEnabled(next);
     setEnabledState(next);
+    triggerIosIsland({
+      title: next ? 'Sound Effects On' : 'Sound Effects Muted',
+      tone: 'neutral',
+    });
     if (next) {
       getAudioContext();
-      window.setTimeout(() => playUiSound('click', true), 15);
+      window.setTimeout(() => playUiSound('toggle', true), 15);
     }
   }, []);
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 export const Skeleton: React.FC<{ className?: string }> = ({ className = 'h-4 w-full' }) => (
   <div
-    className={`animate-pulse rounded-lg bg-stone-200 dark:bg-neutral-800 ${className}`}
+    className={`animate-pulse rounded-[14px] bg-white/60 dark:bg-white/10 backdrop-blur-md ${className}`}
     aria-hidden="true"
   />
 );

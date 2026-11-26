@@ -17,6 +17,12 @@ import {
   isElevenLabsConfigured,
   synthesizeElevenLabsTts,
 } from './server/elevenlabs.ts';
+import {
+  AuthVerificationError,
+  sendVerificationCode,
+  validateAndConsumeSignupVerification,
+  verifyEmailCode,
+} from './server/authVerification.ts';
 
 const app = express();
 const PORT = 3000;
@@ -46,6 +52,18 @@ const ttsLimiter = createRateLimiter({
   label: 'voice synthesis',
 });
 
+const authSendCodeLimiter = createRateLimiter({
+  windowMs: 10 * 60_000,
+  maxRequests: 6,
+  label: 'verification code requests',
+});
+
+const authVerifyCodeLimiter = createRateLimiter({
+  windowMs: 10 * 60_000,
+  maxRequests: 15,
+  label: 'verification code checks',
+});
+
 function sendRouteError(
   res: express.Response,
   err: unknown,
@@ -56,6 +74,10 @@ function sendRouteError(
     res.status(err.statusCode).json({ error: err.message, retryable: err.retryable });
     return;
   }
+  if (err instanceof AuthVerificationError) {
+    res.status(err.statusCode).json({ error: err.message });
+    return;
+  }
   console.error(fallbackMessage, err);
   const msg = err instanceof Error ? err.message : fallbackMessage;
   res.status(defaultStatus).json({ error: msg });
@@ -63,6 +85,80 @@ function sendRouteError(
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
+});
+
+app.post('/api/auth/send-verification-code', authSendCodeLimiter, async (req, res) => {
+  try {
+    const { email, username } = req.body as {
+      email?: unknown;
+      username?: unknown;
+    };
+
+    if (typeof email !== 'string' || typeof username !== 'string') {
+      res.status(400).json({ error: 'Username and email address are required.' });
+      return;
+    }
+
+    const result = await sendVerificationCode({ email, username });
+    res.json(result);
+  } catch (err) {
+    sendRouteError(res, err, 'Could not send verification code right now.', 500);
+  }
+});
+
+app.post('/api/auth/verify-code', authVerifyCodeLimiter, (req, res) => {
+  try {
+    const { email, code, challengeToken } = req.body as {
+      email?: unknown;
+      code?: unknown;
+      challengeToken?: unknown;
+    };
+
+    if (
+      typeof email !== 'string' ||
+      typeof code !== 'string' ||
+      typeof challengeToken !== 'string'
+    ) {
+      res.status(400).json({ error: 'Email address, verification code, and challenge token are required.' });
+      return;
+    }
+
+    const result = verifyEmailCode({ email, code, challengeToken });
+    res.json(result);
+  } catch (err) {
+    sendRouteError(res, err, 'Could not verify the code right now.', 400);
+  }
+});
+
+app.post('/api/auth/validate-signup', authVerifyCodeLimiter, (req, res) => {
+  try {
+    const { email, username, password, verificationToken } = req.body as {
+      email?: unknown;
+      username?: unknown;
+      password?: unknown;
+      verificationToken?: unknown;
+    };
+
+    if (
+      typeof email !== 'string' ||
+      typeof username !== 'string' ||
+      typeof password !== 'string' ||
+      typeof verificationToken !== 'string'
+    ) {
+      res.status(400).json({ error: 'Username, verified email, and authentic password are required.' });
+      return;
+    }
+
+    const result = validateAndConsumeSignupVerification({
+      email,
+      username,
+      password,
+      verificationToken,
+    });
+    res.json(result);
+  } catch (err) {
+    sendRouteError(res, err, 'Could not validate account signup details.', 400);
+  }
 });
 
 app.post(

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const BASE_FIELD_CLASS =
-  'w-full rounded-xl bg-white dark:bg-neutral-950 border border-stone-300 dark:border-neutral-700 px-3.5 py-2.5 text-base sm:text-sm text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors';
+  'w-full rounded-[14px] bg-white/75 dark:bg-slate-950/60 backdrop-blur-md border border-white/80 dark:border-white/15 px-3.5 py-2.5 text-base sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_1px_2px_rgba(15,23,42,0.04)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] focus:outline-none focus:ring-4 focus:ring-[#007AFF]/20 focus:border-[#007AFF] dark:focus:border-[#3898FF] transition-all';
 
 interface FieldWrapperProps {
   label?: string;
@@ -16,7 +16,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, hint, error, id, chi
     {label && (
       <label
         htmlFor={id}
-        className="block text-sm font-medium text-slate-800 dark:text-neutral-200"
+        className="block text-sm font-medium text-slate-800 dark:text-slate-200"
       >
         {label}
       </label>
@@ -25,7 +25,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, hint, error, id, chi
     {error ? (
       <p className="text-xs font-medium text-red-600 dark:text-red-400">{error}</p>
     ) : hint ? (
-      <p className="text-xs text-slate-500 dark:text-neutral-400">{hint}</p>
+      <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p>
     ) : null}
   </div>
 );
@@ -46,7 +46,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={`min-h-[44px] ${BASE_FIELD_CLASS} ${
-            error ? 'border-red-500 focus:ring-red-500' : ''
+            error ? 'border-red-500 focus:ring-red-500/20' : ''
           } ${className}`}
           {...props}
         />
@@ -76,7 +76,7 @@ export const Textarea: React.FC<TextareaProps> = ({
       <textarea
         id={areaId}
         className={`${BASE_FIELD_CLASS} min-h-[110px] resize-y ${
-          error ? 'border-red-500 focus:ring-red-500' : ''
+          error ? 'border-red-500 focus:ring-red-500/20' : ''
         } ${className}`}
         {...props}
       />
@@ -105,7 +105,7 @@ export const Select: React.FC<SelectProps> = ({
       <select
         id={selectId}
         className={`min-h-[44px] ${BASE_FIELD_CLASS} ${
-          error ? 'border-red-500 focus:ring-red-500' : ''
+          error ? 'border-red-500 focus:ring-red-500/20' : ''
         } ${className}`}
         {...props}
       >

@@ -81,7 +81,7 @@ export const LessonsPage: React.FC = () => {
 
       {/* Course Filter & Search Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl bg-stone-200/70 dark:bg-neutral-800/80 w-full md:w-fit">
+        <div className="flex flex-wrap gap-1.5 p-1.5 rounded-full liquid-glass w-full md:w-fit">
           {(
             [
               { key: 'all', label: `All Courses (${ALL_LESSONS.length})` },
@@ -95,10 +95,10 @@ export const LessonsPage: React.FC = () => {
               type="button"
               data-sound="tab"
               onClick={() => setSelectedCourse(item.key)}
-              className={`px-3.5 min-h-[42px] rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap ${
+              className={`px-3.5 min-h-[42px] rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer whitespace-nowrap ${
                 selectedCourse === item.key
-                  ? 'bg-white dark:bg-[#141416] text-slate-950 dark:text-neutral-100 shadow-xs'
-                  : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100'
+                  ? 'liquid-lens-active text-[#007AFF] dark:text-[#4DA3FF]'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               {item.label}
@@ -108,7 +108,7 @@ export const LessonsPage: React.FC = () => {
 
         <div className="relative w-full md:w-72">
           <Search
-            className="h-4 w-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+            className="h-4 w-4 text-slate-400 dark:text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
             aria-hidden="true"
           />
           <input
@@ -117,7 +117,7 @@ export const LessonsPage: React.FC = () => {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search lesson title or formula..."
             aria-label="Search lessons"
-            className="w-full h-11 pl-10 pr-4 rounded-xl border border-stone-200 dark:border-neutral-700 bg-white dark:bg-[#141416] text-sm text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full h-11 pl-10 pr-4 rounded-full liquid-glass text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-4 focus:ring-[#007AFF]/20"
           />
         </div>
       </div>

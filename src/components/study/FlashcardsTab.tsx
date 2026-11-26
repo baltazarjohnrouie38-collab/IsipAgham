@@ -717,7 +717,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
               return (
                 <div
                   key={set.id}
-                  className="rounded-2xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:-translate-y-0.5 hover:shadow-md transition-[transform,box-shadow,border-color] duration-200 overflow-hidden flex flex-col justify-between"
+                  className="liquid-glass rounded-[22px] hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 overflow-hidden flex flex-col justify-between"
                 >
                   <div>
                     <div className={`h-12 ${bannerClass} px-4 flex items-center justify-end`}>
@@ -991,7 +991,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   }`}
                 >
                   {/* Front Face (Question) */}
-                  <div className="flip-card-face rounded-2xl bg-white dark:bg-[#141416] border border-stone-200 dark:border-neutral-800 p-6 sm:p-10 min-h-[260px] flex flex-col justify-between shadow-[0_1px_3px_rgba(15,23,42,0.04)] hover:border-stone-300 dark:hover:border-neutral-700 transition-colors">
+                  <div className="flip-card-face liquid-glass-strong rounded-[26px] p-6 sm:p-10 min-h-[260px] flex flex-col justify-between transition-colors">
                     <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
                       <div className="flex flex-wrap items-center gap-2">
                         <span>Question · {activeItem.setTitle}</span>
@@ -1052,7 +1052,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   </div>
 
                   {/* Back Face (Answer) */}
-                  <div className="flip-card-face flip-card-back rounded-2xl bg-[#FAF9F6] dark:bg-neutral-900 border border-blue-200 dark:border-blue-900/70 p-6 sm:p-10 min-h-[260px] flex flex-col justify-between shadow-[0_2px_8px_rgba(15,23,42,0.05)]">
+                  <div className="flip-card-face flip-card-back liquid-glass-strong rounded-[26px] border border-[#007AFF]/35 dark:border-[#4DA3FF]/35 p-6 sm:p-10 min-h-[260px] flex flex-col justify-between">
                     <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-blue-700 dark:text-blue-400 font-semibold tabular-nums">
                       <span>Answer · {activeItem.setTitle}</span>
                       <span>

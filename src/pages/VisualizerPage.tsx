@@ -111,7 +111,7 @@ export const VisualizerPage: React.FC = () => {
       />
 
       {/* Course Selector */}
-      <div className="grid grid-cols-3 gap-2 p-1 rounded-2xl bg-stone-200/70 dark:bg-neutral-800/80">
+      <div className="grid grid-cols-3 gap-1.5 p-1.5 rounded-full liquid-glass">
         {COURSE_LIST.map((course) => {
           const isActive = selectedCourse === course;
           const isVisited = visitedCourses.includes(course);
@@ -121,19 +121,19 @@ export const VisualizerPage: React.FC = () => {
               key={course}
               type="button"
               onClick={() => handleSelectCourse(course)}
-              className={`min-h-[44px] px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`min-h-[44px] px-3 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                 isActive
-                  ? 'bg-white dark:bg-[#141416] text-slate-950 dark:text-neutral-100 shadow-xs'
-                  : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100'
+                  ? 'liquid-lens-active text-[#007AFF] dark:text-[#4DA3FF]'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>{course}</span>
-              <span className="hidden sm:inline text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
+              <span className="hidden sm:inline text-xs text-slate-500 dark:text-slate-400 tabular-nums">
                 ({count})
               </span>
               {isVisited && (
                 <CheckCircle2
-                  className="h-3.5 w-3.5 text-blue-700 dark:text-blue-400 shrink-0"
+                  className="h-3.5 w-3.5 text-[#007AFF] dark:text-[#4DA3FF] shrink-0"
                   aria-label="Visited"
                 />
               )}

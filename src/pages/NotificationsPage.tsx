@@ -211,16 +211,16 @@ export const NotificationsPage: React.FC = () => {
           type="button"
           onClick={handleBack}
           aria-label="Go back"
-          className="h-11 w-11 rounded-full bg-white dark:bg-[#141416] border border-stone-200 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.04)] flex items-center justify-center text-slate-800 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer shrink-0"
+          className="h-11 w-11 rounded-full liquid-glass flex items-center justify-center text-slate-800 dark:text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shrink-0"
         >
           <ArrowLeft className="h-5 w-5" aria-hidden="true" />
         </button>
 
         <div className="text-center min-w-0">
-          <h1 className="font-display text-lg sm:text-xl font-bold text-slate-950 dark:text-neutral-100 truncate">
+          <h1 className="font-display text-lg sm:text-xl font-bold text-slate-950 dark:text-white truncate">
             Notifications
           </h1>
-          <p className="text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
+          <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
             {unreadCount > 0
               ? `${unreadCount} unread`
               : remindersEnabled
@@ -237,7 +237,7 @@ export const NotificationsPage: React.FC = () => {
                 playUiSound('click');
                 markAllAsRead();
               }}
-              className="min-h-[40px] px-3 rounded-full bg-white dark:bg-[#141416] border border-stone-200 dark:border-neutral-800 text-xs font-semibold text-blue-700 dark:text-blue-400 hover:bg-stone-50 dark:hover:bg-neutral-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+              className="min-h-[40px] px-3.5 rounded-full liquid-glass text-xs font-semibold text-[#007AFF] dark:text-[#4DA3FF] hover:scale-[1.02] active:scale-[0.97] inline-flex items-center gap-1.5 transition-transform cursor-pointer whitespace-nowrap"
             >
               <CheckCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
               <span className="hidden sm:inline">Mark all read</span>
@@ -247,7 +247,7 @@ export const NotificationsPage: React.FC = () => {
             <Link
               to="/profile?tab=reminders"
               aria-label="Notification Settings"
-              className="h-11 w-11 rounded-full bg-white dark:bg-[#141416] border border-stone-200 dark:border-neutral-800 shadow-[0_1px_2px_rgba(15,23,42,0.04)] flex items-center justify-center text-slate-700 dark:text-neutral-200 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors"
+              className="h-11 w-11 rounded-full liquid-glass flex items-center justify-center text-slate-700 dark:text-slate-100 hover:scale-105 active:scale-95 transition-transform"
             >
               <Settings className="h-4.5 w-4.5" aria-hidden="true" />
             </Link>
@@ -259,18 +259,18 @@ export const NotificationsPage: React.FC = () => {
       <Card padding="none" className="overflow-hidden">
         {notifications.length === 0 ? (
           <div className="px-6 py-12 text-center space-y-2">
-            <div className="h-12 w-12 mx-auto rounded-2xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center text-slate-500 dark:text-neutral-400">
+            <div className="h-12 w-12 mx-auto rounded-2xl bg-white/70 dark:bg-white/10 backdrop-blur-md flex items-center justify-center text-slate-500 dark:text-slate-400">
               <Bell className="h-6 w-6" aria-hidden="true" />
             </div>
-            <p className="text-base font-bold text-slate-900 dark:text-neutral-100">
+            <p className="text-base font-bold text-slate-900 dark:text-white">
               No notifications yet
             </p>
-            <p className="text-sm text-slate-500 dark:text-neutral-400 max-w-sm mx-auto">
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
               Due flashcards, daily study reminders, streaks, and upcoming Physics lessons will appear here.
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-stone-200/80 dark:divide-neutral-800">
+          <div className="divide-y divide-slate-200/60 dark:divide-white/10">
             {notifications.map((notif) => {
               const { icon: Icon, bgClass } = getCategoryVisual(notif.category);
               const isHighlighted = highlightedId === notif.id;
@@ -282,10 +282,10 @@ export const NotificationsPage: React.FC = () => {
                   onClick={() => handleNotificationClick(notif)}
                   className={`w-full text-left px-4 sm:px-5 py-4 flex items-start gap-3.5 transition-colors cursor-pointer ${
                     isHighlighted
-                      ? 'bg-blue-50/90 dark:bg-blue-950/40'
+                      ? 'bg-[#007AFF]/14 dark:bg-[#0A84FF]/22'
                       : notif.unread
-                      ? 'bg-blue-50/45 dark:bg-blue-950/20 hover:bg-blue-50/75 dark:hover:bg-blue-950/35'
-                      : 'bg-white dark:bg-[#141416] hover:bg-stone-50/90 dark:hover:bg-neutral-900/70'
+                      ? 'bg-[#007AFF]/7 dark:bg-[#0A84FF]/12 hover:bg-[#007AFF]/12 dark:hover:bg-[#0A84FF]/18'
+                      : 'bg-transparent hover:bg-white/45 dark:hover:bg-white/6'
                   }`}
                 >
                   {/* Avatar / Icon + Unread Dot */}
@@ -297,7 +297,7 @@ export const NotificationsPage: React.FC = () => {
                     </div>
                     {notif.unread && (
                       <span
-                        className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-blue-600 dark:bg-blue-400 ring-2 ring-white dark:ring-[#141416]"
+                        className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-[#007AFF] dark:bg-[#4DA3FF] ring-2 ring-white/90 dark:ring-[#12192E]"
                         aria-label="Unread"
                       />
                     )}

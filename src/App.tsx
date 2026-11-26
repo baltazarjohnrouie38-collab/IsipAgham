@@ -2,10 +2,13 @@ import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { IosDynamicIsland } from './components/ui/IosDynamicIsland';
+import { IosLaunchEffect } from './components/ui/IosLaunchEffect';
 import { PageSkeleton } from './components/ui/Skeleton';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { useIosInteractiveEffects } from './lib/iosEffects';
 import { useGlobalClickSound } from './lib/sound';
 import { AuthPage } from './pages/AuthPage';
 
@@ -24,101 +27,108 @@ const AppRoutes: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] dark:bg-[#0B0B0C] p-6 max-w-5xl mx-auto">
+      <div className="min-h-screen bg-[#EEF3FA] dark:bg-[#060913] p-6 max-w-5xl mx-auto">
         <PageSkeleton />
       </div>
     );
   }
 
   if (!user) {
-    return <AuthPage />;
+    return (
+      <div key="auth-open" className="ios-app-open">
+        <AuthPage />
+      </div>
+    );
   }
 
   return (
-    <NotificationProvider>
-      <Routes>
-        <Route element={<AppShell />}>
-        <Route
-          path="/"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <HomePage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/lessons"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <LessonsPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/lessons/:lessonId"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <LessonDetailPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/study"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <StudyPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/visualizer"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <VisualizerPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/ai"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <AiTutorPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <ProfilePage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/checklist"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <ChecklistPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/notifications"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <NotificationsPage />
-            </Suspense>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-      </Routes>
-    </NotificationProvider>
+    <div key="workspace-open" className="ios-app-open">
+      <NotificationProvider>
+        <Routes>
+          <Route element={<AppShell />}>
+            <Route
+              path="/"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <HomePage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/lessons"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <LessonsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/lessons/:lessonId"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <LessonDetailPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/study"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <StudyPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/visualizer"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <VisualizerPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/ai"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <AiTutorPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <ProfilePage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/checklist"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <ChecklistPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={
+                <Suspense fallback={<PageSkeleton />}>
+                  <NotificationsPage />
+                </Suspense>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </NotificationProvider>
+    </div>
   );
 };
 
 export default function App() {
   useGlobalClickSound();
+  useIosInteractiveEffects();
 
   useEffect(() => {
     document.title = 'IsipAgham';
@@ -128,6 +138,8 @@ export default function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
+          <IosLaunchEffect />
+          <IosDynamicIsland />
           <BrowserRouter>
             <AppRoutes />
           </BrowserRouter>

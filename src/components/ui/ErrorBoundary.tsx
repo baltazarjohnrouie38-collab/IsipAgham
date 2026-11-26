@@ -38,7 +38,7 @@ export class ErrorBoundary extends React.Component<
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center p-6 bg-[#FAF9F6] dark:bg-[#0B0B0C]">
+        <div className="min-h-screen flex items-center justify-center p-6 bg-[#EEF3FA] dark:bg-[#060913]">
           <Card className="max-w-md w-full space-y-4">
             <AlertBanner tone="error" title="Something went wrong">
               {friendly}

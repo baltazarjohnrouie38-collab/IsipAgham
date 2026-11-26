@@ -437,13 +437,13 @@ export const AiTutorPage: React.FC = () => {
                     type="button"
                     disabled={sending || !isOnline}
                     onClick={() => void handleSend(item.text)}
-                    className="text-left rounded-xl border border-stone-200 dark:border-neutral-800 bg-[#FAF9F6] dark:bg-neutral-950 hover:border-blue-500 dark:hover:border-blue-600 p-3.5 transition-colors cursor-pointer disabled:opacity-50 min-h-[44px]"
+                    className="text-left rounded-[18px] border border-white/75 dark:border-white/12 bg-white/60 dark:bg-white/6 backdrop-blur-md hover:border-[#007AFF]/50 dark:hover:border-[#4DA3FF]/50 hover:bg-white/80 dark:hover:bg-white/10 p-3.5 transition-all cursor-pointer disabled:opacity-50 min-h-[44px]"
                   >
-                    <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-1 flex items-center gap-1.5">
+                    <p className="text-xs font-semibold text-[#007AFF] dark:text-[#4DA3FF] mb-1 flex items-center gap-1.5">
                       <Atom className="h-3.5 w-3.5" aria-hidden="true" />
                       {item.course}
                     </p>
-                    <p className="text-sm text-slate-700 dark:text-neutral-300 leading-relaxed">
+                    <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
                       {item.text}
                     </p>
                   </button>
@@ -462,16 +462,16 @@ export const AiTutorPage: React.FC = () => {
                   className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[92%] sm:max-w-[82%] rounded-2xl px-4 py-3.5 space-y-2 ${
+                    className={`max-w-[92%] sm:max-w-[82%] rounded-[22px] px-4 py-3.5 space-y-2 ${
                       isUser
-                        ? 'bg-blue-700 text-white dark:bg-blue-600'
-                        : 'bg-[#FAF9F6] text-slate-900 dark:bg-neutral-800 dark:text-neutral-100 border border-stone-200 dark:border-neutral-700'
+                        ? 'liquid-btn-primary text-white rounded-br-[6px]'
+                        : 'bg-white/75 dark:bg-white/10 text-slate-900 dark:text-slate-100 border border-white/80 dark:border-white/12 backdrop-blur-md rounded-bl-[6px]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span
                         className={`text-xs font-semibold ${
-                          isUser ? 'text-blue-100' : 'text-slate-600 dark:text-neutral-400'
+                          isUser ? 'text-blue-100' : 'text-slate-600 dark:text-slate-400'
                         }`}
                       >
                         {isUser ? profile?.nickname || 'You' : 'IsipAgham Tutor'}
@@ -479,7 +479,7 @@ export const AiTutorPage: React.FC = () => {
                       {msg.materialTitle && (
                         <span
                           className={`text-xs truncate max-w-[190px] ${
-                            isUser ? 'text-blue-100' : 'text-slate-500 dark:text-neutral-400'
+                            isUser ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'
                           }`}
                         >
                           Ref: {msg.materialTitle}
@@ -492,13 +492,13 @@ export const AiTutorPage: React.FC = () => {
                       className={
                         isUser
                           ? 'text-base leading-relaxed text-white'
-                          : 'font-lesson text-base leading-relaxed text-slate-900 dark:text-neutral-100'
+                          : 'font-lesson text-base leading-relaxed text-slate-900 dark:text-slate-100'
                       }
                     />
 
                     {!isUser && (
-                      <div className="pt-1.5 flex items-center justify-between gap-2 border-t border-stone-200/80 dark:border-neutral-700/80">
-                        <span className="text-xs text-slate-500 dark:text-neutral-400 flex items-center gap-1">
+                      <div className="pt-1.5 flex items-center justify-between gap-2 border-t border-slate-200/70 dark:border-white/10">
+                        <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                           <ShieldAlert className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                           Verify with your teacher
                         </span>
@@ -506,7 +506,7 @@ export const AiTutorPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleSpeakToggle(msg)}
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline min-h-[36px] px-2 cursor-pointer"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-[#007AFF] dark:text-[#4DA3FF] hover:underline min-h-[36px] px-2 cursor-pointer"
                           >
                             {isLoadingThis ? (
                               <>
@@ -536,8 +536,8 @@ export const AiTutorPage: React.FC = () => {
 
           {sending && (
             <div className="flex justify-start">
-              <div className="rounded-2xl px-4 py-3 bg-[#FAF9F6] dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700 text-sm text-slate-600 dark:text-neutral-300 flex items-center gap-2">
-                <Bot className="h-4 w-4 text-blue-700 dark:text-blue-400 animate-pulse" aria-hidden="true" />
+              <div className="rounded-[22px] rounded-bl-[6px] px-4 py-3 bg-white/75 dark:bg-white/10 border border-white/80 dark:border-white/12 backdrop-blur-md text-sm text-slate-600 dark:text-slate-200 flex items-center gap-2">
+                <Bot className="h-4 w-4 text-[#007AFF] dark:text-[#4DA3FF] animate-pulse" aria-hidden="true" />
                 <span>Working out the Physics explanation and SI units...</span>
               </div>
             </div>
@@ -548,8 +548,8 @@ export const AiTutorPage: React.FC = () => {
 
         {/* Quick "Explain like I'm 12" follow-up when a reply exists */}
         {lastAssistantMsg && !sending && isOnline && (
-          <div className="px-4 py-2 border-t border-stone-200/80 dark:border-neutral-800 bg-white dark:bg-[#141416] flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs text-slate-500 dark:text-neutral-400">
+          <div className="px-4 py-2 border-t border-slate-200/60 dark:border-white/10 bg-white/45 dark:bg-white/4 backdrop-blur-md flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
               Still tricky? Ask for a simpler breakdown.
             </span>
             <button
@@ -560,7 +560,7 @@ export const AiTutorPage: React.FC = () => {
                   true
                 )
               }
-              className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-[#007AFF] dark:text-[#4DA3FF] hover:underline inline-flex items-center gap-1 cursor-pointer"
             >
               <Lightbulb className="h-3.5 w-3.5" aria-hidden="true" />
               Explain like I&apos;m 12
@@ -573,7 +573,7 @@ export const AiTutorPage: React.FC = () => {
             e.preventDefault();
             void handleSend();
           }}
-          className="border-t border-stone-200 dark:border-neutral-800 bg-[#FAF9F6] dark:bg-neutral-950 p-3 sm:p-4 flex flex-col sm:flex-row gap-2.5"
+          className="border-t border-slate-200/60 dark:border-white/10 bg-white/55 dark:bg-white/5 backdrop-blur-xl p-3 sm:p-4 flex flex-col sm:flex-row gap-2.5"
         >
           <input
             type="text"
@@ -587,7 +587,7 @@ export const AiTutorPage: React.FC = () => {
             }
             disabled={sending || !isOnline}
             aria-label="Physics question"
-            className="flex-1 min-h-[46px] rounded-xl bg-white dark:bg-neutral-900 border border-stone-300 dark:border-neutral-700 px-3.5 py-2.5 text-base text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="flex-1 min-h-[46px] rounded-full bg-white/85 dark:bg-white/8 border border-white/85 dark:border-white/15 px-4 py-2.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-4 focus:ring-[#007AFF]/20"
           />
           <Button
             type="submit"

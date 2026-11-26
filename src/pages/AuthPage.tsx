@@ -1,7 +1,23 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Mail, Moon, ShieldCheck, Sun, User } from 'lucide-react';
+import {
+  ArrowLeft,
+  Check,
+  Eye,
+  EyeOff,
+  Mail,
+  Moon,
+  ShieldCheck,
+  Sun,
+  X,
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { triggerIosIsland } from '../lib/iosEffects';
+import {
+  evaluatePasswordStrength,
+  validateEmail,
+  validateUsername,
+} from '../lib/authValidation';
 import type { PhysicsCourse } from '../types';
 import { AlertBanner } from '../components/ui/AlertBanner';
 import { Button } from '../components/ui/Button';
@@ -9,6 +25,7 @@ import { Input, Select } from '../components/ui/Input';
 import { OfflineBanner } from '../components/ui/OfflineBanner';
 import { PWAInstallButton } from '../components/ui/PWAInstallButton';
 import authHeroLogoUrl from '../assets/images/regenerated_image_1795555562184.jpg';
+import liquidBackdropUrl from '../assets/images/ios_liquid_backdrop_1795687710854.jpg';
 
 const GoogleMark: React.FC = () => (
   <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
@@ -37,13 +54,24 @@ export const AuthPage: React.FC = () => {
   const { darkMode, toggleDarkMode } = useTheme();
   const [mode, setMode] = useState<'signup' | 'login'>('login');
   const [showCredentialsForm, setShowCredentialsForm] = useState(false);
+
   const [identifier, setIdentifier] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [course, setCourse] = useState<PhysicsCourse>('Physics 1');
+
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+
+  const usernameResult = validateUsername(username);
+  const passwordStrength = evaluatePasswordStrength(password, {
+    username,
+    email,
+  });
 
   const handleModeSwitch = (nextMode: 'signup' | 'login') => {
     setMode(nextMode);
@@ -58,35 +86,57 @@ export const AuthPage: React.FC = () => {
 
     if (mode === 'login') {
       if (!identifier.trim() || !password) {
-        setLocalError('Please enter your username (or email) and password.');
+        setLocalError('Please enter your email address and password.');
         return;
       }
-    } else {
-      const cleanUser = username.trim();
-      if (cleanUser.length < 2 || cleanUser.length > 24) {
-        setLocalError('Username must be between 2 and 24 characters.');
-        return;
+
+      setSubmitting(true);
+      try {
+        await signInWithAccount({ identifier, password });
+      } catch {
+        // authError is populated in context
+      } finally {
+        setSubmitting(false);
       }
-      if (password.length < 6) {
-        setLocalError('Password must be at least 6 characters.');
-        return;
-      }
+      return;
+    }
+
+    const userCheck = validateUsername(username);
+    if (!userCheck.valid) {
+      setLocalError(userCheck.error || 'Please enter a valid username.');
+      return;
+    }
+
+    const emailCheck = validateEmail(email);
+    if (!emailCheck.valid) {
+      setLocalError(emailCheck.error || 'Please enter a valid email address.');
+      return;
+    }
+
+    if (!passwordStrength.valid) {
+      setLocalError(
+        passwordStrength.errors[0] || 'Please choose a stronger, authentic password.'
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setLocalError('Passwords do not match. Please re-enter your password.');
+      return;
     }
 
     setSubmitting(true);
     try {
-      if (mode === 'login') {
-        await signInWithAccount({ identifier, password });
-      } else {
-        await signUpWithAccount({
-          username,
-          password,
-          email: email.trim() || undefined,
-          course,
-        });
+      await signUpWithAccount({
+        username: userCheck.clean,
+        email: emailCheck.normalized,
+        password,
+        course,
+      });
+    } catch (err) {
+      if (!authError && err instanceof Error) {
+        setLocalError(err.message);
       }
-    } catch {
-      // authError is already populated in context
     } finally {
       setSubmitting(false);
     }
@@ -107,31 +157,68 @@ export const AuthPage: React.FC = () => {
 
   const displayError = localError || authError;
 
+  const passwordRequirementItems = [
+    { label: '8+ characters', met: passwordStrength.checks.minLength },
+    { label: 'Uppercase (A-Z)', met: passwordStrength.checks.hasUpper },
+    { label: 'Lowercase (a-z)', met: passwordStrength.checks.hasLower },
+    { label: 'Number (0-9)', met: passwordStrength.checks.hasNumber },
+    { label: 'Symbol (!@#$)', met: passwordStrength.checks.hasSpecial },
+    { label: 'Unique phrase', met: passwordStrength.checks.notCommonOrPersonal },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#FAF9F6] dark:bg-[#0B0B0C] text-slate-900 dark:text-neutral-100 flex flex-col">
+    <div className="relative min-h-screen text-slate-950 dark:text-slate-50 flex flex-col">
+      <div className="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
+        <img
+          src={liquidBackdropUrl}
+          alt=""
+          className={`h-full w-full object-cover transition-[filter] duration-500 ${
+            darkMode
+              ? 'brightness-[0.3] contrast-125 saturate-125 hue-rotate-[8deg]'
+              : 'brightness-105 saturate-110'
+          }`}
+          referrerPolicy="no-referrer"
+        />
+        <div
+          className={`absolute inset-0 ${
+            darkMode
+              ? 'bg-[radial-gradient(circle_at_20%_15%,rgba(56,189,248,0.16),transparent_45%),radial-gradient(circle_at_85%_75%,rgba(59,130,246,0.18),transparent_48%),linear-gradient(180deg,rgba(6,9,19,0.58)_0%,rgba(6,9,19,0.82)_100%)]'
+              : 'bg-[radial-gradient(circle_at_15%_15%,rgba(255,255,255,0.68),transparent_52%),linear-gradient(180deg,rgba(238,243,250,0.42)_0%,rgba(229,238,252,0.62)_100%)]'
+          }`}
+        />
+      </div>
+
       <OfflineBanner />
 
-      <div className="flex items-center justify-end gap-2 px-4 sm:px-8 pt-4 w-full max-w-6xl mx-auto">
+      <div className="relative z-10 flex items-center justify-end gap-2 px-4 sm:px-8 pt-4 w-full max-w-6xl mx-auto">
         <PWAInstallButton compact />
         <button
           type="button"
-          onClick={toggleDarkMode}
-          aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="min-h-[42px] min-w-[42px] inline-flex items-center justify-center rounded-full border border-stone-200 dark:border-neutral-800 bg-white dark:bg-[#141416] text-slate-700 dark:text-neutral-200 hover:bg-stone-100 dark:hover:bg-neutral-800 cursor-pointer"
+          data-sound="toggle"
+          onClick={() => {
+            const next = !darkMode;
+            toggleDarkMode();
+            triggerIosIsland({
+              title: next ? 'Dark Glass' : 'Light Glass',
+              subtitle: 'Appearance updated',
+              tone: 'blue',
+            });
+          }}
+          aria-label={darkMode ? 'Switch to light glass' : 'Switch to dark glass'}
+          className="liquid-glass min-h-[42px] min-w-[42px] inline-flex items-center justify-center rounded-full transition-transform active:scale-90 cursor-pointer"
         >
           {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
       </div>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-10">
-        <div className="w-full max-w-[440px] rounded-3xl bg-white dark:bg-[#141416] border border-stone-200/90 dark:border-neutral-800 shadow-[0_8px_30px_rgba(15,23,42,0.06)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.45)] p-6 sm:p-9 space-y-6">
-          {/* Centered Brand + Headline */}
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-10">
+        <div className="w-full max-w-[460px] liquid-glass-strong rounded-[32px] p-6 sm:p-9 space-y-6">
           <div className="flex flex-col items-center text-center space-y-3">
             <div className="inline-flex items-center gap-2.5">
               <img
                 src={authHeroLogoUrl}
                 alt="IsipAgham mascot logo"
-                className="h-10 w-10 rounded-xl object-cover shadow-xs"
+                className="h-11 w-11 rounded-[16px] border border-white/80 dark:border-white/15 object-cover shadow-xs"
                 referrerPolicy="no-referrer"
               />
               <span className="font-display text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white">
@@ -143,14 +230,13 @@ export const AuthPage: React.FC = () => {
               <h1 className="font-display text-2xl sm:text-[28px] font-extrabold tracking-tight text-slate-950 dark:text-white">
                 Let&apos;s get started!
               </h1>
-              <p className="text-sm text-slate-500 dark:text-neutral-400">
+              <p className="text-sm text-slate-600 dark:text-slate-300/80">
                 Free Grade 12 Physics 1–3 lessons, 3D labs &amp; flashcards
               </p>
             </div>
 
-            {/* Centered Pill Switcher */}
             <div
-              className="inline-flex items-center p-1 rounded-full bg-stone-100 dark:bg-neutral-800/90 border border-stone-200/70 dark:border-neutral-700/70 mt-1"
+              className="inline-flex items-center p-1 rounded-full bg-slate-900/5 dark:bg-white/10 border border-white/75 dark:border-white/15 mt-1"
               role="tablist"
               aria-label="Authentication mode"
             >
@@ -159,10 +245,10 @@ export const AuthPage: React.FC = () => {
                 role="tab"
                 aria-selected={mode === 'signup'}
                 onClick={() => handleModeSwitch('signup')}
-                className={`min-h-[38px] px-5 rounded-full text-sm font-semibold transition-all cursor-pointer ${
+                className={`min-h-[38px] px-5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
                   mode === 'signup'
-                    ? 'bg-white dark:bg-[#141416] text-slate-950 dark:text-white shadow-xs ring-1 ring-slate-900/15 dark:ring-white/20'
-                    : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100'
+                    ? 'liquid-lens-active'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white'
                 }`}
               >
                 Sign up
@@ -172,10 +258,10 @@ export const AuthPage: React.FC = () => {
                 role="tab"
                 aria-selected={mode === 'login'}
                 onClick={() => handleModeSwitch('login')}
-                className={`min-h-[38px] px-5 rounded-full text-sm font-semibold transition-all cursor-pointer ${
+                className={`min-h-[38px] px-5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
                   mode === 'login'
-                    ? 'bg-white dark:bg-[#141416] text-slate-950 dark:text-white shadow-xs ring-1 ring-slate-900/15 dark:ring-white/20'
-                    : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100'
+                    ? 'liquid-lens-active'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white'
                 }`}
               >
                 Sign in
@@ -191,17 +277,14 @@ export const AuthPage: React.FC = () => {
 
           {!showCredentialsForm ? (
             <div className="space-y-3.5">
-              {/* Primary Google Option */}
               <button
                 type="button"
                 disabled={submitting}
                 onClick={() => {
                   void handleGoogleSignIn();
                 }}
-                className={`w-full min-h-[48px] px-5 rounded-full font-semibold text-sm flex items-center justify-center gap-3 transition-colors cursor-pointer disabled:opacity-50 ${
-                  mode === 'login'
-                    ? 'bg-slate-950 text-white hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500'
-                    : 'bg-white dark:bg-neutral-900 text-slate-900 dark:text-neutral-100 border border-stone-200 dark:border-neutral-700 hover:bg-stone-50 dark:hover:bg-neutral-800'
+                className={`w-full min-h-[48px] px-5 rounded-full font-semibold text-sm flex items-center justify-center gap-3 transition-all duration-200 [transition-timing-function:cubic-bezier(0.22,1.25,0.36,1)] active:scale-[0.97] cursor-pointer disabled:opacity-50 ${
+                  mode === 'login' ? 'liquid-btn-primary' : 'liquid-btn-outline'
                 }`}
               >
                 <GoogleMark />
@@ -210,10 +293,10 @@ export const AuthPage: React.FC = () => {
 
               <div className="relative py-2">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-stone-200 dark:border-neutral-800" />
+                  <span className="w-full border-t border-slate-900/10 dark:border-white/10" />
                 </div>
                 <div className="relative flex justify-center text-xs font-semibold">
-                  <span className="bg-white dark:bg-[#141416] px-3 text-slate-500 dark:text-neutral-400">
+                  <span className="px-3 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-slate-500 dark:text-slate-300">
                     Other options
                   </span>
                 </div>
@@ -227,27 +310,14 @@ export const AuthPage: React.FC = () => {
                   clearAuthError();
                   setShowCredentialsForm(true);
                 }}
-                className="w-full min-h-[48px] px-5 rounded-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-slate-900 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 text-sm font-semibold flex items-center justify-center gap-2.5 transition-colors cursor-pointer disabled:opacity-50"
+                className="liquid-btn-outline w-full min-h-[48px] px-5 rounded-full text-sm font-semibold flex items-center justify-center gap-2.5 transition-all duration-200 [transition-timing-function:cubic-bezier(0.22,1.25,0.36,1)] active:scale-[0.97] cursor-pointer disabled:opacity-50"
               >
-                <Mail className="h-4 w-4 text-slate-700 dark:text-neutral-300" aria-hidden="true" />
+                <Mail className="h-4 w-4 text-[#007AFF] dark:text-sky-400" aria-hidden="true" />
                 <span>
                   {mode === 'login'
-                    ? 'Sign in with Email or Username'
-                    : 'Sign up with Username or Email'}
+                    ? 'Sign in with Email & Password'
+                    : 'Sign up with Email & Username'}
                 </span>
-              </button>
-
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={() => {
-                  handleModeSwitch('signup');
-                  setShowCredentialsForm(true);
-                }}
-                className="w-full min-h-[48px] px-5 rounded-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-slate-900 dark:text-neutral-100 hover:bg-stone-50 dark:hover:bg-neutral-800 text-sm font-semibold flex items-center justify-center gap-2.5 transition-colors cursor-pointer disabled:opacity-50"
-              >
-                <User className="h-4 w-4 text-blue-700 dark:text-blue-400" aria-hidden="true" />
-                <span>Create Free Username-Only Account</span>
               </button>
             </div>
           ) : (
@@ -259,7 +329,7 @@ export const AuthPage: React.FC = () => {
                   setLocalError(null);
                   clearAuthError();
                 }}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#007AFF] dark:text-sky-400 hover:underline cursor-pointer"
               >
                 <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Back to all options</span>
@@ -267,15 +337,47 @@ export const AuthPage: React.FC = () => {
 
               <form onSubmit={handleSubmit} className="space-y-3.5">
                 {mode === 'login' ? (
-                  <Input
-                    label="Username or Email"
-                    type="text"
-                    placeholder="e.g., NewtonFan12 or student@school.edu.ph"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    autoComplete="username"
-                    required
-                  />
+                  <>
+                    <Input
+                      label="Email Address"
+                      type="text"
+                      placeholder="student@school.edu.ph"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      autoComplete="email"
+                      hint="Use the verified email address for your account."
+                      required
+                    />
+
+                    <div className="space-y-1.5">
+                      <label
+                        htmlFor="login-password"
+                        className="block text-sm font-medium text-slate-800 dark:text-neutral-200"
+                      >
+                        Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="login-password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Enter your password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          autoComplete="current-password"
+                          required
+                          className="w-full min-h-[44px] rounded-xl bg-white dark:bg-neutral-950 border border-stone-300 dark:border-neutral-700 px-3.5 pr-11 py-2.5 text-base sm:text-sm text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <Input
@@ -284,18 +386,113 @@ export const AuthPage: React.FC = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       maxLength={24}
+                      autoComplete="username"
                       required
-                      hint="Shown on the Global Leadership Board. Avoid your full real name."
+                      error={username.length > 0 && !usernameResult.valid ? usernameResult.error : undefined}
+                      hint="3–24 characters (letters, numbers, _, ., -). Shown on the leaderboard."
                     />
 
                     <Input
-                      label="Email Address (Optional)"
+                      label="Email Address"
                       type="email"
-                      placeholder="Optional — leave blank for username-only"
+                      placeholder="student@school.edu.ph"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       autoComplete="email"
+                      required
                     />
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="signup-password"
+                        className="block text-sm font-medium text-slate-800 dark:text-neutral-200"
+                      >
+                        Authentic Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="signup-password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Create a strong password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          autoComplete="new-password"
+                          minLength={8}
+                          required
+                          className="w-full min-h-[44px] rounded-xl bg-white dark:bg-neutral-950 border border-stone-300 dark:border-neutral-700 px-3.5 pr-11 py-2.5 text-base sm:text-sm text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+                        {passwordRequirementItems.map((item) => (
+                          <div
+                            key={item.label}
+                            className={`flex items-center gap-1.5 text-[11px] font-medium ${
+                              item.met
+                                ? 'text-emerald-700 dark:text-emerald-400'
+                                : 'text-slate-500 dark:text-neutral-400'
+                            }`}
+                          >
+                            {item.met ? (
+                              <Check className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                            ) : (
+                              <X className="h-3.5 w-3.5 shrink-0 opacity-60" aria-hidden="true" />
+                            )}
+                            <span>{item.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label
+                        htmlFor="signup-confirm-password"
+                        className="block text-sm font-medium text-slate-800 dark:text-neutral-200"
+                      >
+                        Confirm Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="signup-confirm-password"
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          placeholder="Re-enter your password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          autoComplete="new-password"
+                          required
+                          className={`w-full min-h-[44px] rounded-xl bg-white dark:bg-neutral-950 border px-3.5 pr-11 py-2.5 text-base sm:text-sm text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 transition-colors ${
+                            confirmPassword && confirmPassword !== password
+                              ? 'border-red-500 focus:ring-red-500'
+                              : 'border-stone-300 dark:border-neutral-700 focus:ring-blue-600 focus:border-blue-600'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword((prev) => !prev)}
+                          aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                      {confirmPassword && confirmPassword !== password && (
+                        <p className="text-xs font-medium text-red-600 dark:text-red-400">
+                          Passwords do not match.
+                        </p>
+                      )}
+                    </div>
 
                     <Select
                       label="Your Physics Course"
@@ -309,31 +506,20 @@ export const AuthPage: React.FC = () => {
                   </>
                 )}
 
-                <Input
-                  label="Password"
-                  type="password"
-                  placeholder="At least 6 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  minLength={6}
-                  required
-                />
-
                 <Button type="submit" fullWidth size="lg" loading={submitting}>
-                  {mode === 'login' ? 'Sign in' : 'Start Learning Free (0 XP)'}
+                  {mode === 'login' ? 'Sign in' : 'Create Account'}
                 </Button>
               </form>
             </div>
           )}
 
-          <div className="pt-2 border-t border-stone-200/80 dark:border-neutral-800 flex items-start gap-2 text-left">
+          <div className="pt-2 border-t border-slate-900/10 dark:border-white/10 flex items-start gap-2 text-left">
             <ShieldCheck
-              className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0 mt-0.5"
+              className="h-4 w-4 text-[#007AFF] dark:text-sky-400 shrink-0 mt-0.5"
               aria-hidden="true"
             />
-            <p className="text-[11px] text-slate-500 dark:text-neutral-400 leading-relaxed">
-              RA 10173 Privacy: Email is optional. We never ask for your full name, phone number, or home address, and you can delete your account anytime.
+            <p className="text-[11px] text-slate-600 dark:text-slate-300/80 leading-relaxed">
+              RA 10173 Privacy: Your email is used only to verify your account and sign you in. We never ask for your full real name, phone number, or home address, and you can delete your account anytime.
             </p>
           </div>
         </div>
