@@ -28,7 +28,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { ALL_LESSONS } from '../data/lessons';
 import { NATURAL_VOICE_OPTIONS, useSpeech } from '../hooks/useSpeech';
 import type { NaturalVoiceName } from '../lib/api';
-import { processAvatarImageFile } from '../lib/avatar';
+import { validateAvatarImageFile } from '../lib/avatar';
 import {
   registerStudyNotifications,
   showDueCardsNotification,
@@ -41,6 +41,7 @@ import { Card } from '../components/ui/Card';
 import { Input, Select } from '../components/ui/Input';
 import { PWAInstallButton } from '../components/ui/PWAInstallButton';
 import { UserAvatar } from '../components/ui/UserAvatar';
+import { AvatarCropModal } from '../components/profile/AvatarCropModal';
 import { JoinLeaderboardModal } from '../components/study/JoinLeaderboardModal';
 
 type ProfileTabKey = 'overview' | 'reminders' | 'privacy';
@@ -113,6 +114,7 @@ export const ProfilePage: React.FC = () => {
   const [heroNameDraft, setHeroNameDraft] = useState(profile?.nickname || profile?.username || '');
   const [savingHeroName, setSavingHeroName] = useState(false);
   const [settingsFeedback, setSettingsFeedback] = useState<string | null>(null);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
 
   const nicknameInputRef = useRef<HTMLInputElement | null>(null);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
@@ -295,20 +297,32 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleAvatarSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
 
     setStatusMsg(null);
     setErrorMsg(null);
+    try {
+      validateAvatarImageFile(file);
+      setPendingAvatarFile(file);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Could not open selected image.');
+    }
+  };
+
+  const handleSaveCroppedAvatar = async (avatarDataUrl: string) => {
+    setStatusMsg(null);
+    setErrorMsg(null);
     setUploadingAvatar(true);
     try {
-      const avatarDataUrl = await processAvatarImageFile(file);
       await updateUserProfile({ avatarUrl: avatarDataUrl });
+      setPendingAvatarFile(null);
       setStatusMsg('Profile picture updated!');
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Could not upload profile picture.');
+      setErrorMsg(formatSaveError(err, 'Could not upload profile picture.'));
+      throw err;
     } finally {
       setUploadingAvatar(false);
     }
@@ -1203,6 +1217,16 @@ export const ProfilePage: React.FC = () => {
         open={joinLeaderboardOpen}
         onClose={() => setJoinLeaderboardOpen(false)}
         onJoined={() => setStatusMsg('Joined the Global Leadership Board!')}
+      />
+
+      <AvatarCropModal
+        file={pendingAvatarFile}
+        saving={uploadingAvatar}
+        onChooseAnother={() => avatarInputRef.current?.click()}
+        onCancel={() => {
+          if (!uploadingAvatar) setPendingAvatarFile(null);
+        }}
+        onSave={handleSaveCroppedAvatar}
       />
     </div>
   );
