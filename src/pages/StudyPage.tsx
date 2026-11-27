@@ -84,7 +84,7 @@ export const StudyPage: React.FC = () => {
         subtitle="Upload notes, study SM-2 flashcards with TTS, take mixed quizzes, focus with the calm timer, and track your rank"
       />
 
-      <div className="flex flex-wrap gap-1.5 p-1.5 rounded-full liquid-glass w-full sm:w-fit">
+      <div className="flex items-center gap-1 p-1.5 rounded-full liquid-glass w-full sm:w-fit max-w-full overflow-x-auto no-scrollbar">
         {(
           [
             { key: 'materials', label: `Materials (${materials.length})` },
@@ -99,7 +99,7 @@ export const StudyPage: React.FC = () => {
             type="button"
             data-sound="tab"
             onClick={() => switchTab(item.key)}
-            className={`px-3.5 min-h-[44px] rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer ${
+            className={`px-3.5 min-h-[44px] rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 cursor-pointer ${
               activeTab === item.key
                 ? 'liquid-lens-active text-[#007AFF] dark:text-[#4DA3FF]'
                 : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'

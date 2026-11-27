@@ -305,13 +305,13 @@ export const AiTutorPage: React.FC = () => {
             </Select>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="w-full lg:w-auto flex flex-wrap items-center gap-2 shrink-0">
             {ttsSupported && (
               <select
                 aria-label="Tutor reading voice"
                 value={voice}
                 onChange={(e) => setVoice(e.target.value as NaturalVoiceName)}
-                className="min-h-[44px] rounded-xl border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 text-xs sm:text-sm font-semibold text-slate-700 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="min-h-[44px] max-w-full min-w-0 flex-1 sm:flex-initial rounded-xl border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 text-xs sm:text-sm font-semibold text-slate-700 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-600"
               >
                 {NATURAL_VOICE_OPTIONS.map((v) => (
                   <option key={v.id} value={v.id}>
@@ -413,7 +413,7 @@ export const AiTutorPage: React.FC = () => {
       )}
 
       <Card padding="none" className="overflow-hidden flex flex-col">
-        <div className="max-h-[480px] min-h-[300px] overflow-y-auto p-4 sm:p-5 space-y-4">
+        <div className="max-h-[54dvh] sm:max-h-[520px] min-h-[260px] sm:min-h-[300px] overflow-y-auto p-3.5 sm:p-5 space-y-4">
           {messages.length === 0 ? (
             <div className="py-6 space-y-5">
               <div className="flex items-start gap-3">
@@ -462,7 +462,7 @@ export const AiTutorPage: React.FC = () => {
                   className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[92%] sm:max-w-[82%] rounded-[22px] px-4 py-3.5 space-y-2 ${
+                    className={`min-w-0 max-w-[92%] sm:max-w-[82%] rounded-[22px] px-3.5 sm:px-4 py-3 sm:py-3.5 space-y-2 ${
                       isUser
                         ? 'liquid-btn-primary text-white rounded-br-[6px]'
                         : 'bg-white/75 dark:bg-white/10 text-slate-900 dark:text-slate-100 border border-white/80 dark:border-white/12 backdrop-blur-md rounded-bl-[6px]'
@@ -573,7 +573,7 @@ export const AiTutorPage: React.FC = () => {
             e.preventDefault();
             void handleSend();
           }}
-          className="border-t border-slate-200/60 dark:border-white/10 bg-white/55 dark:bg-white/5 backdrop-blur-xl p-3 sm:p-4 flex flex-col sm:flex-row gap-2.5"
+          className="border-t border-slate-200/60 dark:border-white/10 bg-white/55 dark:bg-white/5 backdrop-blur-xl p-3 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5"
         >
           <input
             type="text"
@@ -587,7 +587,7 @@ export const AiTutorPage: React.FC = () => {
             }
             disabled={sending || !isOnline}
             aria-label="Physics question"
-            className="flex-1 min-h-[46px] rounded-full bg-white/85 dark:bg-white/8 border border-white/85 dark:border-white/15 px-4 py-2.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-4 focus:ring-[#007AFF]/20"
+            className="flex-1 min-w-0 w-full min-h-[46px] rounded-full bg-white/85 dark:bg-white/8 border border-white/85 dark:border-white/15 px-4 py-2.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-4 focus:ring-[#007AFF]/20"
           />
           <Button
             type="submit"
@@ -595,6 +595,7 @@ export const AiTutorPage: React.FC = () => {
             size="md"
             loading={sending}
             disabled={!question.trim() || !isOnline}
+            className="w-full sm:w-auto"
             icon={<Send className="h-4 w-4" aria-hidden="true" />}
           >
             Ask Tutor (+2 XP)

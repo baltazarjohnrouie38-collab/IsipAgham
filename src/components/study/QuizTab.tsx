@@ -306,7 +306,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                         }
                         className={`w-full min-h-[46px] text-left px-4 py-3 rounded-xl border text-sm sm:text-base font-medium transition-colors flex items-center justify-between gap-3 cursor-pointer disabled:cursor-default ${borderStyle}`}
                       >
-                        <span className="text-slate-900 dark:text-neutral-100">
+                        <span className="min-w-0 flex-1 text-slate-900 dark:text-neutral-100 break-words">
                           {kind !== 'true_false' && (
                             <span className="font-bold mr-2">{letter}.</span>
                           )}

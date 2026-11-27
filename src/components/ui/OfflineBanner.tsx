@@ -10,9 +10,9 @@ export const OfflineBanner: React.FC = () => {
   return (
     <div
       role="alert"
-      className="fixed inset-x-0 top-0 z-50 bg-red-600 text-white px-4 py-3 shadow-md"
+      className="fixed inset-x-0 top-0 z-50 bg-red-600 text-white px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] shadow-md"
     >
-      <div className="max-w-5xl mx-auto flex items-center justify-center gap-2.5 text-sm font-semibold">
+      <div className="max-w-5xl mx-auto flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold">
         <WifiOff className="h-5 w-5 shrink-0" aria-hidden="true" />
         <span>
           No Internet Connection — IsipAgham requires an active internet connection to load and sync your Physics study tools.

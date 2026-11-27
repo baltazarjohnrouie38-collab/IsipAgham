@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import appIconUrl from '../../assets/images/regenerated_image_1795555562184.jpg';
+import appIconUrl from '../../assets/images/isipagham_blue_logo_1795790996722.jpg';
 
 export const IosLaunchEffect: React.FC = () => {
   const [phase, setPhase] = useState<'opening' | 'fading' | 'done'>(() => {

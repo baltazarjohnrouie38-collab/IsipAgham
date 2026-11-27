@@ -39,12 +39,12 @@ export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = fa
 
       {showGuide && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
           role="dialog"
           aria-modal="true"
           aria-labelledby="pwa-guide-title"
         >
-          <Card className="w-full max-w-md space-y-4">
+          <Card className="w-full max-w-md max-h-[88dvh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between gap-3">
               <h2
                 id="pwa-guide-title"

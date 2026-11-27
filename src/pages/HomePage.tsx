@@ -27,7 +27,7 @@ import {
   VisualizerGraphicIcon,
 } from '../components/ui/PhysicsIcons';
 import { UserAvatar } from '../components/ui/UserAvatar';
-import heroMascotUrl from '../assets/images/regenerated_image_1795533934834.jpg';
+import heroMascotUrl from '../assets/images/isipagham_blue_logo_1795790996722.jpg';
 
 const RING_ACCENT: Record<string, string> = {
   'Physics 1': 'text-blue-600 dark:text-blue-400',
@@ -143,11 +143,11 @@ export const HomePage: React.FC = () => {
           <div className="animate-float-gentle h-18 w-18 rounded-[24px] liquid-glass-strong flex items-center justify-center shrink-0">
             <Logo size="lg" showText={false} src={heroMascotUrl} />
           </div>
-          <div className="sm:text-left space-y-1">
+          <div className="sm:text-left space-y-1 min-w-0">
             <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
               Kumusta, {displayName} · Grade 12 {profile?.course || 'Physics 1'} · Kaya mo &apos;yan!
             </p>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 dark:text-white text-balance">
+            <h1 className="font-display text-2xl min-[380px]:text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 dark:text-white text-balance">
               What shall we study?
             </h1>
           </div>
@@ -162,61 +162,61 @@ export const HomePage: React.FC = () => {
             to="/study?tab=materials"
             aria-label="Upload new study material"
             title="Upload PDF, PPTX, DOCX, or photo"
-            className="liquid-glass h-12 w-12 rounded-full text-slate-700 dark:text-slate-100 hover:-translate-y-0.5 active:scale-[0.95] inline-flex items-center justify-center shrink-0 transition-all"
+            className="liquid-glass h-11 w-11 sm:h-12 sm:w-12 rounded-full text-slate-700 dark:text-slate-100 hover:-translate-y-0.5 active:scale-[0.95] inline-flex items-center justify-center shrink-0 transition-all"
           >
             <Plus className="h-5 w-5" aria-hidden="true" />
           </Link>
 
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-0">
             <input
               type="text"
               value={promptInput}
               onChange={(e) => setPromptInput(e.target.value)}
-              placeholder="Ask a Physics question (e.g., projectile motion, Bernoulli's principle)..."
+              placeholder="Ask a Physics question (e.g., projectile motion, Bernoulli's)..."
               aria-label="Ask AI Physics Tutor a question"
-              className="w-full h-12 pl-5 pr-12 rounded-full liquid-glass-strong text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-[#007AFF]/20"
+              className="w-full h-11 sm:h-12 pl-4 sm:pl-5 pr-12 rounded-full liquid-glass-strong text-sm sm:text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-[#007AFF]/20"
             />
             <button
               type="submit"
               aria-label="Ask Physics Question"
-              className="liquid-btn-primary absolute right-1.5 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full inline-flex items-center justify-center transition-all active:scale-[0.94] cursor-pointer"
+              className="liquid-btn-primary absolute right-1.5 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-9 sm:w-9 rounded-full inline-flex items-center justify-center transition-all active:scale-[0.94] cursor-pointer"
             >
               <Send className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         </form>
 
-        {/* Quick Action Liquid Glass Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-2.5">
+        {/* Quick Action Liquid Glass Buttons — exact 2x2 grid on narrow phones, centered pill row on sm+ */}
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2 sm:gap-2.5 w-full max-w-md sm:max-w-none">
           <Link
             to="/lessons"
-            className="liquid-btn-primary min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center gap-2 transition-[transform,filter] duration-200 whitespace-nowrap shrink-0"
+            className="liquid-btn-primary min-h-[44px] px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center justify-center gap-2 transition-[transform,filter] duration-200 whitespace-nowrap shrink-0"
           >
-            <LessonsGraphicIcon className="h-5 w-5" />
+            <LessonsGraphicIcon className="h-5 w-5 shrink-0" />
             <span>{ALL_LESSONS.length} Lessons</span>
           </Link>
 
           <Link
             to="/study?tab=materials"
-            className="liquid-btn-outline min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
+            className="liquid-btn-outline min-h-[44px] px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center justify-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
           >
-            <UploadGraphicIcon className="h-5 w-5" />
+            <UploadGraphicIcon className="h-5 w-5 shrink-0" />
             <span>Upload File</span>
           </Link>
 
           <Link
             to="/study?tab=materials&mode=text"
-            className="liquid-btn-outline min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
+            className="liquid-btn-outline min-h-[44px] px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center justify-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
           >
-            <NotesGraphicIcon className="h-5 w-5" />
+            <NotesGraphicIcon className="h-5 w-5 shrink-0" />
             <span>Paste Notes</span>
           </Link>
 
           <Link
             to="/visualizer"
-            className="liquid-btn-outline min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
+            className="liquid-btn-outline min-h-[44px] px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold hover:-translate-y-0.5 active:scale-[0.96] inline-flex items-center justify-center gap-2 transition-[transform,background-color,border-color] duration-200 whitespace-nowrap shrink-0"
           >
-            <VisualizerGraphicIcon className="h-5 w-5" />
+            <VisualizerGraphicIcon className="h-5 w-5 shrink-0" />
             <span>3D Visualizer</span>
           </Link>
         </div>
@@ -258,21 +258,21 @@ export const HomePage: React.FC = () => {
       )}
 
       {/* Daily Goal + Streak + Quick Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card padding="sm" className="space-y-1.5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <Card padding="sm" className="space-y-1.5 min-w-0">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
-            <StreakGraphicIcon className="h-4.5 w-4.5" />
-            <span>Study Streak</span>
+            <StreakGraphicIcon className="h-4.5 w-4.5 shrink-0" />
+            <span className="truncate">Study Streak</span>
           </div>
-          <p className="font-display text-2xl font-bold text-slate-950 dark:text-white tabular-nums">
+          <p className="font-display text-xl sm:text-2xl font-bold text-slate-950 dark:text-white tabular-nums">
             {profile?.streakDays ?? 0} day{(profile?.streakDays ?? 0) === 1 ? '' : 's'}
           </p>
         </Card>
 
-        <Card padding="sm" className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
-            <span>Daily Goal</span>
-            <span className="tabular-nums text-[#007AFF] dark:text-sky-400">
+        <Card padding="sm" className="space-y-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
+            <span className="truncate">Daily Goal</span>
+            <span className="tabular-nums text-[#007AFF] dark:text-sky-400 shrink-0">
               {todayMinutes}/{dailyGoalMinutes}m
             </span>
           </div>
@@ -282,21 +282,21 @@ export const HomePage: React.FC = () => {
               style={{ width: `${goalPct}%` }}
             />
           </div>
-          <p className="text-xs text-slate-600 dark:text-slate-300">
+          <p className="text-xs text-slate-600 dark:text-slate-300 truncate">
             {goalPct >= 100 ? 'Goal met today!' : `${Math.max(0, dailyGoalMinutes - todayMinutes)}m left today`}
           </p>
         </Card>
 
-        <Card padding="sm" className="space-y-1.5">
-          <p className="text-xs font-semibold text-slate-500 dark:text-neutral-400">Due Today</p>
-          <p className="font-display text-2xl font-bold text-blue-700 dark:text-blue-400 tabular-nums">
+        <Card padding="sm" className="space-y-1.5 min-w-0">
+          <p className="text-xs font-semibold text-slate-500 dark:text-neutral-400 truncate">Due Today</p>
+          <p className="font-display text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-400 tabular-nums">
             {dueTodayCount} card{dueTodayCount === 1 ? '' : 's'}
           </p>
         </Card>
 
-        <Card padding="sm" className="space-y-1.5">
-          <p className="text-xs font-semibold text-slate-500 dark:text-neutral-400">Lessons &amp; XP</p>
-          <p className="font-display text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
+        <Card padding="sm" className="space-y-1.5 min-w-0">
+          <p className="text-xs font-semibold text-slate-500 dark:text-neutral-400 truncate">Lessons &amp; XP</p>
+          <p className="font-display text-lg min-[400px]:text-xl sm:text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums leading-tight">
             {completedLessons.length}/{ALL_LESSONS.length} · {profile?.xp ?? 0} XP
           </p>
         </Card>
@@ -316,7 +316,7 @@ export const HomePage: React.FC = () => {
               {nextLesson.objective}
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <Link to="/lessons">
               <Button variant="outline" size="sm">
                 All {ALL_LESSONS.length}

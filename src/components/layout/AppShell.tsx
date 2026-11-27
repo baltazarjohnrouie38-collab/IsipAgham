@@ -35,7 +35,7 @@ import {
 } from '../ui/PhysicsIcons';
 import { PWAInstallButton } from '../ui/PWAInstallButton';
 import { UserAvatar } from '../ui/UserAvatar';
-import sidebarLogoUrl from '../../assets/images/regenerated_image_1795533932091.jpg';
+import sidebarLogoUrl from '../../assets/images/isipagham_blue_logo_1795790996722.jpg';
 
 interface NavItem {
   to: string;
@@ -178,7 +178,7 @@ export const AppShell: React.FC = () => {
   );
 
   return (
-    <div className="relative min-h-screen text-slate-950 dark:text-slate-50 flex flex-col lg:flex-row">
+    <div className="relative min-h-dvh text-slate-950 dark:text-slate-50 flex flex-col lg:flex-row">
       {/* Apple iOS System Grouped Canvas Background */}
       <div
         className="fixed inset-0 z-0 pointer-events-none select-none ios-app-canvas"
@@ -341,17 +341,21 @@ export const AppShell: React.FC = () => {
         </div>
       </aside>
 
-      {/* Mobile Compact Header */}
-      <header className="lg:hidden sticky top-2 mx-3 z-30 h-13 liquid-glass rounded-full px-3 sm:px-4 flex items-center justify-between">
-        <NavLink to="/" className="focus-visible:outline-none">
-          <Logo size="sm" src={sidebarLogoUrl} />
+      {/* Mobile & Tablet Floating Sticky Header */}
+      <header className="lg:hidden sticky top-[max(0.5rem,env(safe-area-inset-top))] z-30 mx-3 sm:mx-6 md:mx-auto md:w-[calc(100%-3rem)] max-w-5xl h-12 sm:h-13 liquid-glass rounded-full px-2.5 sm:px-4 flex items-center justify-between gap-2">
+        <NavLink to="/" className="focus-visible:outline-none shrink-0 min-w-0">
+          <Logo
+            size="sm"
+            src={sidebarLogoUrl}
+            className="[&_span]:hidden min-[380px]:[&_span]:inline"
+          />
         </NavLink>
 
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <Link
             to="/study?tab=progress"
             title="Current daily study streak"
-            className="min-h-[36px] px-2.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-xs font-bold text-amber-700 dark:text-amber-300 inline-flex items-center gap-1 tabular-nums"
+            className="hidden min-[355px]:inline-flex min-h-[36px] px-2 sm:px-2.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-xs font-bold text-amber-700 dark:text-amber-300 items-center gap-1 tabular-nums"
           >
             <Flame className="h-3.5 w-3.5 text-amber-500 shrink-0" aria-hidden="true" />
             <span>{streakDays}</span>
@@ -359,23 +363,25 @@ export const AppShell: React.FC = () => {
           <Link
             to="/study?tab=progress"
             title="Total XP"
-            className="min-h-[36px] px-2.5 rounded-full bg-white/65 dark:bg-white/10 border border-white/75 dark:border-white/15 text-xs font-bold text-slate-900 dark:text-slate-100 inline-flex items-center gap-1 tabular-nums"
+            className="min-h-[36px] px-2 sm:px-2.5 rounded-full bg-white/65 dark:bg-white/10 border border-white/75 dark:border-white/15 text-xs font-bold text-slate-900 dark:text-slate-100 inline-flex items-center gap-1 tabular-nums"
           >
             <Trophy className="h-3.5 w-3.5 text-[#007AFF] dark:text-sky-400 shrink-0" aria-hidden="true" />
             <span>{profile?.xp ?? 0}</span>
           </Link>
-          <PWAInstallButton compact />
+          <div className="hidden sm:inline-flex">
+            <PWAInstallButton compact />
+          </div>
           <button
             type="button"
             onClick={handleOpenNotificationsTab}
             aria-label={`Notifications (${unreadCount} unread)`}
-            className={`relative min-h-[38px] min-w-[38px] inline-flex items-center justify-center rounded-full border transition-all cursor-pointer ${
+            className={`relative h-9 w-9 sm:h-10 sm:w-10 inline-flex items-center justify-center rounded-full border transition-all cursor-pointer shrink-0 ${
               isNotificationsPage
                 ? 'liquid-lens-active'
                 : 'bg-white/60 dark:bg-white/10 border-white/70 dark:border-white/15 text-slate-700 dark:text-slate-200'
             }`}
           >
-            <Bell className="h-4.5 w-4.5" aria-hidden="true" />
+            <Bell className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden="true" />
             {unreadCount > 0 ? (
               <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-[#FF3B30] text-white text-[9px] font-bold flex items-center justify-center tabular-nums shadow-xs">
                 {unreadCount > 9 ? '9+' : unreadCount}
@@ -389,9 +395,13 @@ export const AppShell: React.FC = () => {
             data-sound="toggle"
             onClick={handleToggleTheme}
             aria-label={darkMode ? 'Switch to light glass' : 'Switch to dark glass'}
-            className="min-h-[38px] min-w-[38px] inline-flex items-center justify-center rounded-full bg-white/60 dark:bg-white/10 border border-white/70 dark:border-white/15 text-slate-700 dark:text-slate-200 transition-transform active:scale-90 cursor-pointer"
+            className="h-9 w-9 sm:h-10 sm:w-10 inline-flex items-center justify-center rounded-full bg-white/60 dark:bg-white/10 border border-white/70 dark:border-white/15 text-slate-700 dark:text-slate-200 transition-transform active:scale-90 cursor-pointer shrink-0"
           >
-            {darkMode ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
+            {darkMode ? (
+              <Sun className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+            ) : (
+              <Moon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+            )}
           </button>
           <Link
             to="/profile"
@@ -565,26 +575,29 @@ export const AppShell: React.FC = () => {
         </header>
 
         {/* Main Content Viewport */}
-        <main className="flex-1 pb-28 lg:pb-12">
-          <div key={location.pathname} className="ios-workspace-enter max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <main className="flex-1 min-w-0 pb-[calc(5.75rem+env(safe-area-inset-bottom))] lg:pb-12">
+          <div
+            key={location.pathname}
+            className="ios-workspace-enter w-full max-w-5xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-5"
+          >
             <Outlet />
           </div>
         </main>
       </div>
 
-      {/* Mobile Floating Curved Liquid Glass Navigator — always pinned without scrolling */}
+      {/* Mobile & Tablet Floating Curved Liquid Glass Navigator — centered & pinned above safe area */}
       <nav
         aria-label="Mobile bottom navigation"
-        className="lg:hidden fixed bottom-3 left-3 right-3 z-30 liquid-dock rounded-full pb-safe"
+        className="lg:hidden fixed bottom-[max(0.625rem,env(safe-area-inset-bottom))] inset-x-3 sm:inset-x-6 mx-auto max-w-lg z-30 liquid-dock rounded-full"
       >
-        <div className="grid grid-cols-5 h-15 p-1.5 gap-1">
+        <div className="grid grid-cols-5 h-[56px] sm:h-[60px] p-1.5 gap-1">
           {MOBILE_NAV.map(({ to, mobileLabel, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
               className={({ isActive }) =>
-                `group flex flex-col items-center justify-center gap-0.5 rounded-full min-h-[44px] text-[10px] font-semibold transition-all duration-200 [transition-timing-function:cubic-bezier(0.22,1.25,0.36,1)] active:scale-[0.92] ${
+                `group flex flex-col items-center justify-center gap-0.5 rounded-full min-h-[44px] min-w-0 text-[10px] font-semibold transition-all duration-200 [transition-timing-function:cubic-bezier(0.22,1.25,0.36,1)] active:scale-[0.92] ${
                   isActive
                     ? 'liquid-lens-active'
                     : 'text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white'
@@ -592,7 +605,7 @@ export const AppShell: React.FC = () => {
               }
             >
               <Icon className="h-5 w-5 shrink-0 transition-transform duration-200 group-active:scale-90" />
-              <span className="truncate max-w-full px-1">{mobileLabel}</span>
+              <span className="truncate max-w-full px-1 leading-tight">{mobileLabel}</span>
             </NavLink>
           ))}
         </div>

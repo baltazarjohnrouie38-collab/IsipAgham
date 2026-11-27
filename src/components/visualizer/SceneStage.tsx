@@ -409,8 +409,8 @@ export const SceneStage: React.FC<SceneStageProps> = ({
         <div
           className={`relative w-full bg-stone-100 dark:bg-[#0d0d0f] transition-[height] duration-300 ${
             expanded
-              ? 'h-[440px] sm:h-[540px] lg:h-[600px]'
-              : 'h-[340px] sm:h-[420px] lg:h-[460px]'
+              ? 'h-[390px] min-[400px]:h-[440px] sm:h-[520px] lg:h-[600px]'
+              : 'h-[290px] min-[400px]:h-[340px] sm:h-[420px] lg:h-[460px]'
           }`}
         >
           {!webglReady ? (
@@ -648,16 +648,16 @@ export const SceneStage: React.FC<SceneStageProps> = ({
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <Card className="lg:col-span-7 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 min-w-0">
+        <Card className="lg:col-span-7 space-y-4 min-w-0">
           <h3 className="text-sm font-bold text-slate-900 dark:text-neutral-100">
             Simulation Parameters
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{controls}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">{controls}</div>
         </Card>
 
         {readout && (
-          <Card className="lg:col-span-5 space-y-3">
+          <Card className="lg:col-span-5 space-y-3 min-w-0">
             <h3 className="text-sm font-bold text-slate-900 dark:text-neutral-100">
               Live Calculated Values
             </h3>

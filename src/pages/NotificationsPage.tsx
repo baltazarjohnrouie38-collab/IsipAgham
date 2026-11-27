@@ -373,11 +373,11 @@ export const NotificationsPage: React.FC = () => {
           </Button>
         </div>
 
-        <form onSubmit={handleSaveReminderTime} className="flex items-center gap-2.5">
+        <form onSubmit={handleSaveReminderTime} className="flex flex-col min-[380px]:flex-row items-stretch min-[380px]:items-center gap-2.5">
           <label className="sr-only" htmlFor="notifications-reminder-time">
             Reminder Time
           </label>
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-0">
             <Clock
               className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
               aria-hidden="true"

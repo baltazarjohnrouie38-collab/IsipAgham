@@ -190,9 +190,9 @@ export const TimerTab: React.FC<TimerTabProps> = ({ sessions = [] }) => {
           role="dialog"
           aria-modal="true"
           aria-label="Calm focus timer screen"
-          className="fixed inset-0 z-50 bg-[#EEF3FA]/95 dark:bg-[#060913]/95 backdrop-blur-3xl text-slate-950 dark:text-slate-50 flex flex-col items-center justify-between p-6 sm:p-10"
+          className="fixed inset-0 z-50 min-h-dvh overflow-y-auto bg-[#EEF3FA]/95 dark:bg-[#060913]/95 backdrop-blur-3xl text-slate-950 dark:text-slate-50 flex flex-col items-center justify-between gap-4 p-4 sm:p-10 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]"
         >
-          <div className="w-full max-w-2xl flex items-center justify-between">
+          <div className="w-full max-w-2xl flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">
               {mode === 'focus' ? 'Calm Focus Session' : 'Recharge Break'}
             </span>
@@ -206,9 +206,9 @@ export const TimerTab: React.FC<TimerTabProps> = ({ sessions = [] }) => {
             </Button>
           </div>
 
-          <div className="flex flex-col items-center text-center space-y-6">
-            <div className="relative h-64 w-64 flex items-center justify-center">
-              <svg className="h-64 w-64 -rotate-90" viewBox="0 0 240 240" aria-hidden="true">
+          <div className="flex flex-col items-center text-center space-y-5 sm:space-y-6">
+            <div className="relative h-56 w-56 sm:h-64 sm:w-64 flex items-center justify-center">
+              <svg className="h-56 w-56 sm:h-64 sm:w-64 -rotate-90" viewBox="0 0 240 240" aria-hidden="true">
                 <circle
                   cx="120"
                   cy="120"
@@ -276,7 +276,7 @@ export const TimerTab: React.FC<TimerTabProps> = ({ sessions = [] }) => {
 
           <Card padding="lg" className="space-y-6 text-center">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800 w-64 mx-auto sm:mx-0">
+              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800 w-full max-w-[260px] mx-auto sm:mx-0">
                 <button
                   type="button"
                   onClick={() => handleModeSwitch('focus')}

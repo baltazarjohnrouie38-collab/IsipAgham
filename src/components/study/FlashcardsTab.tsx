@@ -588,10 +588,10 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
       {/* Study Set Selector, Rename & Sub-mode Tabs */}
       <Card className="space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-          <div className="flex-1 max-w-md space-y-2">
+          <div className="flex-1 min-w-0 max-w-md space-y-2">
             {!renamingSet ? (
-              <div className="flex items-end gap-2">
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-2">
+                <div className="flex-1 min-w-0">
                   <Select
                     label="Active Study Set"
                     value={activeSet.id}
@@ -621,8 +621,8 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                 )}
               </div>
             ) : (
-              <form onSubmit={handleSaveRename} className="flex items-end gap-2">
-                <div className="flex-1">
+              <form onSubmit={handleSaveRename} className="flex flex-wrap sm:flex-nowrap items-end gap-2">
+                <div className="flex-1 min-w-0 w-full sm:w-auto">
                   <Input
                     label="Rename Study Set"
                     value={setTitleDraft}
@@ -647,8 +647,8 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800">
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
+            <div className="flex gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800 max-w-full overflow-x-auto no-scrollbar">
               <button
                 type="button"
                 data-sound="tab"
@@ -807,12 +807,12 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
             </div>
 
             {ttsSupported && (
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
                 <select
                   aria-label="Natural voice"
                   value={voice}
                   onChange={(e) => setVoice(e.target.value as NaturalVoiceName)}
-                  className="min-h-[40px] rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-2.5 text-xs font-semibold text-slate-800 dark:text-neutral-200"
+                  className="min-h-[40px] max-w-full min-w-0 flex-1 sm:flex-initial rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-2.5 text-xs font-semibold text-slate-800 dark:text-neutral-200"
                 >
                   {NATURAL_VOICE_OPTIONS.map((v) => (
                     <option key={v.id} value={v.id}>
@@ -824,7 +824,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   aria-label="Speech speed"
                   value={rate}
                   onChange={(e) => setRate(Number(e.target.value))}
-                  className="min-h-[40px] rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-2.5 text-xs font-semibold text-slate-800 dark:text-neutral-200"
+                  className="min-h-[40px] max-w-full min-w-0 rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-2.5 text-xs font-semibold text-slate-800 dark:text-neutral-200"
                 >
                   <option value={0.85}>0.85x Speed</option>
                   <option value={1}>1.0x Normal</option>
@@ -997,10 +997,10 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   }`}
                 >
                   {/* Front Face (Question) */}
-                  <div className="flip-card-face apple-surface rounded-[24px] p-6 sm:p-10 min-h-[260px] flex flex-col justify-between transition-colors">
+                  <div className="flip-card-face apple-surface rounded-[24px] p-5 sm:p-10 min-h-[240px] sm:min-h-[260px] min-w-0 max-w-full overflow-hidden flex flex-col justify-between transition-colors">
                     <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span>Question · {activeItem.setTitle}</span>
+                      <div className="flex flex-wrap items-center gap-2 min-w-0">
+                        <span className="truncate max-w-full">Question · {activeItem.setTitle}</span>
                         {activeBadge && (
                           <span
                             className={`inline-flex items-center px-2 py-0.5 rounded-md border text-[11px] font-semibold ${activeBadge.className}`}
@@ -1015,7 +1015,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                       </span>
                     </div>
 
-                    <div className="py-6 text-center">
+                    <div className="py-5 sm:py-6 text-center min-w-0 w-full">
                       <MathText
                         text={activeItem.card.front}
                         className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-neutral-100 leading-relaxed"
@@ -1058,16 +1058,16 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                   </div>
 
                   {/* Back Face (Answer) */}
-                  <div className="flip-card-face flip-card-back apple-surface rounded-[24px] border-[#007AFF]/35 dark:border-[#4DA3FF]/35 p-6 sm:p-10 min-h-[260px] flex flex-col justify-between">
+                  <div className="flip-card-face flip-card-back apple-surface rounded-[24px] border-[#007AFF]/35 dark:border-[#4DA3FF]/35 p-5 sm:p-10 min-h-[240px] sm:min-h-[260px] min-w-0 max-w-full overflow-hidden flex flex-col justify-between">
                     <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-blue-700 dark:text-blue-400 font-semibold tabular-nums">
-                      <span>Answer · {activeItem.setTitle}</span>
+                      <span className="truncate max-w-full">Answer · {activeItem.setTitle}</span>
                       <span>
                         Card {safeIndex + 1} of {orderedSessionCards.length} · EF{' '}
                         {(activeItem.card.easeFactor || 2.5).toFixed(2)}
                       </span>
                     </div>
 
-                    <div className="py-6 text-center">
+                    <div className="py-5 sm:py-6 text-center min-w-0 w-full">
                       <MathText
                         text={activeItem.card.back}
                         className="font-lesson text-lg sm:text-xl font-semibold text-slate-900 dark:text-neutral-100 leading-relaxed"

@@ -11,7 +11,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from './firebase';
+import { auth, db, handleFirestoreError, OperationType } from './firebase';
 import type {
   AiMessage,
   FlashcardItem,
@@ -50,6 +50,7 @@ export function subscribeMaterials(
       onData(sortByCreatedDesc(snap.docs.map((d) => d.data() as StudyMaterial)));
     },
     (error) => {
+      if (!auth.currentUser) return;
       handleFirestoreError(error, OperationType.LIST, 'materials');
     }
   );
@@ -66,6 +67,7 @@ export function subscribeStudySets(
       onData(sortByCreatedDesc(snap.docs.map((d) => d.data() as StudySet)));
     },
     (error) => {
+      if (!auth.currentUser) return;
       handleFirestoreError(error, OperationType.LIST, 'studySets');
     }
   );
@@ -267,6 +269,7 @@ export function subscribeQuizAttempts(
       onData(sortByCreatedDesc(snap.docs.map((d) => d.data() as QuizAttempt)));
     },
     (error) => {
+      if (!auth.currentUser) return;
       handleFirestoreError(error, OperationType.LIST, 'quizAttempts');
     }
   );
@@ -283,6 +286,7 @@ export function subscribeStudySessions(
       onData(sortByCreatedDesc(snap.docs.map((d) => d.data() as StudySession)));
     },
     (error) => {
+      if (!auth.currentUser) return;
       handleFirestoreError(error, OperationType.LIST, 'studySessions');
     }
   );
@@ -438,6 +442,7 @@ export function subscribeLeaderboard(onData: (entries: LeaderboardEntry[]) => vo
       onData(list.slice(0, 100));
     },
     (error) => {
+      if (!auth.currentUser) return;
       handleFirestoreError(error, OperationType.LIST, 'leaderboard');
     }
   );
@@ -461,6 +466,7 @@ export function subscribeAiMessages(
       onData(list);
     },
     (error) => {
+      if (!auth.currentUser) return;
       handleFirestoreError(error, OperationType.LIST, 'aiMessages');
     }
   );

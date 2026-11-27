@@ -30,12 +30,20 @@ import { playUiSound } from '../lib/sound';
 import type { ChecklistKey, PhysicsCourse, UserProfile } from '../types';
 import { useTheme } from './ThemeContext';
 
+export interface DeleteAccountProgress {
+  step: 'collections' | 'profile' | 'auth' | 'done';
+  percent: number;
+  label: string;
+}
+
 interface AuthContextValue {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
   authError: string | null;
+  accountDeletedNotice: string | null;
   clearAuthError: () => void;
+  clearAccountDeletedNotice: () => void;
   signUpWithAccount: (params: {
     username: string;
     email: string;
@@ -53,7 +61,9 @@ interface AuthContextValue {
   toggleLessonCompleted: (lessonId: string, done?: boolean) => Promise<void>;
   markCourseVisited: (course: PhysicsCourse) => Promise<void>;
   toggleChecklistItem: (key: ChecklistKey, done?: boolean) => Promise<void>;
-  deleteAccountAndData: () => Promise<void>;
+  deleteAccountAndData: (options?: {
+    onProgress?: (progress: DeleteAccountProgress) => void;
+  }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -121,10 +131,38 @@ function formatAuthError(err: unknown): string {
   if (code === 'auth/popup-closed-by-user') {
     return 'Sign-in window was closed before completing.';
   }
+  if (code === 'auth/popup-blocked') {
+    return 'Verification popup was blocked by your browser. Please allow popups and try again.';
+  }
+  if (code === 'auth/user-mismatch') {
+    return 'Selected Google account does not match your signed-in account. Please select the same account.';
+  }
+  if (code === 'auth/too-many-requests') {
+    return 'Too many verification attempts. Please wait a moment and try again.';
+  }
   if (code === 'auth/requires-recent-login') {
-    return 'For security, please sign out and sign back in before deleting your account.';
+    return 'For security, please verify your sign-in again to delete your account.';
   }
   return err instanceof Error ? err.message : 'Authentication failed. Please try again.';
+}
+
+function clearUserLocalStorage(uid: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const exactKeys = [`isipagham_notif_read_${uid}`, `isipagham_notif_events_${uid}`];
+    exactKeys.forEach((k) => window.localStorage.removeItem(k));
+    const notifyPrefix = `isipagham_notified_${uid}_`;
+    const toRemove: string[] = [];
+    for (let i = 0; i < window.localStorage.length; i += 1) {
+      const key = window.localStorage.key(i);
+      if (key && key.startsWith(notifyPrefix)) {
+        toRemove.push(key);
+      }
+    }
+    toRemove.forEach((k) => window.localStorage.removeItem(k));
+  } catch {
+    // ignore storage access issues
+  }
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -132,15 +170,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [accountDeletedNotice, setAccountDeletedNotice] = useState<string | null>(null);
   const { darkMode, setDarkMode } = useTheme();
   const signingOutRef = useRef(false);
+  const deletingAccountRef = useRef(false);
+  const profileUnsubRef = useRef<(() => void) | null>(null);
 
   const clearAuthError = () => setAuthError(null);
+  const clearAccountDeletedNotice = () => setAccountDeletedNotice(null);
 
   const ensureUserDocuments = async (
     firebaseUser: User,
     options?: { username?: string; email?: string; course?: PhysicsCourse }
   ) => {
+    if (deletingAccountRef.current) return;
     const userRef = doc(db, 'users', firebaseUser.uid);
     const lbRef = doc(db, 'leaderboard', firebaseUser.uid);
 
@@ -217,12 +260,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    let unsubProfile: (() => void) | null = null;
-
     const unsubAuth = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (unsubProfile) {
-        unsubProfile();
-        unsubProfile = null;
+      if (profileUnsubRef.current) {
+        profileUnsubRef.current();
+        profileUnsubRef.current = null;
+      }
+
+      if (deletingAccountRef.current) {
+        return;
       }
 
       setUser(firebaseUser);
@@ -238,10 +283,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error(err);
       }
 
+      if (deletingAccountRef.current) {
+        return;
+      }
+
       const userRef = doc(db, 'users', firebaseUser.uid);
-      unsubProfile = onSnapshot(
+      profileUnsubRef.current = onSnapshot(
         userRef,
         (snapshot) => {
+          if (deletingAccountRef.current) return;
           if (snapshot.exists()) {
             const raw = snapshot.data() as Partial<UserProfile>;
             const normalized: UserProfile = {
@@ -281,13 +331,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
         (error) => {
           setLoading(false);
+          if (deletingAccountRef.current || !auth.currentUser) return;
           handleFirestoreError(error, OperationType.GET, `users/${firebaseUser.uid}`);
         }
       );
     });
 
     return () => {
-      if (unsubProfile) unsubProfile();
+      if (profileUnsubRef.current) {
+        profileUnsubRef.current();
+        profileUnsubRef.current = null;
+      }
       unsubAuth();
     };
   }, []);
@@ -299,6 +353,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     course?: PhysicsCourse;
   }) => {
     setAuthError(null);
+    setAccountDeletedNotice(null);
 
     const usernameCheck = validateUsername(params.username);
     if (!usernameCheck.valid) {
@@ -348,6 +403,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithAccount = async (params: { identifier: string; password: string }) => {
     setAuthError(null);
+    setAccountDeletedNotice(null);
     const raw = params.identifier.trim();
     const authEmail = raw.includes('@') ? raw : usernameToAuthEmail(raw);
 
@@ -375,6 +431,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     setAuthError(null);
+    setAccountDeletedNotice(null);
     try {
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
@@ -609,37 +666,122 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const deleteAccountAndData = async () => {
-    if (!user) return;
-    const uid = user.uid;
-    const userOwnedCollections = [
-      'materials',
-      'studySets',
-      'quizAttempts',
-      'studySessions',
-      'aiMessages',
-    ];
+  const deleteAccountAndData = async (options?: {
+    onProgress?: (progress: DeleteAccountProgress) => void;
+  }) => {
+    const currentUser = auth.currentUser || user;
+    if (!currentUser) return;
+
+    const uid = currentUser.uid;
+    const report = (progress: DeleteAccountProgress) => {
+      options?.onProgress?.(progress);
+    };
 
     try {
-      for (const colName of userOwnedCollections) {
-        const snap = await getDocs(query(collection(db, colName), where('userId', '==', uid)));
-        if (!snap.empty) {
-          const batch = writeBatch(db);
-          snap.docs.forEach((d) => batch.delete(d.ref));
-          await batch.commit();
+      // 1. Prevent profile recreation & detach user snapshot listener during teardown
+      deletingAccountRef.current = true;
+      if (profileUnsubRef.current) {
+        profileUnsubRef.current();
+        profileUnsubRef.current = null;
+      }
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+        } catch {
+          // ignore
         }
       }
 
+      // 2. Query & delete all user-owned collections in parallel batches
+      report({
+        step: 'collections',
+        percent: 35,
+        label: 'Removing study materials, flashcards & AI history…',
+      });
+      const userOwnedCollections = [
+        'materials',
+        'studySets',
+        'quizAttempts',
+        'studySessions',
+        'aiMessages',
+      ];
+      const snaps = await Promise.all(
+        userOwnedCollections.map((colName) =>
+          getDocs(query(collection(db, colName), where('userId', '==', uid)))
+        )
+      );
+
+      const docRefs = snaps.flatMap((snap) => snap.docs.map((d) => d.ref));
+      if (docRefs.length > 0) {
+        const BATCH_LIMIT = 450;
+        const batchCommits: Promise<void>[] = [];
+        for (let i = 0; i < docRefs.length; i += BATCH_LIMIT) {
+          const chunk = docRefs.slice(i, i + BATCH_LIMIT);
+          const batch = writeBatch(db);
+          chunk.forEach((ref) => batch.delete(ref));
+          batchCommits.push(batch.commit());
+        }
+        await Promise.all(batchCommits);
+      }
+
+      // 3. Delete leaderboard & private user profile + clear user-scoped localStorage
+      report({
+        step: 'profile',
+        percent: 70,
+        label: 'Erasing profile, leaderboard & saved preferences…',
+      });
       const finalBatch = writeBatch(db);
       finalBatch.delete(doc(db, 'leaderboard', uid));
       finalBatch.delete(doc(db, 'users', uid));
       await finalBatch.commit();
+      clearUserLocalStorage(uid);
 
-      await deleteUser(user);
+      // 4. Delete Firebase Auth user directly (no Google popup) and sign out cleanly
+      report({
+        step: 'auth',
+        percent: 90,
+        label: 'Finalizing account removal & signing out…',
+      });
+      let authDeleted = false;
+      try {
+        await deleteUser(currentUser);
+        authDeleted = true;
+      } catch (authErr) {
+        const code = (authErr as { code?: string })?.code ?? '';
+        if (code !== 'auth/requires-recent-login') {
+          throw authErr;
+        }
+      }
+
+      await signOut(auth).catch(() => undefined);
+
+      report({
+        step: 'done',
+        percent: 100,
+        label: 'Account deleted. Returning to Sign In…',
+      });
+
+      setAccountDeletedNotice(
+        authDeleted
+          ? 'Your account and all study records have been permanently deleted.'
+          : 'All your profile data, leaderboard entry, and study records were deleted, and you have been signed out. To also remove your login credential, sign in once more and delete right away.'
+      );
+      triggerIosAuthTransition({ mode: 'deleted' });
+      playUiSound('lock', true);
+      triggerIosIsland({
+        title: 'Account Deleted',
+        subtitle: 'Returning to Sign In',
+        tone: 'neutral',
+      });
+
+      setAuthError(null);
+      setProfile(null);
+      setUser(null);
     } catch (err) {
       const msg = formatAuthError(err);
-      setAuthError(msg);
       throw new Error(msg);
+    } finally {
+      deletingAccountRef.current = false;
     }
   };
 
@@ -650,7 +792,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         profile,
         loading,
         authError,
+        accountDeletedNotice,
         clearAuthError,
+        clearAccountDeletedNotice,
         signUpWithAccount,
         signInWithAccount,
         signInWithGoogle,

@@ -52,13 +52,13 @@ export const IosDynamicIsland: React.FC = () => {
       key={active.key}
       role="status"
       aria-live="polite"
-      className="fixed top-3 left-1/2 -translate-x-1/2 z-[90] pointer-events-none px-4 max-w-[calc(100vw-2rem)]"
+      className="fixed top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 -translate-x-1/2 z-[90] pointer-events-none px-3 w-max max-w-[calc(100vw-1.5rem)]"
     >
-      <div className="ios-island-enter rounded-full bg-slate-950/90 dark:bg-[#0D1428]/92 backdrop-blur-2xl border border-white/20 shadow-[0_14px_38px_-6px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.22)] px-4 py-2 flex items-center gap-2.5 text-white whitespace-nowrap">
+      <div className="ios-island-enter rounded-full bg-slate-950/90 dark:bg-[#0D1428]/92 backdrop-blur-2xl border border-white/20 shadow-[0_14px_38px_-6px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.22)] px-3.5 sm:px-4 py-2 flex items-center gap-2 text-white max-w-full">
         {icon}
-        <span className="text-xs font-bold tracking-tight">{active.title}</span>
+        <span className="text-xs font-bold tracking-tight truncate">{active.title}</span>
         {active.subtitle && (
-          <span className="text-xs text-slate-300 font-medium truncate max-w-[160px]">
+          <span className="text-xs text-slate-300 font-medium truncate max-w-[140px] sm:max-w-[200px]">
             · {active.subtitle}
           </span>
         )}

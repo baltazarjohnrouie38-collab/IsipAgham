@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
+  AlertTriangle,
   Bell,
   BellOff,
   Box,
   Camera,
+  Check,
   CheckSquare,
   ChevronRight,
+  Loader2,
   LogOut,
   Moon,
   Pencil,
@@ -17,8 +20,9 @@ import {
   Upload,
   Volume2,
   VolumeX,
+  X,
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth, type DeleteAccountProgress } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ALL_LESSONS } from '../data/lessons';
@@ -54,6 +58,7 @@ const ALL_CHECKLIST_KEYS: ChecklistKey[] = [
 ];
 
 export const ProfilePage: React.FC = () => {
+  const navigate = useNavigate();
   const {
     profile,
     updateUserProfile,
@@ -92,7 +97,12 @@ export const ProfilePage: React.FC = () => {
   const [savingNotif, setSavingNotif] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<1 | 2>(1);
+  const [deleteAcknowledged, setDeleteAcknowledged] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleteModalError, setDeleteModalError] = useState<string | null>(null);
+  const [deleteProgress, setDeleteProgress] = useState<DeleteAccountProgress | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   const nicknameInputRef = useRef<HTMLInputElement | null>(null);
@@ -185,13 +195,46 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleDeleteAccount = async () => {
+  const openDeleteModal = () => {
+    setDeleteStep(1);
+    setDeleteAcknowledged(false);
+    setDeleteConfirmText('');
+    setDeleteModalError(null);
+    setDeleteProgress(null);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (deleting) return;
+    setDeleteModalOpen(false);
+    setDeleteModalError(null);
+  };
+
+  const isDeletePhraseMatched = deleteConfirmText.trim().toUpperCase() === 'DELETE';
+
+  const handleDeleteAccount = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!isDeletePhraseMatched) {
+      setDeleteModalError('Please type DELETE to confirm permanent account deletion.');
+      return;
+    }
+
     setDeleting(true);
-    setErrorMsg(null);
+    setDeleteModalError(null);
+    setDeleteProgress({
+      step: 'collections',
+      percent: 25,
+      label: 'Removing study materials, flashcards & AI history…',
+    });
+
     try {
-      await deleteAccountAndData();
+      await deleteAccountAndData({
+        onProgress: (progress) => setDeleteProgress(progress),
+      });
+      navigate('/', { replace: true });
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Could not delete account.');
+      setDeleteModalError(err instanceof Error ? err.message : 'Could not delete account.');
+      setDeleteProgress(null);
       setDeleting(false);
     }
   };
@@ -333,7 +376,7 @@ export const ProfilePage: React.FC = () => {
         </div>
 
         {/* Clean Underline Tabs */}
-        <div className="border-b border-stone-200 dark:border-neutral-800 flex items-center gap-6 overflow-x-auto">
+        <div className="border-b border-stone-200 dark:border-neutral-800 flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar">
           {(
             [
               { key: 'overview', label: 'Course & Account' },
@@ -648,12 +691,12 @@ export const ProfilePage: React.FC = () => {
                     Used when listening to lessons, flashcards, and AI Tutor answers.
                   </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
                   <select
                     aria-label="Natural Reading Voice"
                     value={voice}
                     onChange={(e) => setVoice(e.target.value as NaturalVoiceName)}
-                    className="min-h-[38px] rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 text-xs font-semibold text-slate-800 dark:text-neutral-100"
+                    className="min-h-[40px] max-w-full min-w-0 flex-1 sm:flex-initial rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 text-xs font-semibold text-slate-800 dark:text-neutral-100"
                   >
                     {NATURAL_VOICE_OPTIONS.map((v) => (
                       <option key={v.id} value={v.id}>
@@ -725,35 +768,238 @@ export const ProfilePage: React.FC = () => {
                   Sign Out
                 </Button>
 
-                {!confirmDelete ? (
-                  <Button
-                    variant="danger"
-                    icon={<Trash2 className="h-4 w-4" />}
-                    onClick={() => setConfirmDelete(true)}
-                  >
-                    Delete Account &amp; Data
-                  </Button>
-                ) : (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      variant="danger"
-                      loading={deleting}
-                      onClick={() => {
-                        void handleDeleteAccount();
-                      }}
-                    >
-                      Confirm Permanent Delete
-                    </Button>
-                    <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                )}
+                <Button
+                  variant="danger"
+                  icon={<Trash2 className="h-4 w-4" />}
+                  onClick={openDeleteModal}
+                >
+                  Delete Account &amp; Data
+                </Button>
               </div>
             </Card>
           </div>
         )}
       </div>
+
+      {/* Multi-step Permanent Account Deletion Confirmation Modal */}
+      {deleteModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/55 backdrop-blur-md pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-account-modal-title"
+          onClick={closeDeleteModal}
+        >
+          <Card
+            padding="md"
+            className="animate-pop w-full max-w-md max-h-[88dvh] overflow-y-auto space-y-5 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-10 w-10 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div className="min-w-0">
+                  <h2
+                    id="delete-account-modal-title"
+                    className="font-display text-lg font-bold text-slate-950 dark:text-white"
+                  >
+                    {deleting
+                      ? 'Deleting Your Account…'
+                      : deleteStep === 1
+                      ? 'Delete Account Permanently?'
+                      : 'Final Verification Required'}
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {deleting
+                      ? 'Please wait while we erase all records and return you to Sign In'
+                      : `Step ${deleteStep} of 2 · Cannot be undone`}
+                  </p>
+                </div>
+              </div>
+              {!deleting && (
+                <button
+                  type="button"
+                  onClick={closeDeleteModal}
+                  aria-label="Close delete account dialog"
+                  className="min-h-[36px] min-w-[36px] rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+
+            {deleting ? (
+              <div className="space-y-4 py-1" aria-live="polite">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2 text-xs font-semibold">
+                    <span className="text-slate-700 dark:text-slate-200 truncate">
+                      {deleteProgress?.label || 'Processing deletion…'}
+                    </span>
+                    <span className="text-rose-600 dark:text-rose-400 tabular-nums shrink-0">
+                      {deleteProgress?.percent ?? 15}%
+                    </span>
+                  </div>
+                  <div className="h-2.5 w-full rounded-full overflow-hidden bg-slate-200/85 dark:bg-white/10">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-rose-500 via-rose-600 to-amber-500 transition-[width] duration-300 ease-out"
+                      style={{ width: `${deleteProgress?.percent ?? 15}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-slate-50/75 dark:bg-white/[0.03] p-3.5 space-y-2.5 text-xs">
+                  {(
+                    [
+                      { key: 'collections', label: 'Erase materials, flashcards, quizzes & AI chats' },
+                      { key: 'profile', label: 'Remove profile, XP & Global Leadership Board' },
+                      { key: 'auth', label: 'Finalize account removal & return to Sign In' },
+                    ] as const
+                  ).map((item, idx) => {
+                    const order = ['collections', 'profile', 'auth', 'done'];
+                    const activeIndex = order.indexOf(deleteProgress?.step || 'collections');
+                    const isDone = activeIndex > idx || deleteProgress?.step === 'done';
+                    const isCurrent = activeIndex === idx && deleteProgress?.step !== 'done';
+                    return (
+                      <div key={item.key} className="flex items-center gap-2.5">
+                        {isDone ? (
+                          <span className="h-5 w-5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                            <Check className="h-3.5 w-3.5 stroke-[2.75]" aria-hidden="true" />
+                          </span>
+                        ) : isCurrent ? (
+                          <span className="h-5 w-5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                          </span>
+                        ) : (
+                          <span className="h-5 w-5 rounded-full border border-slate-300 dark:border-white/20 shrink-0" />
+                        )}
+                        <span
+                          className={
+                            isDone
+                              ? 'font-semibold text-emerald-700 dark:text-emerald-300'
+                              : isCurrent
+                              ? 'font-semibold text-slate-900 dark:text-white'
+                              : 'text-slate-500 dark:text-slate-400'
+                          }
+                        >
+                          {item.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : deleteStep === 1 ? (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-rose-200/80 dark:border-rose-500/25 bg-rose-50/75 dark:bg-rose-950/35 p-3.5 space-y-2 text-xs sm:text-sm text-rose-950 dark:text-rose-100">
+                  <p className="font-semibold">
+                    The following data for <span className="font-bold">{displayName}</span> will be permanently erased:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed">
+                    <li>Your login account, profile photo, XP, streak, and settings</li>
+                    <li>Your entry on the Global Leadership Board</li>
+                    <li>All uploaded PDFs/notes, generated flashcards, and quizzes</li>
+                    <li>All quiz scores, Pomodoro logs, and AI Physics Tutor chats</li>
+                  </ul>
+                </div>
+
+                <label className="flex items-start gap-3 p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-white/60 dark:bg-white/[0.03] cursor-pointer select-none min-h-[44px]">
+                  <input
+                    type="checkbox"
+                    checked={deleteAcknowledged}
+                    onChange={(e) => setDeleteAcknowledged(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded accent-rose-600 cursor-pointer shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-snug">
+                    I understand this permanently deletes my account and all study records, and cannot be recovered.
+                  </span>
+                </label>
+
+                <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-1">
+                  <Button variant="outline" onClick={closeDeleteModal}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="danger"
+                    disabled={!deleteAcknowledged}
+                    onClick={() => {
+                      setDeleteModalError(null);
+                      setDeleteStep(2);
+                    }}
+                  >
+                    Continue to Final Step
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleDeleteAccount} className="space-y-4">
+                {deleteModalError && (
+                  <AlertBanner tone="error" title="Deletion notice">
+                    {deleteModalError}
+                  </AlertBanner>
+                )}
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <label
+                      htmlFor="delete-confirm-phrase"
+                      className="block text-sm font-medium text-slate-800 dark:text-slate-200"
+                    >
+                      Type <span className="font-bold text-rose-600 dark:text-rose-400">DELETE</span> to confirm
+                    </label>
+                    {isDeletePhraseMatched && (
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                        Matched
+                      </span>
+                    )}
+                  </div>
+                  <Input
+                    id="delete-confirm-phrase"
+                    placeholder="Type DELETE"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    autoComplete="off"
+                    autoFocus
+                    required
+                  />
+                </div>
+
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed rounded-xl bg-slate-100/80 dark:bg-white/[0.04] p-3">
+                  Once confirmed, all your saved Physics study records and profile will be erased immediately and you will be returned to the Sign In page.
+                </p>
+
+                <div className="flex flex-col-reverse sm:flex-row sm:justify-between gap-2 pt-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setDeleteModalError(null);
+                      setDeleteStep(1);
+                    }}
+                  >
+                    Back
+                  </Button>
+                  <div className="flex flex-col-reverse sm:flex-row gap-2">
+                    <Button type="button" variant="outline" onClick={closeDeleteModal}>
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="danger"
+                      icon={<Trash2 className="h-4 w-4" />}
+                      disabled={!isDeletePhraseMatched}
+                    >
+                      Permanently Delete
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            )}
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

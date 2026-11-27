@@ -7,7 +7,7 @@ export interface IosIslandPayload {
 }
 
 export interface IosAuthTransitionPayload {
-  mode: 'login' | 'signup' | 'logout';
+  mode: 'login' | 'signup' | 'logout' | 'deleted';
   username?: string;
 }
 

@@ -158,21 +158,21 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
   return (
     <div className="space-y-6">
       {/* KPI Summary Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card padding="sm" className="space-y-1">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <Card padding="sm" className="space-y-1 min-w-0">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-neutral-400">
-            <Flame className="h-4 w-4 text-amber-500" aria-hidden="true" />
-            <span>Study Streak</span>
+            <Flame className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />
+            <span className="truncate">Study Streak</span>
           </div>
-          <p className="font-display text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
+          <p className="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
             {profile?.streakDays ?? 0} day{(profile?.streakDays ?? 0) === 1 ? '' : 's'}
           </p>
         </Card>
 
-        <Card padding="sm" className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs font-medium text-slate-500 dark:text-neutral-400">
-            <span>Daily Goal</span>
-            <span className="tabular-nums text-blue-700 dark:text-blue-400">
+        <Card padding="sm" className="space-y-1.5 min-w-0">
+          <div className="flex items-center justify-between gap-1 text-xs font-medium text-slate-500 dark:text-neutral-400">
+            <span className="truncate">Daily Goal</span>
+            <span className="tabular-nums text-blue-700 dark:text-blue-400 shrink-0">
               {todayMinutes}/{dailyGoalMinutes}m
             </span>
           </div>
@@ -182,27 +182,27 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               style={{ width: `${dailyGoalPct}%` }}
             />
           </div>
-          <p className="text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 tabular-nums truncate">
             {totalMinutes}m total studied
           </p>
         </Card>
 
-        <Card padding="sm" className="space-y-1">
+        <Card padding="sm" className="space-y-1 min-w-0">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-neutral-400">
-            <Layers className="h-4 w-4 text-blue-700 dark:text-blue-400" aria-hidden="true" />
-            <span>Cards Due / Reviewed</span>
+            <Layers className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" aria-hidden="true" />
+            <span className="truncate">Due / Reviewed</span>
           </div>
-          <p className="font-display text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
+          <p className="font-display text-lg min-[400px]:text-xl sm:text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums leading-tight">
             {dueTodayCount} / {profile?.cardsReviewedCount ?? 0}
           </p>
         </Card>
 
-        <Card padding="sm" className="space-y-1">
+        <Card padding="sm" className="space-y-1 min-w-0">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-neutral-400">
-            <Trophy className="h-4 w-4 text-amber-500" aria-hidden="true" />
-            <span>Total XP · Quiz Avg</span>
+            <Trophy className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />
+            <span className="truncate">XP · Quiz Avg</span>
           </div>
-          <p className="font-display text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
+          <p className="font-display text-lg min-[400px]:text-xl sm:text-2xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums leading-tight">
             {(profile?.xp ?? 0).toLocaleString()} · {attempts.length > 0 ? `${avgQuizPct}%` : '—'}
           </p>
         </Card>
@@ -210,8 +210,8 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
       {/* Physics 1, Physics 2, Physics 3 Curriculum Progress */}
       <Card className="space-y-4">
-        <div className="flex items-center justify-between gap-2">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="min-w-0">
             <h2 className="font-display text-lg font-bold text-slate-900 dark:text-neutral-100">
               Lesson Completion by Course
             </h2>
@@ -458,7 +458,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="h-44 flex items-end gap-2 pt-4 pb-2 px-2 rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 border border-stone-200 dark:border-neutral-800">
+            <div className="h-44 flex items-end gap-1.5 sm:gap-2 pt-4 pb-2 px-2 rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 border border-stone-200 dark:border-neutral-800 overflow-x-auto no-scrollbar">
               {recentChartAttempts.map((a, idx) => (
                 <div
                   key={a.id}

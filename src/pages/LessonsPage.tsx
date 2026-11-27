@@ -81,7 +81,7 @@ export const LessonsPage: React.FC = () => {
 
       {/* Course Filter & Search Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5 p-1.5 rounded-full liquid-glass w-full md:w-fit">
+        <div className="flex items-center gap-1 p-1.5 rounded-full liquid-glass w-full md:w-fit overflow-x-auto no-scrollbar">
           {(
             [
               { key: 'all', label: `All Courses (${ALL_LESSONS.length})` },
@@ -95,7 +95,7 @@ export const LessonsPage: React.FC = () => {
               type="button"
               data-sound="tab"
               onClick={() => setSelectedCourse(item.key)}
-              className={`px-3.5 min-h-[42px] rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer whitespace-nowrap ${
+              className={`px-3.5 min-h-[42px] rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
                 selectedCourse === item.key
                   ? 'liquid-lens-active text-[#007AFF] dark:text-[#4DA3FF]'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'

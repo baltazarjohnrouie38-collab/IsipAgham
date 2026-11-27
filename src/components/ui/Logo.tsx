@@ -1,5 +1,5 @@
 import React from 'react';
-import logoUrl from '../../assets/images/regenerated_image_1795533932091.jpg';
+import logoUrl from '../../assets/images/isipagham_blue_logo_1795790996722.jpg';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';

@@ -195,7 +195,7 @@ export const LessonDetailPage: React.FC = () => {
           <p className="text-base text-slate-800 dark:text-neutral-200 leading-relaxed">
             {lesson.objective}
           </p>
-          <div className="pt-1 text-base text-blue-900 dark:text-blue-200 font-medium">
+          <div className="pt-1 text-base text-blue-900 dark:text-blue-200 font-medium overflow-x-auto no-scrollbar max-w-full">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 mr-2">
               Key Formula:
             </span>
@@ -454,6 +454,7 @@ export const LessonDetailPage: React.FC = () => {
         <Button
           variant={isCompleted ? 'outline' : 'secondary'}
           data-sound="none"
+          className="w-full sm:w-auto"
           icon={<CheckCircle2 className="h-4 w-4" />}
           onClick={() => {
             playUiSound(isCompleted ? 'click' : 'celebrate');
@@ -466,6 +467,7 @@ export const LessonDetailPage: React.FC = () => {
         {nextLesson ? (
           <Link
             to={`/lessons/${nextLesson.id}`}
+            className="w-full sm:w-auto"
             onClick={() => {
               if (!isCompleted) {
                 void toggleLessonCompleted(lesson.id, true);
@@ -477,7 +479,7 @@ export const LessonDetailPage: React.FC = () => {
             </Button>
           </Link>
         ) : (
-          <Link to="/lessons">
+          <Link to="/lessons" className="w-full sm:w-auto">
             <Button fullWidth icon={<ArrowLeft className="h-4 w-4" />}>
               Back to Curriculum
             </Button>

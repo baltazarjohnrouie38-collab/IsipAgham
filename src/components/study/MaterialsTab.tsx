@@ -246,7 +246,7 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800 max-w-xs">
+        <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800 w-full sm:max-w-xs">
           <button
             type="button"
             onClick={() => setInputMode('file')}
@@ -308,7 +308,7 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
                 type="file"
                 accept=".pdf,.pptx,.docx,.png,.jpg,.jpeg,.webp"
                 onChange={handleFileChange}
-                className="block w-full rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-sm text-slate-700 dark:text-neutral-300 file:mr-4 file:py-2.5 file:px-4 file:rounded-l-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-800 dark:file:bg-blue-950 dark:file:text-blue-300 hover:file:bg-blue-100 cursor-pointer"
+                className="block w-full max-w-full rounded-xl border border-stone-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-xs sm:text-sm text-slate-700 dark:text-neutral-300 file:mr-3 sm:file:mr-4 file:py-2.5 file:px-3 sm:file:px-4 file:rounded-l-xl file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-800 dark:file:bg-blue-950 dark:file:text-blue-300 hover:file:bg-blue-100 cursor-pointer overflow-hidden text-ellipsis"
               />
               {selectedFile && (
                 <p className="text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
@@ -348,8 +348,8 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="w-52">
+          <div className="flex flex-wrap items-end gap-3 min-w-0 w-full md:w-auto">
+            <div className="w-full sm:w-56">
               <Select
                 label="What to generate"
                 value={generateFocus}
@@ -362,13 +362,13 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
               </Select>
             </div>
 
-            <div className="flex flex-wrap gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800">
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-stone-100 dark:bg-neutral-800 max-w-full overflow-x-auto no-scrollbar">
               {(['All', 'Physics 1', 'Physics 2', 'Physics 3'] as const).map((filter) => (
                 <button
                   key={filter}
                   type="button"
                   onClick={() => setCourseFilter(filter)}
-                  className={`px-3 min-h-[38px] rounded-lg text-xs font-semibold transition-colors whitespace-nowrap cursor-pointer ${
+                  className={`px-3 min-h-[38px] rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                     courseFilter === filter
                       ? 'bg-white dark:bg-neutral-900 text-slate-900 dark:text-neutral-100 shadow-xs'
                       : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100'

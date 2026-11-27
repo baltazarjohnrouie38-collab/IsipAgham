@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ArrowLeft,
   Check,
@@ -24,7 +24,7 @@ import { Button } from '../components/ui/Button';
 import { Input, Select } from '../components/ui/Input';
 import { OfflineBanner } from '../components/ui/OfflineBanner';
 import { PWAInstallButton } from '../components/ui/PWAInstallButton';
-import authHeroLogoUrl from '../assets/images/regenerated_image_1795555562184.jpg';
+import authHeroLogoUrl from '../assets/images/isipagham_blue_logo_1795790996722.jpg';
 
 const GoogleMark: React.FC = () => (
   <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
@@ -48,8 +48,15 @@ const GoogleMark: React.FC = () => (
 );
 
 export const AuthPage: React.FC = () => {
-  const { signInWithAccount, signUpWithAccount, signInWithGoogle, authError, clearAuthError } =
-    useAuth();
+  const {
+    signInWithAccount,
+    signUpWithAccount,
+    signInWithGoogle,
+    authError,
+    accountDeletedNotice,
+    clearAuthError,
+    clearAccountDeletedNotice,
+  } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
   const [mode, setMode] = useState<'signup' | 'login'>('login');
   const [showCredentialsForm, setShowCredentialsForm] = useState(false);
@@ -72,16 +79,25 @@ export const AuthPage: React.FC = () => {
     email,
   });
 
+  useEffect(() => {
+    if (accountDeletedNotice) {
+      setMode('login');
+      setShowCredentialsForm(false);
+    }
+  }, [accountDeletedNotice]);
+
   const handleModeSwitch = (nextMode: 'signup' | 'login') => {
     setMode(nextMode);
     setLocalError(null);
     clearAuthError();
+    clearAccountDeletedNotice();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
     clearAuthError();
+    clearAccountDeletedNotice();
 
     if (mode === 'login') {
       if (!identifier.trim() || !password) {
@@ -166,7 +182,7 @@ export const AuthPage: React.FC = () => {
   ];
 
   return (
-    <div className="relative min-h-screen text-slate-950 dark:text-slate-50 flex flex-col">
+    <div className="relative min-h-dvh text-slate-950 dark:text-slate-50 flex flex-col pb-[env(safe-area-inset-bottom)]">
       <div
         className="fixed inset-0 z-0 pointer-events-none select-none ios-app-canvas"
         aria-hidden="true"
@@ -174,7 +190,7 @@ export const AuthPage: React.FC = () => {
 
       <OfflineBanner />
 
-      <div className="relative z-10 flex items-center justify-end gap-2 px-4 sm:px-8 pt-4 w-full max-w-6xl mx-auto">
+      <div className="relative z-10 flex items-center justify-end gap-2 px-4 sm:px-8 pt-[max(1rem,env(safe-area-inset-top))] w-full max-w-6xl mx-auto">
         <PWAInstallButton compact />
         <button
           type="button"
@@ -195,8 +211,8 @@ export const AuthPage: React.FC = () => {
         </button>
       </div>
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-10">
-        <div className="ios-card-spring w-full max-w-[460px] liquid-glass-strong rounded-[32px] p-6 sm:p-9 space-y-6">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-3.5 sm:px-4 py-5 sm:py-10">
+        <div className="ios-card-spring w-full max-w-[460px] liquid-glass-strong rounded-[28px] sm:rounded-[32px] p-5 sm:p-8 space-y-5 sm:space-y-6">
           <div className="flex flex-col items-center text-center space-y-3">
             <div className="inline-flex items-center gap-2.5">
               <img
@@ -252,6 +268,12 @@ export const AuthPage: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {accountDeletedNotice && !displayError && (
+            <AlertBanner tone="success" title="Account deleted">
+              {accountDeletedNotice}
+            </AlertBanner>
+          )}
 
           {displayError && (
             <AlertBanner tone="error" title="Sign-in notice">
@@ -355,7 +377,7 @@ export const AuthPage: React.FC = () => {
                           type="button"
                           onClick={() => setShowPassword((prev) => !prev)}
                           aria-label={showPassword ? 'Hide password' : 'Show password'}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 min-h-[38px] min-w-[38px] flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
                         >
                           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
@@ -409,13 +431,13 @@ export const AuthPage: React.FC = () => {
                           type="button"
                           onClick={() => setShowPassword((prev) => !prev)}
                           aria-label={showPassword ? 'Hide password' : 'Show password'}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 min-h-[38px] min-w-[38px] flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
                         >
                           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+                      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-1.5 pt-0.5">
                         {passwordRequirementItems.map((item) => (
                           <div
                             key={item.label}
@@ -462,7 +484,7 @@ export const AuthPage: React.FC = () => {
                           type="button"
                           onClick={() => setShowConfirmPassword((prev) => !prev)}
                           aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 min-h-[38px] min-w-[38px] flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-neutral-200 cursor-pointer"
                         >
                           {showConfirmPassword ? (
                             <EyeOff className="h-4 w-4" />

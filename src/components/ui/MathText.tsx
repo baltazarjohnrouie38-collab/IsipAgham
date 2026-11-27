@@ -39,8 +39,8 @@ const KatexNode: React.FC<KatexNodeProps> = ({ expr, displayMode = false }) => {
       ref={containerRef}
       className={
         displayMode
-          ? 'block my-2.5 overflow-x-auto py-1 text-center'
-          : 'inline-block align-baseline mx-0.5'
+          ? 'block my-2.5 max-w-full overflow-x-auto no-scrollbar py-1 text-center'
+          : 'inline-block align-baseline mx-0.5 max-w-full overflow-x-auto no-scrollbar align-middle'
       }
     />
   );
@@ -255,7 +255,7 @@ export const MathText: React.FC<MathTextProps> = ({ text, className = '' }) => {
   const lines = prepared.split('\n');
 
   return (
-    <div className={`space-y-2 break-words ${className}`}>
+    <div className={`space-y-2 break-words min-w-0 max-w-full ${className}`}>
       {lines.map((rawLine, lineIdx) => {
         const trimmed = rawLine.trim();
         if (!trimmed) {
@@ -332,7 +332,7 @@ export const MathInline: React.FC<{ text: string; className?: string }> = ({
 }) => {
   const segments = splitMathSegments(text);
   return (
-    <span className={className}>
+    <span className={`min-w-0 max-w-full break-words ${className}`}>
       {segments.map((seg, idx) => {
         if (seg.kind === 'inline-math' || seg.kind === 'block-math') {
           return <KatexNode key={idx} expr={seg.value} displayMode={false} />;

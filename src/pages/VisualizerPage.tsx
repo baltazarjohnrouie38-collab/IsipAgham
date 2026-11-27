@@ -111,7 +111,7 @@ export const VisualizerPage: React.FC = () => {
       />
 
       {/* Course Selector */}
-      <div className="grid grid-cols-3 gap-1.5 p-1.5 rounded-full liquid-glass">
+      <div className="grid grid-cols-3 gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-full liquid-glass">
         {COURSE_LIST.map((course) => {
           const isActive = selectedCourse === course;
           const isVisited = visitedCourses.includes(course);
@@ -121,13 +121,13 @@ export const VisualizerPage: React.FC = () => {
               key={course}
               type="button"
               onClick={() => handleSelectCourse(course)}
-              className={`min-h-[44px] px-3 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`min-h-[44px] min-w-0 px-2 sm:px-3 py-2 rounded-full text-[11px] min-[380px]:text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer ${
                 isActive
                   ? 'liquid-lens-active text-[#007AFF] dark:text-[#4DA3FF]'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <span>{course}</span>
+              <span className="truncate">{course}</span>
               <span className="hidden sm:inline text-xs text-slate-500 dark:text-slate-400 tabular-nums">
                 ({count})
               </span>
@@ -144,9 +144,9 @@ export const VisualizerPage: React.FC = () => {
 
       {/* Topic-Grouped Scene Selector */}
       <Card className="space-y-4">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Layers className="h-4 w-4 text-blue-700 dark:text-blue-400" aria-hidden="true" />
+        <div className="flex flex-col min-[460px]:flex-row min-[460px]:items-center justify-between gap-1.5">
+          <div className="flex items-center gap-2 min-w-0">
+            <Layers className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" aria-hidden="true" />
             <h2 className="font-display text-sm sm:text-base font-bold text-slate-900 dark:text-neutral-100">
               {selectedCourse} Topics &amp; Simulations
             </h2>
@@ -204,11 +204,11 @@ export const VisualizerPage: React.FC = () => {
           <p className="text-xs sm:text-sm text-slate-600 dark:text-neutral-400">{activeScene.subtitle}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1 min-w-0">
           {activeScene.formulas.map((eq) => (
             <div
               key={eq}
-              className="rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 border border-stone-200 dark:border-neutral-800 px-3.5 py-2.5 text-sm sm:text-base text-slate-900 dark:text-neutral-100 overflow-x-auto flex items-center"
+              className="min-w-0 rounded-xl bg-[#FAF9F6] dark:bg-neutral-950 border border-stone-200 dark:border-neutral-800 px-3.5 py-2.5 text-sm sm:text-base text-slate-900 dark:text-neutral-100 overflow-x-auto no-scrollbar flex items-center"
             >
               <MathInline text={eq} />
             </div>
