@@ -32,6 +32,7 @@
         "classCode": { "type": "string", "maxLength": 20 },
         "visitedCourses": { "type": "array" },
         "checklist": { "type": "object" },
+        "leaderboardJoined": { "type": "boolean", "description": "Whether the student has activated joining the public Global Leadership Board." },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },

@@ -41,6 +41,7 @@ import { Card } from '../components/ui/Card';
 import { Input, Select } from '../components/ui/Input';
 import { PWAInstallButton } from '../components/ui/PWAInstallButton';
 import { UserAvatar } from '../components/ui/UserAvatar';
+import { JoinLeaderboardModal } from '../components/study/JoinLeaderboardModal';
 
 type ProfileTabKey = 'overview' | 'reminders' | 'privacy';
 
@@ -63,6 +64,7 @@ export const ProfilePage: React.FC = () => {
     profile,
     updateUserProfile,
     toggleChecklistItem,
+    leaveGlobalLeaderboard,
     signOutUser,
     deleteAccountAndData,
   } = useAuth();
@@ -104,6 +106,13 @@ export const ProfilePage: React.FC = () => {
   const [deleteModalError, setDeleteModalError] = useState<string | null>(null);
   const [deleteProgress, setDeleteProgress] = useState<DeleteAccountProgress | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [joinLeaderboardOpen, setJoinLeaderboardOpen] = useState(false);
+  const [confirmingLeaveBoard, setConfirmingLeaveBoard] = useState(false);
+  const [leavingBoard, setLeavingBoard] = useState(false);
+  const [editingHeroName, setEditingHeroName] = useState(false);
+  const [heroNameDraft, setHeroNameDraft] = useState(profile?.nickname || profile?.username || '');
+  const [savingHeroName, setSavingHeroName] = useState(false);
+  const [settingsFeedback, setSettingsFeedback] = useState<string | null>(null);
 
   const nicknameInputRef = useRef<HTMLInputElement | null>(null);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
@@ -117,7 +126,9 @@ export const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (profile) {
-      setNickname(profile.nickname || profile.username);
+      const nextName = profile.nickname || profile.username || 'Student';
+      setNickname(nextName);
+      setHeroNameDraft(nextName);
       setCourse(profile.course || 'Physics 1');
       setDailyGoalMinutes(profile.dailyGoalMinutes || 15);
       setNotifEnabled(Boolean(profile.notificationsEnabled));
@@ -125,17 +136,59 @@ export const ProfilePage: React.FC = () => {
     }
   }, [
     profile?.uid,
+    profile?.nickname,
+    profile?.username,
     profile?.course,
     profile?.dailyGoalMinutes,
     profile?.notificationsEnabled,
     profile?.notificationTime,
   ]);
 
+  const formatSaveError = (err: unknown, fallback: string) => {
+    if (!(err instanceof Error)) return fallback;
+    try {
+      const parsed = JSON.parse(err.message) as { error?: string };
+      if (parsed && typeof parsed.error === 'string' && parsed.error) {
+        return parsed.error;
+      }
+    } catch {
+      // plain error message
+    }
+    return err.message || fallback;
+  };
+
+  const handleSaveHeroUsername = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatusMsg(null);
+    setErrorMsg(null);
+    const cleaned = heroNameDraft.trim().replace(/\s+/g, ' ');
+    if (cleaned.length < 2 || cleaned.length > 24) {
+      setErrorMsg('Username must be between 2 and 24 characters.');
+      return;
+    }
+    setSavingHeroName(true);
+    try {
+      await updateUserProfile({
+        username: cleaned,
+        nickname: cleaned,
+      });
+      setNickname(cleaned);
+      setHeroNameDraft(cleaned);
+      setEditingHeroName(false);
+      setStatusMsg(`Username updated to "${cleaned}".`);
+    } catch (err) {
+      setErrorMsg(formatSaveError(err, 'Could not update username. Please try again.'));
+    } finally {
+      setSavingHeroName(false);
+    }
+  };
+
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMsg(null);
     setErrorMsg(null);
-    const trimmed = nickname.trim();
+    setSettingsFeedback(null);
+    const trimmed = nickname.trim().replace(/\s+/g, ' ');
     if (trimmed.length < 2 || trimmed.length > 24) {
       setErrorMsg('Username must be between 2 and 24 characters.');
       return;
@@ -150,9 +203,12 @@ export const ProfilePage: React.FC = () => {
         course,
         dailyGoalMinutes: safeGoal,
       });
+      setNickname(trimmed);
+      setHeroNameDraft(trimmed);
       setStatusMsg('Profile, Physics course, and daily goal saved.');
+      setSettingsFeedback(`Saved! Your username is now "${trimmed}".`);
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to update settings.');
+      setErrorMsg(formatSaveError(err, 'Failed to update settings.'));
     } finally {
       setSaving(false);
     }
@@ -272,6 +328,22 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  const handleLeaveLeaderboard = async () => {
+    setStatusMsg(null);
+    setErrorMsg(null);
+    setLeavingBoard(true);
+    try {
+      await leaveGlobalLeaderboard();
+      setConfirmingLeaveBoard(false);
+      setStatusMsg('Left Global Leadership Board. Your XP is now private.');
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Could not leave Global Leadership Board.');
+    } finally {
+      setLeavingBoard(false);
+    }
+  };
+
+  const isLeaderboardJoined = Boolean(profile?.leaderboardJoined);
   const displayName = profile?.nickname || profile?.username || 'Student';
   const checklistDoneCount = ALL_CHECKLIST_KEYS.filter((k) =>
     Boolean(profile?.checklist?.[k])
@@ -312,10 +384,59 @@ export const ProfilePage: React.FC = () => {
               <Camera className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
-          <div className="space-y-1.5 min-w-0">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-slate-950 dark:text-neutral-100 truncate">
-              {displayName}
-            </h1>
+          <div className="space-y-1.5 min-w-0 flex-1">
+            {editingHeroName ? (
+              <form
+                onSubmit={handleSaveHeroUsername}
+                className="flex flex-wrap items-center gap-2 max-w-md"
+              >
+                <input
+                  type="text"
+                  value={heroNameDraft}
+                  onChange={(e) => setHeroNameDraft(e.target.value)}
+                  minLength={2}
+                  maxLength={24}
+                  required
+                  autoFocus
+                  aria-label="New username"
+                  placeholder="Enter username (2–24 chars)"
+                  className="min-h-[40px] flex-1 min-w-[160px] rounded-xl border border-blue-400 dark:border-blue-500 bg-white dark:bg-neutral-950 px-3 text-base sm:text-sm font-semibold text-slate-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+                <Button type="submit" size="sm" loading={savingHeroName}>
+                  Save
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={savingHeroName}
+                  onClick={() => {
+                    setHeroNameDraft(displayName);
+                    setEditingHeroName(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </form>
+            ) : (
+              <div className="flex items-center gap-2 min-w-0">
+                <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-slate-950 dark:text-neutral-100 truncate">
+                  {displayName}
+                </h1>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHeroNameDraft(displayName);
+                    setEditingHeroName(true);
+                  }}
+                  aria-label="Edit username"
+                  title="Change username"
+                  className="h-8 w-8 rounded-full border border-stone-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:text-blue-700 dark:hover:text-blue-400 hover:border-blue-300 inline-flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+                >
+                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </div>
+            )}
             <p className="text-xs sm:text-sm text-slate-600 dark:text-neutral-400 truncate">
               Grade 12 · {profile?.course || 'Physics 1'} ·{' '}
               {profile?.email || 'Username-only sign-in (no email stored)'}
@@ -348,7 +469,10 @@ export const ProfilePage: React.FC = () => {
                 icon={<Pencil className="h-3.5 w-3.5" />}
                 onClick={() => {
                   setActiveTab('overview');
-                  window.setTimeout(() => nicknameInputRef.current?.focus(), 60);
+                  window.setTimeout(() => {
+                    nicknameInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    nicknameInputRef.current?.focus();
+                  }, 80);
                 }}
               >
                 Edit Settings
@@ -431,7 +555,7 @@ export const ProfilePage: React.FC = () => {
                       Global Leadership Board &amp; XP
                     </p>
                     <p className="text-xs text-slate-500 dark:text-neutral-400 tabular-nums">
-                      {(profile?.xp ?? 0).toLocaleString()} XP earned · {profile?.streakDays ?? 0}d streak · {(profile?.lessonsCompleted || []).length}/{ALL_LESSONS.length} lessons
+                      {isLeaderboardJoined ? 'Joined (Active)' : 'Not joined yet'} · {(profile?.xp ?? 0).toLocaleString()} XP earned · {profile?.streakDays ?? 0}d streak · {(profile?.lessonsCompleted || []).length}/{ALL_LESSONS.length} lessons
                     </p>
                   </div>
                 </div>
@@ -528,11 +652,18 @@ export const ProfilePage: React.FC = () => {
                   ref={nicknameInputRef}
                   label="Username (Leaderboard Name)"
                   value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
+                  onChange={(e) => {
+                    setNickname(e.target.value);
+                    if (settingsFeedback) setSettingsFeedback(null);
+                  }}
                   maxLength={24}
                   minLength={2}
                   required
-                  hint="Shown on the Global Leadership Board. Avoid using your full real name."
+                  hint={
+                    isLeaderboardJoined
+                      ? '2–24 characters. Updates both your profile and Global Leadership Board name.'
+                      : '2–24 characters. Used across your profile and if you join the Global Leadership Board.'
+                  }
                 />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -559,10 +690,78 @@ export const ProfilePage: React.FC = () => {
                   </Select>
                 </div>
 
-                <Button type="submit" loading={saving}>
-                  Save Profile Settings
-                </Button>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button type="submit" loading={saving}>
+                    Save Profile Settings
+                  </Button>
+                  {settingsFeedback && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                      <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                      {settingsFeedback}
+                    </span>
+                  )}
+                </div>
               </form>
+
+              <div className="pt-2 border-t border-stone-200/80 dark:border-neutral-800 max-w-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-[#FAF9F6] dark:bg-neutral-900/80 border border-stone-200/80 dark:border-neutral-800">
+                  <div className="space-y-0.5 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 dark:text-neutral-100 flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />
+                      <span>Global Leaderboard Status</span>
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-neutral-400">
+                      {isLeaderboardJoined
+                        ? `Activated — Visible as "${displayName}" (${(profile?.xp ?? 0).toLocaleString()} XP)`
+                        : 'Not joined — Activate to publish your username, avatar, and XP'}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    {!isLeaderboardJoined ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        icon={<Trophy className="h-3.5 w-3.5" />}
+                        onClick={() => setJoinLeaderboardOpen(true)}
+                      >
+                        Join Global Leaderboard
+                      </Button>
+                    ) : confirmingLeaveBoard ? (
+                      <>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="danger"
+                          loading={leavingBoard}
+                          onClick={() => {
+                            void handleLeaveLeaderboard();
+                          }}
+                        >
+                          Confirm Leave
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={leavingBoard}
+                          onClick={() => setConfirmingLeaveBoard(false)}
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setConfirmingLeaveBoard(true)}
+                      >
+                        Leave Leaderboard
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </Card>
           </div>
         )}
@@ -1000,6 +1199,11 @@ export const ProfilePage: React.FC = () => {
           </Card>
         </div>
       )}
+      <JoinLeaderboardModal
+        open={joinLeaderboardOpen}
+        onClose={() => setJoinLeaderboardOpen(false)}
+        onJoined={() => setStatusMsg('Joined the Global Leadership Board!')}
+      />
     </div>
   );
 };

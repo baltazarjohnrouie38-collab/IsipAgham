@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth';
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -61,6 +62,8 @@ interface AuthContextValue {
   toggleLessonCompleted: (lessonId: string, done?: boolean) => Promise<void>;
   markCourseVisited: (course: PhysicsCourse) => Promise<void>;
   toggleChecklistItem: (key: ChecklistKey, done?: boolean) => Promise<void>;
+  joinGlobalLeaderboard: (nicknameOverride?: string) => Promise<void>;
+  leaveGlobalLeaderboard: () => Promise<void>;
   deleteAccountAndData: (options?: {
     onProgress?: (progress: DeleteAccountProgress) => void;
   }) => Promise<void>;
@@ -242,16 +245,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         lessonsCompleted: [],
         visitedCourses: [],
         checklist: {},
+        leaderboardJoined: false,
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-      batch.set(lbRef, {
-        uid: firebaseUser.uid,
-        nickname: username,
-        avatarUrl: '',
-        xp: 0,
-        weeklyXp: 0,
-        weekKey,
         updatedAt: serverTimestamp(),
       });
 
@@ -259,6 +254,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await batch.commit();
       } catch (error) {
         handleFirestoreError(error, OperationType.WRITE, `users/${firebaseUser.uid}`);
+      }
+    } else {
+      const existingData = snap.data() as Partial<UserProfile>;
+      if (existingData.leaderboardJoined === undefined) {
+        try {
+          const migrateBatch = writeBatch(db);
+          migrateBatch.update(userRef, {
+            leaderboardJoined: false,
+            updatedAt: serverTimestamp(),
+          });
+          migrateBatch.delete(lbRef);
+          await migrateBatch.commit();
+        } catch {
+          // Non-fatal fallback if leaderboard doc was already absent
+          await updateDoc(userRef, {
+            leaderboardJoined: false,
+            updatedAt: serverTimestamp(),
+          }).catch(() => undefined);
+          await deleteDoc(lbRef).catch(() => undefined);
+        }
       }
     }
   };
@@ -325,6 +340,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               lessonsCompleted: Array.isArray(raw.lessonsCompleted) ? raw.lessonsCompleted : [],
               visitedCourses: Array.isArray(raw.visitedCourses) ? raw.visitedCourses : [],
               checklist: raw.checklist || {},
+              leaderboardJoined: Boolean(raw.leaderboardJoined),
               createdAt: raw.createdAt,
               updatedAt: raw.updatedAt,
             };
@@ -507,6 +523,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       'lessonsCompleted',
       'visitedCourses',
       'checklist',
+      'leaderboardJoined',
     ];
 
     const sanitized: Record<string, unknown> = { updatedAt: serverTimestamp() };
@@ -530,21 +547,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const batch = writeBatch(db);
     batch.update(userRef, sanitized);
 
-    const shouldSyncLb =
-      sanitized.nickname !== undefined ||
-      sanitized.avatarUrl !== undefined ||
-      sanitized.xp !== undefined ||
-      sanitized.weeklyXp !== undefined ||
-      sanitized.weekKey !== undefined;
+    const effectiveJoined =
+      sanitized.leaderboardJoined !== undefined
+        ? Boolean(sanitized.leaderboardJoined)
+        : Boolean(profile.leaderboardJoined);
 
-    if (shouldSyncLb) {
+    const shouldSyncLb =
+      effectiveJoined &&
+      (sanitized.nickname !== undefined ||
+        sanitized.avatarUrl !== undefined ||
+        sanitized.xp !== undefined ||
+        sanitized.weeklyXp !== undefined ||
+        sanitized.weekKey !== undefined ||
+        sanitized.leaderboardJoined === true);
+
+    if (sanitized.leaderboardJoined === false) {
+      batch.delete(lbRef);
+    } else if (shouldSyncLb) {
       const currentWeek = getCurrentWeekKey();
-      const lbWeeklyXp =
+      const rawLbWeeklyXp =
         sanitized.weeklyXp !== undefined
           ? (sanitized.weeklyXp as number)
           : profile.weekKey === currentWeek
           ? profile.weeklyXp
           : 0;
+      const lbXp = Math.round(
+        Math.max(0, Number((sanitized.xp as number) ?? profile.xp) || 0)
+      );
+      const lbWeeklyXp = Math.round(Math.max(0, Number(rawLbWeeklyXp) || 0));
       batch.set(
         lbRef,
         {
@@ -553,7 +583,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           avatarUrl:
             (sanitized.avatarUrl as string) ??
             (isValidAvatarUrl(profile.avatarUrl) ? profile.avatarUrl : ''),
-          xp: (sanitized.xp as number) ?? profile.xp,
+          xp: lbXp,
           weeklyXp: lbWeeklyXp,
           weekKey: (sanitized.weekKey as string) ?? currentWeek,
           updatedAt: serverTimestamp(),
@@ -564,6 +594,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       await batch.commit();
+      if (typeof sanitized.nickname === 'string' && sanitized.nickname !== profile.nickname) {
+        await updateProfile(user, { displayName: sanitized.nickname }).catch(() => undefined);
+        playUiSound('success', true);
+        triggerIosIsland({
+          title: 'Username Updated',
+          subtitle: `Now shown as ${sanitized.nickname}`,
+          tone: 'emerald',
+        });
+      }
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
     }
@@ -667,6 +706,79 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
+    }
+  };
+
+  const joinGlobalLeaderboard = async (nicknameOverride?: string) => {
+    if (!user || !profile) return;
+    const rawName = nicknameOverride !== undefined ? nicknameOverride : profile.nickname || profile.username;
+    const trimmed = rawName.trim();
+    if (trimmed.length < 2 || trimmed.length > 24) {
+      throw new Error('Leaderboard username must be between 2 and 24 characters.');
+    }
+    const cleanName = sanitizeUsername(trimmed);
+    const currentWeek = getCurrentWeekKey();
+    const lbXp = Math.round(Math.max(0, Number(profile.xp) || 0));
+    const lbWeeklyXp = Math.round(
+      Math.max(0, Number(profile.weekKey === currentWeek ? profile.weeklyXp || 0 : 0) || 0)
+    );
+
+    const userRef = doc(db, 'users', user.uid);
+    const lbRef = doc(db, 'leaderboard', user.uid);
+
+    const batch = writeBatch(db);
+    batch.update(userRef, {
+      leaderboardJoined: true,
+      username: cleanName,
+      nickname: cleanName,
+      updatedAt: serverTimestamp(),
+    });
+    batch.set(lbRef, {
+      uid: user.uid,
+      nickname: cleanName,
+      avatarUrl: isValidAvatarUrl(profile.avatarUrl) ? profile.avatarUrl : '',
+      xp: lbXp,
+      weeklyXp: lbWeeklyXp,
+      weekKey: currentWeek,
+      updatedAt: serverTimestamp(),
+    });
+
+    try {
+      await batch.commit();
+      await updateProfile(user, { displayName: cleanName }).catch(() => undefined);
+      playUiSound('celebrate', true);
+      triggerIosIsland({
+        title: 'Joined Leaderboard',
+        subtitle: `Active as ${cleanName}`,
+        tone: 'emerald',
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `leaderboard/${user.uid}`);
+    }
+  };
+
+  const leaveGlobalLeaderboard = async () => {
+    if (!user || !profile) return;
+    const userRef = doc(db, 'users', user.uid);
+    const lbRef = doc(db, 'leaderboard', user.uid);
+
+    const batch = writeBatch(db);
+    batch.update(userRef, {
+      leaderboardJoined: false,
+      updatedAt: serverTimestamp(),
+    });
+    batch.delete(lbRef);
+
+    try {
+      await batch.commit();
+      playUiSound('toggle', true);
+      triggerIosIsland({
+        title: 'Left Leaderboard',
+        subtitle: 'Your XP is now private',
+        tone: 'neutral',
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `leaderboard/${user.uid}`);
     }
   };
 
@@ -809,6 +921,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         toggleLessonCompleted,
         markCourseVisited,
         toggleChecklistItem,
+        joinGlobalLeaderboard,
+        leaveGlobalLeaderboard,
         deleteAccountAndData,
       }}
     >

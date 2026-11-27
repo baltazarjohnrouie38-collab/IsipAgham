@@ -395,7 +395,7 @@ export const AuthPage: React.FC = () => {
                       autoComplete="username"
                       required
                       error={username.length > 0 && !usernameResult.valid ? usernameResult.error : undefined}
-                      hint="3–24 characters (letters, numbers, _, ., -). Shown on the leaderboard."
+                      hint="3–24 characters (letters, numbers, _, ., -). Used if you join the leaderboard."
                     />
 
                     <Input

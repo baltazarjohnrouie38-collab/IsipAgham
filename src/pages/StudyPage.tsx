@@ -27,7 +27,7 @@ type StudyTabKey = 'materials' | 'flashcards' | 'quiz' | 'timer' | 'progress';
 const VALID_TABS: StudyTabKey[] = ['materials', 'flashcards', 'quiz', 'timer', 'progress'];
 
 export const StudyPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = (searchParams.get('tab') as StudyTabKey) || 'materials';
   const [activeTab, setActiveTab] = useState<StudyTabKey>(
@@ -61,16 +61,22 @@ export const StudyPage: React.FC = () => {
     });
     const unsubAttempts = subscribeQuizAttempts(user.uid, setAttempts);
     const unsubSessions = subscribeStudySessions(user.uid, setSessions);
-    const unsubLeaderboard = subscribeLeaderboard(setLeaderboard);
 
     return () => {
       unsubMats();
       unsubSets();
       unsubAttempts();
       unsubSessions();
-      unsubLeaderboard();
     };
   }, [user]);
+
+  useEffect(() => {
+    if (!user || !profile?.leaderboardJoined) {
+      setLeaderboard([]);
+      return;
+    }
+    return subscribeLeaderboard(setLeaderboard);
+  }, [user, profile?.leaderboardJoined]);
 
   const switchTab = (tab: StudyTabKey) => {
     setActiveTab(tab);

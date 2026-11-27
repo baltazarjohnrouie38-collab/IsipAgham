@@ -17,5 +17,7 @@ export const dirtyDozenPayloads = [
   { name: 'Invalid document ID injection', path: '/materials/invalid$id!', op: 'create', auth: { uid: 'userA' }, data: { id: 'invalid$id!', userId: 'userA', title: 'Test', course: 'Physics 1', sourceType: 'text', extractedText: 'abc' }, expected: 'PERMISSION_DENIED' },
   { name: 'Cross-user visualizer scenario read', path: '/visualizerScenarios/scenB', op: 'get', auth: { uid: 'userA' }, expected: 'PERMISSION_DENIED' },
   { name: 'Visualizer scenario ownership spoofing', path: '/visualizerScenarios/scen1', op: 'create', auth: { uid: 'userA' }, data: { id: 'scen1', userId: 'userB', sceneId: 'p1-projectile', course: 'Physics 1', title: 'Basketball Shot', params: { angle: 50, speed: 12 } }, expected: 'PERMISSION_DENIED' },
+  { name: 'Unactivated leaderboard write bypass', path: '/leaderboard/userA', op: 'create', auth: { uid: 'userA' }, data: { uid: 'userA', nickname: 'Juan', xp: 100 }, expected: 'PERMISSION_DENIED' },
+  { name: 'Invalid leaderboardJoined type poisoning', path: '/users/userA', op: 'update', auth: { uid: 'userA' }, data: { leaderboardJoined: 'yes' }, expected: 'PERMISSION_DENIED' },
 ];
 

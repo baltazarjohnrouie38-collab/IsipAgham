@@ -7,6 +7,7 @@
 4. On `create`, `createdAt == request.time` (and `updatedAt == request.time` where present). On `update`, `createdAt == existing().createdAt` and `updatedAt == request.time`.
 5. Every string has explicit `.size()` bounds; every array has explicit `.size()` bounds; every document ID matches `^[a-zA-Z0-9_\-]+$`.
 6. Updates use strict `incoming().diff(existing()).affectedKeys().hasOnly([...])` to block shadow fields and privilege/XP spoofing beyond validated integer bounds (`0 <= xp <= 1000000`).
+7. Opt-in Leaderboard Gate: Creating or updating `/leaderboard/{userId}` requires `users/{userId}.leaderboardJoined == true` via `getAfter(...)`, ensuring users only appear on the Global Leadership Board after explicitly activating it (and can leave anytime by deleting `/leaderboard/{userId}` and setting `leaderboardJoined: false`).
 
 ## 2. Dirty Dozen Adversarial Payloads (Must Return PERMISSION_DENIED)
 1. Unauthenticated read of `/users/userA`.
@@ -21,3 +22,5 @@
 10. Authenticated userA listing `/studySets` without `where('userId', '==', uid)` or reading userB's `/studySets/setB`.
 11. Authenticated userA creating `/users/userA` with `createdAt` set to a forged past client timestamp instead of `request.time`.
 12. Authenticated userA creating `/materials/invalid$id!` with invalid path characters.
+13. Authenticated userA creating `/leaderboard/userA` while `/users/userA.leaderboardJoined` is `false` (unactivated leaderboard bypass).
+

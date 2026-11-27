@@ -52,7 +52,8 @@ service cloud.firestore {
           'xp', 'weeklyXp', 'weekKey', 'streakDays', 'lastStudyDate',
           'todayStudyDate', 'todayStudySeconds', 'totalStudySeconds',
           'cardsReviewedCount', 'aiQuestionsAsked', 'lessonsCompleted',
-          'classCode', 'visitedCourses', 'checklist', 'createdAt', 'updatedAt'
+          'classCode', 'visitedCourses', 'checklist', 'leaderboardJoined',
+          'createdAt', 'updatedAt'
         ])
         && data.uid is string && data.uid == request.auth.uid && isValidId(data.uid)
         && (!('username' in data) || (data.username is string && data.username.size() >= 2 && data.username.size() <= 24))
@@ -81,6 +82,7 @@ service cloud.firestore {
         && (!('classCode' in data) || (data.classCode is string && data.classCode.size() <= 20))
         && (!('visitedCourses' in data) || (data.visitedCourses is list && data.visitedCourses.size() <= 3 && (data.visitedCourses.size() == 0 || isValidCourse(data.visitedCourses[0]))))
         && (!('checklist' in data) || (data.checklist is map && data.checklist.size() <= 20))
+        && (!('leaderboardJoined' in data) || data.leaderboardJoined is bool)
         && data.createdAt is timestamp
         && data.updatedAt is timestamp;
     }
@@ -202,25 +204,34 @@ service cloud.firestore {
           'notificationTime', 'fcmToken', 'xp', 'weeklyXp', 'weekKey',
           'streakDays', 'lastStudyDate', 'todayStudyDate', 'todayStudySeconds',
           'totalStudySeconds', 'cardsReviewedCount', 'aiQuestionsAsked',
-          'lessonsCompleted', 'visitedCourses', 'checklist', 'updatedAt'
+          'lessonsCompleted', 'visitedCourses', 'checklist', 'leaderboardJoined',
+          'updatedAt'
         ]);
       allow delete: if isValidId(userId) && isOwner(userId);
     }
 
-    // Public Global Leadership Board (nickname + avatarUrl + XP only, zero PII)
+    function hasJoinedLeaderboard() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.leaderboardJoined == true;
+    }
+
+    // Public Global Leadership Board (nickname + avatarUrl + XP only, zero PII; requires opt-in)
     match /leaderboard/{userId} {
-      allow get: if isValidId(userId) && isSignedIn();
-      allow list: if isSignedIn() && resource.data.keys().hasOnly(['uid', 'nickname', 'avatarUrl', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt']);
+      allow get: if isValidId(userId) && (isOwner(userId) || hasJoinedLeaderboard());
+      allow list: if hasJoinedLeaderboard() && resource.data.keys().hasOnly(['uid', 'nickname', 'avatarUrl', 'xp', 'weeklyXp', 'weekKey', 'classCode', 'updatedAt']);
       allow create: if isValidId(userId)
         && isOwner(userId)
         && isValidLeaderboardEntry(incoming())
-        && incoming().updatedAt == request.time;
+        && incoming().updatedAt == request.time
+        && getAfter(/databases/$(database)/documents/users/$(userId)).data.leaderboardJoined == true;
       allow update: if isValidId(userId)
         && isOwner(userId)
         && isValidLeaderboardEntry(incoming())
         && incoming().uid == existing().uid
         && incoming().updatedAt == request.time
-        && incoming().diff(existing()).affectedKeys().hasOnly(['nickname', 'avatarUrl', 'xp', 'weeklyXp', 'weekKey', 'updatedAt']);
+        && incoming().diff(existing()).affectedKeys().hasOnly(['nickname', 'avatarUrl', 'xp', 'weeklyXp', 'weekKey', 'updatedAt'])
+        && getAfter(/databases/$(database)/documents/users/$(userId)).data.leaderboardJoined == true;
       allow delete: if isValidId(userId) && isOwner(userId);
     }
 

@@ -43,6 +43,7 @@ export interface UserProfile {
   lessonsCompleted: string[];
   visitedCourses: PhysicsCourse[];
   checklist: Partial<Record<ChecklistKey, boolean>>;
+  leaderboardJoined?: boolean;
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
 }

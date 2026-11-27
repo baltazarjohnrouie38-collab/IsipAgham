@@ -2,9 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   BookOpen,
+  CheckCircle2,
   Clock,
   Flame,
   Layers,
+  Lock,
   RefreshCw,
   Search,
   Target,
@@ -17,6 +19,7 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Logo } from '../ui/Logo';
 import { UserAvatar } from '../ui/UserAvatar';
+import { JoinLeaderboardModal } from './JoinLeaderboardModal';
 
 interface ProgressTabProps {
   attempts: QuizAttempt[];
@@ -77,12 +80,15 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
   studySets = [],
   onSwitchTab,
 }) => {
-  const { user, profile, toggleChecklistItem } = useAuth();
+  const { user, profile, toggleChecklistItem, leaveGlobalLeaderboard } = useAuth();
   const navigate = useNavigate();
 
   const [challengeMode, setChallengeMode] = useState<'flashcards' | 'quiz'>('flashcards');
   const [periodMode, setPeriodMode] = useState<'weekly' | 'alltime'>('weekly');
   const [searchTerm, setSearchTerm] = useState('');
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
+  const [confirmingLeave, setConfirmingLeave] = useState(false);
+  const [leavingBoard, setLeavingBoard] = useState(false);
 
   useEffect(() => {
     if (user && profile && !profile.checklist?.check_dashboard_leaderboard) {
@@ -131,6 +137,23 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     attempts.length > 0
       ? Math.round(attempts.reduce((sum, a) => sum + a.percentage, 0) / attempts.length)
       : 0;
+
+  const isLeaderboardJoined = Boolean(profile?.leaderboardJoined);
+  const myRank = useMemo(() => {
+    if (!user?.uid) return -1;
+    const idx = sortedLeaderboard.findIndex((item) => item.uid === user.uid);
+    return idx >= 0 ? idx + 1 : -1;
+  }, [sortedLeaderboard, user?.uid]);
+
+  const handleLeaveBoard = async () => {
+    setLeavingBoard(true);
+    try {
+      await leaveGlobalLeaderboard();
+      setConfirmingLeave(false);
+    } finally {
+      setLeavingBoard(false);
+    }
+  };
 
   const recentChartAttempts = [...attempts].slice(0, 10).reverse();
   const displayName = profile?.nickname || profile?.username || 'You';
@@ -321,120 +344,197 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
       {/* Global Leadership Board Card */}
       <div className="space-y-3">
-        <h2 className="font-display text-lg font-bold text-slate-900 dark:text-neutral-100">
-          Global Leadership Board
-        </h2>
-
-        <Card className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <div className="h-12 w-12 rounded-2xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
-                <Logo size="sm" showText={false} />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-slate-500 dark:text-neutral-400">
-                  Usernames &amp; XP only · RA 10173 compliant
-                </p>
-                <p className="text-lg font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
-                  {sortedLeaderboard.length} learner{sortedLeaderboard.length === 1 ? '' : 's'} worldwide
-                </p>
-              </div>
-            </div>
-
-            <div className="relative w-full sm:w-56">
-              <Search
-                className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                aria-hidden="true"
-              />
-              <input
-                type="search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search username..."
-                aria-label="Search Global Leadership Board by username"
-                className="w-full h-10 pl-9 pr-3 rounded-full border border-stone-200 dark:border-neutral-700 bg-[#FAF9F6] dark:bg-neutral-900 text-xs text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setPeriodMode('weekly')}
-              className={`min-h-[38px] px-4 rounded-full text-xs font-bold transition-colors cursor-pointer ${
-                periodMode === 'weekly'
-                  ? 'bg-blue-700 text-white dark:bg-blue-600'
-                  : 'bg-white dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 border border-stone-200 dark:border-neutral-700'
-              }`}
-            >
-              Weekly XP ({currentWeekKey})
-            </button>
-            <button
-              type="button"
-              onClick={() => setPeriodMode('alltime')}
-              className={`min-h-[38px] px-4 rounded-full text-xs font-bold transition-colors cursor-pointer ${
-                periodMode === 'alltime'
-                  ? 'bg-blue-700 text-white dark:bg-blue-600'
-                  : 'bg-white dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 border border-stone-200 dark:border-neutral-700'
-              }`}
-            >
-              All-Time XP
-            </button>
-          </div>
-
-          {filteredLeaderboard.length === 0 ? (
-            <div className="py-10 text-center text-sm text-slate-500 dark:text-neutral-400">
-              {sortedLeaderboard.length === 0
-                ? 'No learners on the Global Leadership Board yet. Complete a lesson, quiz, or card review to earn XP!'
-                : 'No learners match that username filter.'}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display text-lg font-bold text-slate-900 dark:text-neutral-100">
+            Global Leadership Board
+          </h2>
+          {isLeaderboardJoined ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                {myRank > 0 ? `Joined · Rank #${myRank}` : 'Joined · Active'}
+              </span>
+              {confirmingLeave ? (
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    loading={leavingBoard}
+                    onClick={() => {
+                      void handleLeaveBoard();
+                    }}
+                  >
+                    Confirm Leave
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={leavingBoard}
+                    onClick={() => setConfirmingLeave(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setConfirmingLeave(true)}
+                >
+                  Leave Board
+                </Button>
+              )}
             </div>
           ) : (
-            <div className="divide-y divide-stone-100 dark:divide-neutral-800/80">
-              {filteredLeaderboard.map((entry) => {
-                const rank =
-                  sortedLeaderboard.findIndex((item) => item.uid === entry.uid) + 1;
-                const isSelf = entry.uid === user?.uid;
-                const displayXp =
-                  periodMode === 'weekly'
-                    ? entry.weekKey === currentWeekKey
-                      ? entry.weeklyXp || 0
-                      : 0
-                    : entry.xp || 0;
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-neutral-400">
+              <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+              Not Joined Yet
+            </span>
+          )}
+        </div>
 
-                return (
-                  <div
-                    key={entry.uid}
-                    className={`py-3 px-2.5 sm:px-3 rounded-xl flex items-center justify-between gap-3 transition-colors ${
-                      isSelf ? 'bg-blue-50/70 dark:bg-blue-950/35' : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <MedalBadge rank={rank} />
-                      <UserAvatar
-                        name={entry.nickname}
-                        avatarUrl={entry.avatarUrl}
-                        size="sm"
-                        tone={isSelf ? 'primary' : 'neutral'}
-                      />
-                      <div className="min-w-0">
-                        <span className="text-sm font-bold text-slate-900 dark:text-neutral-100 truncate block">
-                          {entry.nickname}
-                          {isSelf && (
-                            <span className="ml-2 text-xs font-semibold text-blue-700 dark:text-blue-400">
-                              (You)
+        <Card className="space-y-5">
+          {!isLeaderboardJoined ? (
+            <div className="rounded-2xl border border-blue-200/90 dark:border-blue-800/70 bg-blue-50/75 dark:bg-blue-950/35 p-5 sm:p-6 text-center space-y-4">
+              <div className="mx-auto h-12 w-12 rounded-full bg-white/90 dark:bg-white/10 text-blue-700 dark:text-blue-300 flex items-center justify-center shadow-sm">
+                <Lock className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div className="space-y-1.5 max-w-md mx-auto">
+                <p className="text-base font-bold text-slate-950 dark:text-white">
+                  Join Global Leaderboard to View Rankings
+                </p>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  Rankings and active learners are hidden until you join. Your{' '}
+                  <span className="font-bold tabular-nums">{(profile?.xp ?? 0).toLocaleString()} XP</span>{' '}
+                  is currently private—activate your public entry (username, avatar &amp; XP only) to see where you rank.
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  size="sm"
+                  icon={<Trophy className="h-4 w-4" />}
+                  onClick={() => setJoinModalOpen(true)}
+                >
+                  Join Global Leaderboard
+                </Button>
+                <p className="text-[11px] text-slate-500 dark:text-neutral-400">
+                  Opt-in only · Usernames &amp; XP only (RA 10173 compliant)
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="h-12 w-12 rounded-2xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                    <Logo size="sm" showText={false} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-neutral-400">
+                      Opt-in only · Usernames &amp; XP only (RA 10173 compliant)
+                    </p>
+                    <p className="text-lg font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
+                      {sortedLeaderboard.length} active learner{sortedLeaderboard.length === 1 ? '' : 's'} worldwide
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative w-full sm:w-56">
+                  <Search
+                    className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search username..."
+                    aria-label="Search Global Leadership Board by username"
+                    className="w-full h-10 pl-9 pr-3 rounded-full border border-stone-200 dark:border-neutral-700 bg-[#FAF9F6] dark:bg-neutral-900 text-xs text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPeriodMode('weekly')}
+                  className={`min-h-[38px] px-4 rounded-full text-xs font-bold transition-colors cursor-pointer ${
+                    periodMode === 'weekly'
+                      ? 'bg-blue-700 text-white dark:bg-blue-600'
+                      : 'bg-white dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 border border-stone-200 dark:border-neutral-700'
+                  }`}
+                >
+                  Weekly XP ({currentWeekKey})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPeriodMode('alltime')}
+                  className={`min-h-[38px] px-4 rounded-full text-xs font-bold transition-colors cursor-pointer ${
+                    periodMode === 'alltime'
+                      ? 'bg-blue-700 text-white dark:bg-blue-600'
+                      : 'bg-white dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 border border-stone-200 dark:border-neutral-700'
+                  }`}
+                >
+                  All-Time XP
+                </button>
+              </div>
+
+              {filteredLeaderboard.length === 0 ? (
+                <div className="py-10 text-center text-sm text-slate-500 dark:text-neutral-400">
+                  {sortedLeaderboard.length === 0
+                    ? 'No learners have joined the Global Leadership Board yet.'
+                    : 'No learners match that username filter.'}
+                </div>
+              ) : (
+                <div className="divide-y divide-stone-100 dark:divide-neutral-800/80">
+                  {filteredLeaderboard.map((entry) => {
+                    const rank =
+                      sortedLeaderboard.findIndex((item) => item.uid === entry.uid) + 1;
+                    const isSelf = entry.uid === user?.uid;
+                    const displayXp =
+                      periodMode === 'weekly'
+                        ? entry.weekKey === currentWeekKey
+                          ? entry.weeklyXp || 0
+                          : 0
+                        : entry.xp || 0;
+
+                    return (
+                      <div
+                        key={entry.uid}
+                        className={`py-3 px-2.5 sm:px-3 rounded-xl flex items-center justify-between gap-3 transition-colors ${
+                          isSelf ? 'bg-blue-50/70 dark:bg-blue-950/35' : ''
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <MedalBadge rank={rank} />
+                          <UserAvatar
+                            name={entry.nickname}
+                            avatarUrl={entry.avatarUrl}
+                            size="sm"
+                            tone={isSelf ? 'primary' : 'neutral'}
+                          />
+                          <div className="min-w-0">
+                            <span className="text-sm font-bold text-slate-900 dark:text-neutral-100 truncate block">
+                              {entry.nickname}
+                              {isSelf && (
+                                <span className="ml-2 text-xs font-semibold text-blue-700 dark:text-blue-400">
+                                  (You)
+                                </span>
+                              )}
                             </span>
-                          )}
+                          </div>
+                        </div>
+
+                        <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 text-xs font-bold tabular-nums shrink-0">
+                          {displayXp.toLocaleString()} XP
                         </span>
                       </div>
-                    </div>
-
-                    <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 text-xs font-bold tabular-nums shrink-0">
-                      {displayXp.toLocaleString()} XP
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </Card>
       </div>
@@ -528,6 +628,11 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           </div>
         )}
       </Card>
+
+      <JoinLeaderboardModal
+        open={joinModalOpen}
+        onClose={() => setJoinModalOpen(false)}
+      />
     </div>
   );
 };

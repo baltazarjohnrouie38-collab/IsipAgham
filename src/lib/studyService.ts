@@ -432,6 +432,8 @@ export function sortFlashcardsBySM2Priority<T extends { card: FlashcardItem }>(
   );
 }
 
+const REMOVED_LEADERBOARD_ACCOUNTS = new Set(['prodlax6uzhb', 'prode1lxavy3']);
+
 export function subscribeLeaderboard(onData: (entries: LeaderboardEntry[]) => void) {
   const q = collection(db, 'leaderboard');
   return onSnapshot(
@@ -439,6 +441,7 @@ export function subscribeLeaderboard(onData: (entries: LeaderboardEntry[]) => vo
     (snap) => {
       const list = snap.docs
         .map((d) => d.data() as LeaderboardEntry)
+        .filter((entry) => !REMOVED_LEADERBOARD_ACCOUNTS.has((entry.nickname || '').trim().toLowerCase()))
         .sort((a, b) => (b.xp || 0) - (a.xp || 0));
       onData(list.slice(0, 100));
     },

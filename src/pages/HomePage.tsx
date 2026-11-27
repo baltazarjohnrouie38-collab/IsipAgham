@@ -3,12 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   Bell,
+  CheckCircle2,
   ChevronRight,
   Clock,
   Layers,
+  Lock,
   Plus,
   Send,
   Target,
+  Trophy,
 } from 'lucide-react';
 import { useAuth, getLocalDateKey } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -27,6 +30,7 @@ import {
   VisualizerGraphicIcon,
 } from '../components/ui/PhysicsIcons';
 import { UserAvatar } from '../components/ui/UserAvatar';
+import { JoinLeaderboardModal } from '../components/study/JoinLeaderboardModal';
 import heroMascotUrl from '../assets/images/isipagham_blue_logo_1795790996722.jpg';
 
 const RING_ACCENT: Record<string, string> = {
@@ -95,11 +99,15 @@ export const HomePage: React.FC = () => {
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [promptInput, setPromptInput] = useState('');
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !profile?.leaderboardJoined) {
+      setLeaderboard([]);
+      return;
+    }
     return subscribeLeaderboard(setLeaderboard);
-  }, [user]);
+  }, [user, profile?.leaderboardJoined]);
 
   const latestUnread = useMemo(
     () => notifications.find((n) => n.unread) || null,
@@ -453,64 +461,118 @@ export const HomePage: React.FC = () => {
                 Global Leadership Board
               </h2>
             </div>
-            <Link
-              to="/study?tab=progress"
-              className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline shrink-0"
-            >
-              View all
-            </Link>
+            {profile?.leaderboardJoined ? (
+              <Link
+                to="/study?tab=progress"
+                className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline shrink-0"
+              >
+                View all
+              </Link>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-neutral-400 shrink-0">
+                <Lock className="h-3 w-3" aria-hidden="true" />
+                Locked
+              </span>
+            )}
           </div>
 
-          {topThree.length === 0 ? (
-            <p className="text-sm text-slate-500 dark:text-neutral-400 py-4">
-              No XP logged yet. Review cards, complete a lesson, or take a quiz to earn XP!
-            </p>
-          ) : (
-            <div className="divide-y divide-stone-100 dark:divide-neutral-800/80">
-              {topThree.map((entry, idx) => {
-                const isSelf = entry.uid === user?.uid;
-                return (
-                  <div
-                    key={entry.uid}
-                    className="py-2.5 flex items-center justify-between gap-2"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span
-                        className={`h-6 w-6 rounded-full text-[11px] font-bold inline-flex items-center justify-center shrink-0 tabular-nums ${
-                          RANK_MEDAL_COLORS[idx] || RANK_MEDAL_COLORS[2]
-                        }`}
-                      >
-                        {idx + 1}
-                      </span>
-                      <UserAvatar
-                        name={entry.nickname}
-                        avatarUrl={entry.avatarUrl}
-                        size="xs"
-                        tone={isSelf ? 'primary' : 'neutral'}
-                      />
-                      <span className="text-sm font-bold text-slate-900 dark:text-neutral-100 truncate">
-                        {entry.nickname}
-                        {isSelf && (
-                          <span className="ml-1 text-xs font-semibold text-blue-700 dark:text-blue-400">
-                            (You)
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 text-xs font-bold tabular-nums shrink-0">
-                      {entry.xp.toLocaleString()} XP
-                    </span>
-                  </div>
-                );
-              })}
+          {!profile?.leaderboardJoined ? (
+            <div className="rounded-xl border border-blue-200/80 dark:border-blue-800/70 bg-blue-50/70 dark:bg-blue-950/35 p-4 space-y-3 my-auto">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-full bg-white/80 dark:bg-white/10 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
+                  <Lock className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div className="space-y-1 min-w-0">
+                  <p className="text-sm font-bold text-slate-950 dark:text-white">
+                    Join to View Rankings
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Global leaderboard rankings are hidden until you join. Activate your entry to see top learners and share your{' '}
+                    <span className="font-bold tabular-nums">{(profile?.xp ?? 0).toLocaleString()} XP</span>.
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                className="w-full"
+                icon={<Trophy className="h-3.5 w-3.5" />}
+                onClick={() => setJoinModalOpen(true)}
+              >
+                Join Global Leaderboard
+              </Button>
             </div>
+          ) : (
+            <>
+              {topThree.length === 0 ? (
+                <p className="text-sm text-slate-500 dark:text-neutral-400 py-4">
+                  No XP logged yet. Review cards, complete a lesson, or take a quiz to earn XP!
+                </p>
+              ) : (
+                <div className="divide-y divide-stone-100 dark:divide-neutral-800/80">
+                  {topThree.map((entry, idx) => {
+                    const isSelf = entry.uid === user?.uid;
+                    return (
+                      <div
+                        key={entry.uid}
+                        className="py-2.5 flex items-center justify-between gap-2"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span
+                            className={`h-6 w-6 rounded-full text-[11px] font-bold inline-flex items-center justify-center shrink-0 tabular-nums ${
+                              RANK_MEDAL_COLORS[idx] || RANK_MEDAL_COLORS[2]
+                            }`}
+                          >
+                            {idx + 1}
+                          </span>
+                          <UserAvatar
+                            name={entry.nickname}
+                            avatarUrl={entry.avatarUrl}
+                            size="xs"
+                            tone={isSelf ? 'primary' : 'neutral'}
+                          />
+                          <span className="text-sm font-bold text-slate-900 dark:text-neutral-100 truncate">
+                            {entry.nickname}
+                            {isSelf && (
+                              <span className="ml-1 text-xs font-semibold text-blue-700 dark:text-blue-400">
+                                (You)
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 text-xs font-bold tabular-nums shrink-0">
+                          {entry.xp.toLocaleString()} XP
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between gap-2 rounded-xl border border-emerald-200/80 dark:border-emerald-800/50 bg-emerald-50/60 dark:bg-emerald-950/25 px-3 py-2 text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-300">
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  Active on Global Leaderboard
+                </span>
+                <Link
+                  to="/study?tab=progress"
+                  className="font-semibold text-blue-700 dark:text-blue-400 hover:underline shrink-0"
+                >
+                  Rankings
+                </Link>
+              </div>
+            </>
           )}
 
           <p className="text-xs text-slate-500 dark:text-neutral-400">
-            Usernames &amp; XP only · RA 10173 compliant
+            Opt-in only · Usernames &amp; XP only (RA 10173 compliant)
           </p>
         </Card>
       </div>
+
+      <JoinLeaderboardModal
+        open={joinModalOpen}
+        onClose={() => setJoinModalOpen(false)}
+      />
     </div>
   );
 };
