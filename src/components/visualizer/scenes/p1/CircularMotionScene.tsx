@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -23,15 +23,17 @@ const CircularContent: React.FC<{
   const omega = speed / radius;
   const ac = (speed * speed) / radius;
   const fc = mass * ac;
+  const visualR = radius <= 4 ? Math.max(0.75, radius) : Math.min(4.8, 4 + Math.log10(radius / 4) * 0.6);
+  const visualOmega = Math.min(6, Math.max(0.35, omega));
 
   const circlePts = useMemo(() => {
     const pts: [number, number, number][] = [];
     for (let i = 0; i <= 64; i++) {
       const a = (i / 64) * Math.PI * 2;
-      pts.push([Math.cos(a) * radius, 0.4, Math.sin(a) * radius]);
+      pts.push([Math.cos(a) * visualR, 0.4, Math.sin(a) * visualR]);
     }
     return pts;
-  }, [radius]);
+  }, [visualR]);
 
   useFrame((_, delta) => {
     if (lastResetRef.current !== resetSignal) {
@@ -39,7 +41,7 @@ const CircularContent: React.FC<{
       angleRef.current = 0;
     }
     if (playing) {
-      angleRef.current += omega * Math.min(delta, 0.05) * 0.65;
+      angleRef.current += visualOmega * Math.min(delta, 0.05) * 0.65;
     }
     if (rotorRef.current) {
       rotorRef.current.rotation.y = angleRef.current;
@@ -62,13 +64,13 @@ const CircularContent: React.FC<{
 
       <group ref={rotorRef}>
         {/* Tether rod */}
-        <mesh position={[radius / 2, 0.4, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-          <cylinderGeometry args={[0.025, 0.025, radius, 10]} />
+        <mesh position={[visualR / 2, 0.4, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <cylinderGeometry args={[0.025, 0.025, visualR, 10]} />
           <meshStandardMaterial color="#94a3b8" metalness={0.75} roughness={0.25} />
         </mesh>
 
         {/* Orbiting mass */}
-        <group position={[radius, 0.4, 0]}>
+        <group position={[visualR, 0.4, 0]}>
           <mesh castShadow>
             <sphereGeometry args={[0.26, 28, 28]} />
             <meshStandardMaterial color="#1d4ed8" roughness={0.22} metalness={0.55} />
@@ -114,6 +116,17 @@ export const CircularMotionScene: React.FC<SceneComponentProps> = () => {
   const fc = mass * ac;
   const period = (2 * Math.PI * radius) / speed;
 
+  const paramValues = useMemo(
+    () => ({ radius, speed, mass }),
+    [radius, speed, mass]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.radius === 'number' && Number.isFinite(next.radius)) setRadius(next.radius);
+    if (typeof next.speed === 'number' && Number.isFinite(next.speed)) setSpeed(next.speed);
+    if (typeof next.mass === 'number' && Number.isFinite(next.mass)) setMass(next.mass);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -121,6 +134,9 @@ export const CircularMotionScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0, 5.2, 7.2]}
       cameraTarget={[0, 0.4, 0]}
+      sceneId="p1-circular"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -128,6 +144,8 @@ export const CircularMotionScene: React.FC<SceneComponentProps> = () => {
             value={radius}
             min={1}
             max={4}
+            customMin={0.2}
+            customMax={200}
             step={0.25}
             unit="m"
             onChange={setRadius}
@@ -137,6 +155,8 @@ export const CircularMotionScene: React.FC<SceneComponentProps> = () => {
             value={speed}
             min={1}
             max={10}
+            customMin={0.2}
+            customMax={100}
             step={0.5}
             unit="m/s"
             onChange={setSpeed}
@@ -146,6 +166,8 @@ export const CircularMotionScene: React.FC<SceneComponentProps> = () => {
             value={mass}
             min={0.5}
             max={6}
+            customMin={0.05}
+            customMax={5000}
             step={0.5}
             unit="kg"
             onChange={setMass}

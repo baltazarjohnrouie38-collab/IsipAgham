@@ -149,7 +149,11 @@ function formatAuthError(err: unknown): string {
 function clearUserLocalStorage(uid: string): void {
   if (typeof window === 'undefined') return;
   try {
-    const exactKeys = [`isipagham_notif_read_${uid}`, `isipagham_notif_events_${uid}`];
+    const exactKeys = [
+      `isipagham_notif_read_${uid}`,
+      `isipagham_notif_events_${uid}`,
+      `isipagham_visualizer_scenarios_${uid}`,
+    ];
     exactKeys.forEach((k) => window.localStorage.removeItem(k));
     const notifyPrefix = `isipagham_notified_${uid}_`;
     const toRemove: string[] = [];
@@ -704,6 +708,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         'quizAttempts',
         'studySessions',
         'aiMessages',
+        'visualizerScenarios',
       ];
       const snaps = await Promise.all(
         userOwnedCollections.map((colName) =>

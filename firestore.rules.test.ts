@@ -15,4 +15,7 @@ export const dirtyDozenPayloads = [
   { name: 'Cross-user studySet read', path: '/studySets/setB', op: 'get', auth: { uid: 'userA' }, expected: 'PERMISSION_DENIED' },
   { name: 'Forged client timestamp on create', path: '/users/userA', op: 'create', auth: { uid: 'userA' }, data: { uid: 'userA', email: 'a@b.ph', nickname: 'Juan', darkMode: false, xp: 0, createdAt: new Date(0), updatedAt: new Date(0) }, expected: 'PERMISSION_DENIED' },
   { name: 'Invalid document ID injection', path: '/materials/invalid$id!', op: 'create', auth: { uid: 'userA' }, data: { id: 'invalid$id!', userId: 'userA', title: 'Test', course: 'Physics 1', sourceType: 'text', extractedText: 'abc' }, expected: 'PERMISSION_DENIED' },
+  { name: 'Cross-user visualizer scenario read', path: '/visualizerScenarios/scenB', op: 'get', auth: { uid: 'userA' }, expected: 'PERMISSION_DENIED' },
+  { name: 'Visualizer scenario ownership spoofing', path: '/visualizerScenarios/scen1', op: 'create', auth: { uid: 'userA' }, data: { id: 'scen1', userId: 'userB', sceneId: 'p1-projectile', course: 'Physics 1', title: 'Basketball Shot', params: { angle: 50, speed: 12 } }, expected: 'PERMISSION_DENIED' },
 ];
+

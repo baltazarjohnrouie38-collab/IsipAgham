@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -23,8 +23,9 @@ const MagFieldContent: React.FC<{
   const angleRef = useRef(0);
   const lastResetRef = useRef(resetSignal);
 
+  const safeProbeR = Math.max(0.1, probeR);
   const solenoidLen = 0.3; // 30 cm physical length
-  const bWireMicroT = ((MU0 * Math.abs(current)) / (2 * Math.PI * (probeR * 0.05))) * 1e6;
+  const bWireMicroT = ((MU0 * Math.abs(current)) / (2 * Math.PI * (safeProbeR * 0.05))) * 1e6;
   const bSolenoidMilliT = ((MU0 * turns * Math.abs(current)) / solenoidLen) * 1e3;
 
   const wireRings = useMemo(() => {
@@ -58,12 +59,13 @@ const MagFieldContent: React.FC<{
     }
     const dir = current >= 0 ? 1 : -1;
     if (playing) {
-      angleRef.current += dir * Math.min(delta, 0.05) * (0.8 + Math.abs(current) * 0.1);
+      const visualRate = Math.min(3.5, 0.8 + Math.abs(current) * 0.05);
+      angleRef.current += dir * Math.min(delta, 0.05) * visualRate;
     }
 
     if (probeRef.current) {
       if (mode === 'wire') {
-        const r = 0.7 + probeR * 0.65;
+        const r = Math.min(2.6, 0.7 + safeProbeR * 0.65);
         probeRef.current.position.set(
           Math.cos(angleRef.current) * r,
           1.6,
@@ -154,11 +156,28 @@ export const MagneticFieldScene: React.FC<SceneComponentProps> = () => {
   const [turns, setTurns] = useState(40);
   const [probeR, setProbeR] = useState(1.5);
 
-  const bWireMicroT = ((MU0 * Math.abs(current)) / (2 * Math.PI * (probeR * 0.05))) * 1e6;
+  const safeProbeR = Math.max(0.1, probeR);
+  const bWireMicroT = ((MU0 * Math.abs(current)) / (2 * Math.PI * (safeProbeR * 0.05))) * 1e6;
   const bSolenoidMilliT = ((MU0 * turns * Math.abs(current)) / 0.3) * 1e3;
+
+  const paramValues = useMemo(
+    () => ({ mode, current, probeR, turns }),
+    [mode, current, probeR, turns]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (next.mode === 'wire' || next.mode === 'solenoid') setMode(next.mode);
+    if (typeof next.current === 'number' && Number.isFinite(next.current)) setCurrent(next.current);
+    if (typeof next.probeR === 'number' && Number.isFinite(next.probeR)) setProbeR(Math.max(0.1, next.probeR));
+    if (typeof next.turns === 'number' && Number.isFinite(next.turns)) setTurns(next.turns);
+    setResetSignal((n) => n + 1);
+  }, []);
 
   return (
     <SceneStage
+      sceneId="p3-magfield"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       playing={playing}
       onTogglePlay={() => setPlaying((p) => !p)}
       onReset={() => setResetSignal((n) => n + 1)}
@@ -195,6 +214,8 @@ export const MagneticFieldScene: React.FC<SceneComponentProps> = () => {
             value={current}
             min={-15}
             max={15}
+            customMin={-200}
+            customMax={200}
             step={1}
             unit="A"
             onChange={setCurrent}
@@ -205,6 +226,8 @@ export const MagneticFieldScene: React.FC<SceneComponentProps> = () => {
               value={probeR}
               min={0.5}
               max={3.0}
+              customMin={0.1}
+              customMax={20}
               step={0.1}
               unit="×5 cm"
               onChange={setProbeR}
@@ -215,6 +238,8 @@ export const MagneticFieldScene: React.FC<SceneComponentProps> = () => {
               value={turns}
               min={15}
               max={80}
+              customMin={5}
+              customMax={2000}
               step={5}
               unit="turns"
               onChange={setTurns}

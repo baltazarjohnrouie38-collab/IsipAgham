@@ -24,6 +24,7 @@ import type {
   StudyMaterial,
   StudySession,
   StudySet,
+  VisualizerScenario,
 } from '../types';
 
 export function makeDocId(prefix: string): string {
@@ -506,3 +507,102 @@ export async function clearAiMessages(userId: string): Promise<void> {
     handleFirestoreError(error, OperationType.DELETE, 'aiMessages');
   }
 }
+
+function sanitizeScenarioParams(
+  params: Record<string, number | string>
+): Record<string, number | string> {
+  const clean: Record<string, number | string> = {};
+  const entries = Object.entries(params).slice(0, 10);
+  for (const [rawKey, rawVal] of entries) {
+    const key = String(rawKey).replace(/[^a-zA-Z0-9_]/g, '').slice(0, 32);
+    if (!key) continue;
+    if (typeof rawVal === 'number' && Number.isFinite(rawVal)) {
+      clean[key] = Number(rawVal.toFixed(4));
+    } else if (typeof rawVal === 'string') {
+      clean[key] = rawVal.trim().slice(0, 40);
+    }
+  }
+  return clean;
+}
+
+export function subscribeVisualizerScenarios(
+  userId: string,
+  onData: (items: VisualizerScenario[]) => void
+) {
+  const q = query(collection(db, 'visualizerScenarios'), where('userId', '==', userId));
+  return onSnapshot(
+    q,
+    (snap) => {
+      onData(sortByCreatedDesc(snap.docs.map((d) => d.data() as VisualizerScenario)));
+    },
+    (error) => {
+      if (!auth.currentUser) return;
+      handleFirestoreError(error, OperationType.LIST, 'visualizerScenarios');
+    }
+  );
+}
+
+export async function saveVisualizerScenario(params: {
+  userId: string;
+  sceneId: string;
+  course: PhysicsCourse;
+  title: string;
+  notes?: string;
+  params: Record<string, number | string>;
+}): Promise<string> {
+  const id = makeDocId('scen');
+  const cleanSceneId = params.sceneId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || 'p1-projectile';
+  const cleanTitle = params.title.trim().slice(0, 120) || 'My Custom Scenario';
+  const cleanNotes = (params.notes || '').trim().slice(0, 600);
+  const cleanParams = sanitizeScenarioParams(params.params);
+
+  try {
+    await setDoc(doc(db, 'visualizerScenarios', id), {
+      id,
+      userId: params.userId,
+      sceneId: cleanSceneId,
+      course: params.course,
+      title: cleanTitle,
+      ...(cleanNotes ? { notes: cleanNotes } : {}),
+      params: cleanParams,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return id;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.CREATE, `visualizerScenarios/${id}`);
+  }
+}
+
+export async function updateVisualizerScenario(
+  scenarioId: string,
+  updates: {
+    title: string;
+    notes?: string;
+    params: Record<string, number | string>;
+  }
+): Promise<void> {
+  const cleanTitle = updates.title.trim().slice(0, 120) || 'My Custom Scenario';
+  const cleanNotes = (updates.notes || '').trim().slice(0, 600);
+  const cleanParams = sanitizeScenarioParams(updates.params);
+
+  try {
+    await updateDoc(doc(db, 'visualizerScenarios', scenarioId), {
+      title: cleanTitle,
+      notes: cleanNotes,
+      params: cleanParams,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, `visualizerScenarios/${scenarioId}`);
+  }
+}
+
+export async function deleteVisualizerScenario(scenarioId: string): Promise<void> {
+  try {
+    await deleteDoc(doc(db, 'visualizerScenarios', scenarioId));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `visualizerScenarios/${scenarioId}`);
+  }
+}
+

@@ -3,7 +3,7 @@
 ## 1. Data Invariants
 1. A user profile at `/users/{userId}` contains `email` (PII) and can ONLY be read, created, updated, or deleted by `request.auth.uid == userId`. No blanket `list` is allowed on `/users`.
 2. A `/leaderboard/{userId}` document exposes ONLY `uid`, `nickname`, `xp`, and `updatedAt` (no email or PII), can be listed/read by signed-in users, and can only be written by `request.auth.uid == userId`.
-3. Every `/materials/{materialId}`, `/studySets/{setId}`, `/quizAttempts/{attemptId}`, `/studySessions/{sessionId}`, and `/aiMessages/{messageId}` document must have `userId == request.auth.uid` on create and read/list/delete, and `userId` is immutable on update.
+3. Every `/materials/{materialId}`, `/studySets/{setId}`, `/quizAttempts/{attemptId}`, `/studySessions/{sessionId}`, `/aiMessages/{messageId}`, and `/visualizerScenarios/{scenarioId}` document must have `userId == request.auth.uid` on create and read/list/delete, and `userId` is immutable on update.
 4. On `create`, `createdAt == request.time` (and `updatedAt == request.time` where present). On `update`, `createdAt == existing().createdAt` and `updatedAt == request.time`.
 5. Every string has explicit `.size()` bounds; every array has explicit `.size()` bounds; every document ID matches `^[a-zA-Z0-9_\-]+$`.
 6. Updates use strict `incoming().diff(existing()).affectedKeys().hasOnly([...])` to block shadow fields and privilege/XP spoofing beyond validated integer bounds (`0 <= xp <= 1000000`).

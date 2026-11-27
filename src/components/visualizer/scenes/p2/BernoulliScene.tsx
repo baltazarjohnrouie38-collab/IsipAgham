@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
@@ -24,16 +24,17 @@ const BernoulliContent: React.FC<{
   );
   const lastResetRef = useRef(resetSignal);
 
-  const areaRatio = (r1 * r1) / (r2 * r2);
+  const areaRatio = (r1 * r1) / Math.max(1e-6, r2 * r2);
   const v2 = v1 * areaRatio;
   const p1Kpa = 120; // reference inlet pressure 120 kPa
   const deltaP = 0.5 * density * (v2 * v2 - v1 * v1);
   const p2Kpa = Math.max(5, p1Kpa - deltaP / 1000);
 
-  const visualR1 = 0.45 + r1 * 0.9;
-  const visualR2 = 0.28 + r2 * 0.85;
+  const visualR1 = 0.92;
+  const visualR2 = THREE.MathUtils.clamp(visualR1 * (r2 / Math.max(0.005, r1)), 0.26, 0.86);
   const col1H = Math.max(0.4, Math.min(2.4, (p1Kpa / 140) * 1.9));
   const col2H = Math.max(0.25, Math.min(2.4, (p2Kpa / 140) * 1.9));
+  const speedScale = v2 > 10 ? (10 / v2) * 0.45 : 0.45;
 
   const initialOffsets = useMemo(
     () => Array.from({ length: PARTICLE_COUNT }, (_, i) => -4.2 + (i / PARTICLE_COUNT) * 8.4),
@@ -52,7 +53,7 @@ const BernoulliContent: React.FC<{
       const inThroat = Math.abs(x) < 1.35;
       const localV = inThroat ? v2 : v1;
       if (playing) {
-        x += localV * dt * 0.45;
+        x += Math.max(0.4, localV * speedScale) * dt;
         if (x > 4.2) x = -4.2;
         offsetsRef.current[i] = x;
       }
@@ -145,10 +146,23 @@ export const BernoulliScene: React.FC<SceneComponentProps> = () => {
   const [r2, setR2] = useState(0.28);
   const [density, setDensity] = useState(1000);
 
-  const effectiveR2 = Math.min(r2, r1 - 0.05);
+  const effectiveR2 = Math.max(0.002, Math.min(r2, r1 * 0.92));
   const v2 = v1 * ((r1 * r1) / (effectiveR2 * effectiveR2));
   const p1Kpa = 120;
   const p2Kpa = Math.max(5, p1Kpa - (0.5 * density * (v2 * v2 - v1 * v1)) / 1000);
+
+  const paramValues = useMemo(
+    () => ({ v1, r1, r2: effectiveR2, density }),
+    [v1, r1, effectiveR2, density]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.v1 === 'number' && Number.isFinite(next.v1)) setV1(next.v1);
+    if (typeof next.r1 === 'number' && Number.isFinite(next.r1)) setR1(Math.max(0.01, next.r1));
+    if (typeof next.r2 === 'number' && Number.isFinite(next.r2)) setR2(Math.max(0.002, next.r2));
+    if (typeof next.density === 'number' && Number.isFinite(next.density)) setDensity(next.density);
+    setResetSignal((n) => n + 1);
+  }, []);
 
   return (
     <SceneStage
@@ -157,6 +171,9 @@ export const BernoulliScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0, 3.0, 8.6]}
       cameraTarget={[0, 1.6, 0]}
+      sceneId="p2-bernoulli"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -164,7 +181,9 @@ export const BernoulliScene: React.FC<SceneComponentProps> = () => {
             value={v1}
             min={0.5}
             max={4.0}
-            step={0.25}
+            customMin={0.1}
+            customMax={30}
+            step={0.1}
             unit="m/s"
             onChange={setV1}
           />
@@ -173,7 +192,9 @@ export const BernoulliScene: React.FC<SceneComponentProps> = () => {
             value={r1}
             min={0.35}
             max={0.7}
-            step={0.05}
+            customMin={0.01}
+            customMax={3.0}
+            step={0.01}
             unit="m"
             onChange={setR1}
           />
@@ -182,7 +203,9 @@ export const BernoulliScene: React.FC<SceneComponentProps> = () => {
             value={effectiveR2}
             min={0.15}
             max={0.45}
-            step={0.02}
+            customMin={0.005}
+            customMax={2.5}
+            step={0.01}
             unit="m"
             onChange={setR2}
           />
@@ -191,7 +214,9 @@ export const BernoulliScene: React.FC<SceneComponentProps> = () => {
             value={density}
             min={700}
             max={1300}
-            step={50}
+            customMin={1}
+            customMax={13600}
+            step={25}
             unit="kg/m³"
             onChange={setDensity}
           />

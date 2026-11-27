@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
@@ -26,6 +26,7 @@ const TorqueContent: React.FC<{
   const torque = leverR * force * Math.sin(thetaRad);
   const inertia = 0.5 * diskMass * DISK_RADIUS * DISK_RADIUS;
   const alpha = torque / inertia;
+  const visualLeverR = Math.min(DISK_RADIUS, Math.max(0.35, leverR));
 
   // Applied force vector direction in XY plane relative to lever arm along +X
   const fx = Math.cos(thetaRad);
@@ -66,13 +67,13 @@ const TorqueContent: React.FC<{
         </mesh>
 
         {/* Visual spoke & lever bar */}
-        <mesh position={[leverR / 2, 0, 0.2]} castShadow>
-          <boxGeometry args={[leverR, 0.14, 0.14]} />
+        <mesh position={[visualLeverR / 2, 0, 0.2]} castShadow>
+          <boxGeometry args={[visualLeverR, 0.14, 0.14]} />
           <meshStandardMaterial color="#f59e0b" metalness={0.75} roughness={0.25} />
         </mesh>
 
         {/* Force application point */}
-        <group position={[leverR, 0, 0.2]}>
+        <group position={[visualLeverR, 0, 0.2]}>
           <mesh>
             <sphereGeometry args={[0.14, 16, 16]} />
             <meshStandardMaterial color="#ef4444" roughness={0.3} />
@@ -80,7 +81,7 @@ const TorqueContent: React.FC<{
           <Arrow3D
             origin={[0, 0, 0]}
             direction={[fx, fy, 0]}
-            length={0.7 + force * 0.025}
+            length={Math.min(1.9, 0.55 + Math.log10(1 + force) * 0.55)}
             color="#ef4444"
           />
           <PhysicsPin
@@ -108,6 +109,19 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
   const inertia = 0.5 * diskMass * DISK_RADIUS * DISK_RADIUS;
   const alpha = torque / inertia;
 
+  const paramValues = useMemo(
+    () => ({ leverR, force, angle, diskMass }),
+    [leverR, force, angle, diskMass]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.leverR === 'number' && Number.isFinite(next.leverR)) setLeverR(next.leverR);
+    if (typeof next.force === 'number' && Number.isFinite(next.force)) setForce(next.force);
+    if (typeof next.angle === 'number' && Number.isFinite(next.angle)) setAngle(next.angle);
+    if (typeof next.diskMass === 'number' && Number.isFinite(next.diskMass)) setDiskMass(next.diskMass);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -115,6 +129,9 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0, 2.8, 7.6]}
       cameraTarget={[0, 2.2, 0]}
+      sceneId="p1-torque"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -122,7 +139,9 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
             value={leverR}
             min={0.4}
             max={2.0}
-            step={0.1}
+            customMin={0.05}
+            customMax={10}
+            step={0.05}
             unit="m"
             onChange={setLeverR}
           />
@@ -131,6 +150,8 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
             value={force}
             min={5}
             max={50}
+            customMin={1}
+            customMax={2000}
             step={1}
             unit="N"
             onChange={setForce}
@@ -140,6 +161,8 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
             value={angle}
             min={15}
             max={165}
+            customMin={5}
+            customMax={175}
             step={5}
             unit="°"
             onChange={setAngle}
@@ -149,7 +172,9 @@ export const TorqueScene: React.FC<SceneComponentProps> = () => {
             value={diskMass}
             min={1}
             max={10}
-            step={1}
+            customMin={0.2}
+            customMax={500}
+            step={0.5}
             unit="kg"
             onChange={setDiskMass}
           />

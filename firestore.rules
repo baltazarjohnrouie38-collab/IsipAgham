@@ -165,6 +165,20 @@ service cloud.firestore {
         && data.createdAt is timestamp;
     }
 
+    function isValidVisualizerScenario(data) {
+      return data.keys().hasAll(['id', 'userId', 'sceneId', 'course', 'title', 'params', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['id', 'userId', 'sceneId', 'course', 'title', 'notes', 'params', 'createdAt', 'updatedAt'])
+        && isValidId(data.id)
+        && data.userId is string && data.userId == request.auth.uid && isValidId(data.userId)
+        && data.sceneId is string && data.sceneId.size() >= 1 && data.sceneId.size() <= 40 && data.sceneId.matches('^[a-zA-Z0-9_\\-]+$')
+        && isValidCourse(data.course)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 120
+        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 600))
+        && data.params is map && data.params.size() <= 10
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
     // --- Collection Rules ---
 
     // Private User Profile (PII isolated to owner only; no list allowed)
@@ -292,6 +306,30 @@ service cloud.firestore {
         && incoming().createdAt == request.time;
       allow update: if false;
       allow delete: if isValidId(messageId) && isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // Custom 3D Visualizer Scenarios
+    match /visualizerScenarios/{scenarioId} {
+      allow get: if isValidId(scenarioId) && isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isValidId(scenarioId)
+        && isSignedIn()
+        && isValidVisualizerScenario(incoming())
+        && incoming().id == scenarioId
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(scenarioId)
+        && isSignedIn()
+        && existing().userId == request.auth.uid
+        && isValidVisualizerScenario(incoming())
+        && incoming().id == existing().id
+        && incoming().userId == existing().userId
+        && incoming().sceneId == existing().sceneId
+        && incoming().course == existing().course
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'notes', 'params', 'updatedAt']);
+      allow delete: if isValidId(scenarioId) && isSignedIn() && existing().userId == request.auth.uid;
     }
   }
 }

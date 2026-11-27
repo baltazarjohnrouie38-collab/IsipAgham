@@ -134,6 +134,23 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "userId", "role", "content", "createdAt"]
+    },
+    "VisualizerScenario": {
+      "title": "VisualizerScenario",
+      "description": "User-created custom real-world physics scenario saved for any 3D Visualizer simulation.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "sceneId": { "type": "string", "minLength": 1, "maxLength": 40, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "course": { "type": "string", "enum": ["Physics 1", "Physics 2", "Physics 3"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "notes": { "type": "string", "maxLength": 600 },
+        "params": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "sceneId", "course", "title", "params", "createdAt", "updatedAt"]
     }
   },
   "firestore": {
@@ -164,6 +181,10 @@
     "/aiMessages/{messageId}": {
       "schema": { "$ref": "#/entities/AiMessage" },
       "description": "AI Physics assistant chat messages per user."
+    },
+    "/visualizerScenarios/{scenarioId}": {
+      "schema": { "$ref": "#/entities/VisualizerScenario" },
+      "description": "User-saved custom real-world physics scenarios for the 3D Visualizer."
     }
   }
 }

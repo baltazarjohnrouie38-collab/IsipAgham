@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -41,8 +41,9 @@ const InductionContent: React.FC<{
       lastResetRef.current = resetSignal;
       phaseRef.current = 0;
     }
+    const visualSpeed = Math.min(3.0, Math.max(0.1, speed));
     if (playing) {
-      phaseRef.current += Math.min(delta, 0.05) * speed * 1.3;
+      phaseRef.current += Math.min(delta, 0.05) * visualSpeed * 1.3;
     }
 
     // Magnet oscillates along X into and out of coil centered at x = 0
@@ -126,8 +127,23 @@ export const InductionScene: React.FC<SceneComponentProps> = () => {
   const maxFluxMwb = fieldB * 0.04 * 1000;
   const peakEmfApprox = turns * fieldB * 0.04 * speed * 2.2;
 
+  const paramValues = useMemo(
+    () => ({ speed, turns, fieldB }),
+    [speed, turns, fieldB]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.speed === 'number' && Number.isFinite(next.speed)) setSpeed(next.speed);
+    if (typeof next.turns === 'number' && Number.isFinite(next.turns)) setTurns(next.turns);
+    if (typeof next.fieldB === 'number' && Number.isFinite(next.fieldB)) setFieldB(next.fieldB);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
+      sceneId="p3-induction"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       playing={playing}
       onTogglePlay={() => setPlaying((p) => !p)}
       onReset={() => setResetSignal((n) => n + 1)}
@@ -140,6 +156,8 @@ export const InductionScene: React.FC<SceneComponentProps> = () => {
             value={speed}
             min={0.4}
             max={2.5}
+            customMin={0.1}
+            customMax={10}
             step={0.1}
             unit="×"
             onChange={setSpeed}
@@ -149,6 +167,8 @@ export const InductionScene: React.FC<SceneComponentProps> = () => {
             value={turns}
             min={10}
             max={60}
+            customMin={1}
+            customMax={1000}
             step={5}
             unit="turns"
             onChange={setTurns}
@@ -158,7 +178,9 @@ export const InductionScene: React.FC<SceneComponentProps> = () => {
             value={fieldB}
             min={0.2}
             max={1.5}
-            step={0.1}
+            customMin={0.05}
+            customMax={15}
+            step={0.05}
             unit="T"
             onChange={setFieldB}
           />

@@ -29,6 +29,7 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { MathInline } from '../ui/MathText';
 import { setPinDisplay } from './PhysicsPin';
+import { SceneScenarioStudio } from './SceneScenarioStudio';
 
 export type CameraPreset = 'iso' | 'front' | 'top';
 
@@ -289,6 +290,8 @@ export interface SliderControlProps {
   value: number;
   min: number;
   max: number;
+  customMin?: number;
+  customMax?: number;
   step?: number;
   unit?: string;
   onChange: (val: number) => void;
@@ -299,24 +302,85 @@ export const SliderControl: React.FC<SliderControlProps> = ({
   value,
   min,
   max,
+  customMin,
+  customMax,
   step = 1,
   unit = '',
   onChange,
 }) => {
   const id = React.useId();
+  const numId = React.useId();
+  const effectiveMin = customMin ?? min;
+  const effectiveMax = customMax ?? max;
+  const formatVal = (v: number) => {
+    if (!Number.isFinite(v)) return '0';
+    if (Number.isInteger(step) && Number.isInteger(v)) return String(v);
+    return Number(v.toFixed(4)).toString();
+  };
+
+  const [inputText, setInputText] = useState<string>(() => formatVal(value));
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!focused) {
+      setInputText(formatVal(value));
+    }
+  }, [value, focused]);
+
+  const sliderVal = Math.min(max, Math.max(min, value));
+  const isCustomOutside = value < min - 1e-6 || value > max + 1e-6;
+
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between gap-2">
         <label
           htmlFor={id}
-          className="text-xs font-semibold text-slate-700 dark:text-neutral-200"
+          className="text-xs font-semibold text-slate-700 dark:text-neutral-200 min-w-0"
         >
           <MathInline text={label} />
         </label>
-        <span className="text-xs font-bold text-blue-700 dark:text-blue-400 tabular-nums shrink-0">
-          {Number.isInteger(step) ? value : value.toFixed(2)}{' '}
-          {unit && <MathInline text={unit} />}
-        </span>
+        <div className="flex items-center gap-1 shrink-0">
+          {isCustomOutside && (
+            <span className="rounded bg-blue-100 dark:bg-blue-950/60 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-300">
+              Custom
+            </span>
+          )}
+          <input
+            id={numId}
+            type="number"
+            aria-label={`${label} exact value`}
+            min={effectiveMin}
+            max={effectiveMax}
+            step={step}
+            value={inputText}
+            onFocus={() => setFocused(true)}
+            onBlur={() => {
+              setFocused(false);
+              const parsed = parseFloat(inputText);
+              if (Number.isFinite(parsed)) {
+                const clamped = Math.min(effectiveMax, Math.max(effectiveMin, parsed));
+                onChange(clamped);
+                setInputText(formatVal(clamped));
+              } else {
+                setInputText(formatVal(value));
+              }
+            }}
+            onChange={(e) => {
+              const raw = e.target.value;
+              setInputText(raw);
+              const parsed = parseFloat(raw);
+              if (Number.isFinite(parsed) && parsed >= effectiveMin && parsed <= effectiveMax) {
+                onChange(parsed);
+              }
+            }}
+            className="w-20 min-h-[28px] rounded-lg border border-stone-200 dark:border-neutral-700 bg-[#FAF9F6] dark:bg-neutral-950 px-1.5 py-0.5 text-right text-xs font-bold text-blue-700 dark:text-blue-400 tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-600"
+          />
+          {unit && (
+            <span className="text-[11px] font-semibold text-slate-600 dark:text-neutral-300 shrink-0">
+              <MathInline text={unit} />
+            </span>
+          )}
+        </div>
       </div>
       <input
         id={id}
@@ -324,7 +388,7 @@ export const SliderControl: React.FC<SliderControlProps> = ({
         min={min}
         max={max}
         step={step}
-        value={value}
+        value={sliderVal}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="w-full h-2 rounded-lg appearance-none bg-stone-200 dark:bg-neutral-700 accent-blue-700 cursor-pointer"
       />
@@ -347,6 +411,9 @@ interface SceneStageProps {
   cameraPosition?: [number, number, number];
   cameraTarget?: [number, number, number];
   showGrid?: boolean;
+  sceneId?: string;
+  paramValues?: Record<string, number | string>;
+  onApplyParams?: (next: Record<string, number | string>) => void;
   controls: React.ReactNode;
   readout?: React.ReactNode;
   children: React.ReactNode;
@@ -359,6 +426,9 @@ export const SceneStage: React.FC<SceneStageProps> = ({
   cameraPosition = [6, 4.5, 9],
   cameraTarget = [0, 1, 0],
   showGrid = true,
+  sceneId,
+  paramValues,
+  onApplyParams,
   controls,
   readout,
   children,
@@ -665,6 +735,14 @@ export const SceneStage: React.FC<SceneStageProps> = ({
           </Card>
         )}
       </div>
+
+      {sceneId && paramValues && onApplyParams && (
+        <SceneScenarioStudio
+          sceneId={sceneId}
+          paramValues={paramValues}
+          onApplyParams={onApplyParams}
+        />
+      )}
     </div>
   );
 };

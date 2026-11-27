@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Box, CheckCircle2, Layers } from 'lucide-react';
+import { Box, CheckCircle2, Compass, Layers, Play, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import type { PhysicsCourse } from '../types';
 import {
@@ -9,8 +9,14 @@ import {
   type SceneComponentProps,
   type VisualizerSceneMeta,
 } from '../components/visualizer/scenesCatalog';
+import { detectAndParseRealScenario } from '../components/visualizer/scenariosCatalog';
+import {
+  useVisualizerScenarios,
+  VisualizerScenarioProvider,
+} from '../components/visualizer/VisualizerScenarioContext';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
 import { Skeleton } from '../components/ui/Skeleton';
 import { MathInline } from '../components/ui/MathText';
 
@@ -28,7 +34,119 @@ function getLazySceneComponent(scene: VisualizerSceneMeta) {
   return cached;
 }
 
-export const VisualizerPage: React.FC = () => {
+const SAMPLE_PROMPTS = [
+  {
+    label: 'Car Crash (1200 kg vs 1800 kg)',
+    text: 'A 1200 kg car at 14 m/s hits a stopped 1800 kg SUV and sticks (inelastic)',
+  },
+  {
+    label: '220V Home Kettle & Toaster',
+    text: '220V parallel circuit with a 32 ohm kettle and 48 ohm toaster',
+  },
+  {
+    label: 'Steel Bridge Heating',
+    text: '120 m steel bridge heating up by 45 °C in summer',
+  },
+  {
+    label: 'Basketball 3-Point Arc',
+    text: 'Basketball shot launched at 52° with 8.5 m/s speed',
+  },
+];
+
+const RealScenarioQuickBar: React.FC<{
+  onLaunchScene: (scene: VisualizerSceneMeta) => void;
+}> = ({ onLaunchScene }) => {
+  const ctx = useVisualizerScenarios();
+  const [scenarioInput, setScenarioInput] = useState('');
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const runScenarioText = (rawText: string, customLabel?: string) => {
+    const result = detectAndParseRealScenario(rawText);
+    if (!result) {
+      setNotice('Type a real-world situation with numbers or units to simulate it in 3D.');
+      return;
+    }
+    const targetScene = VISUALIZER_SCENES.find((s) => s.id === result.sceneId);
+    if (!targetScene) return;
+    ctx?.queueScenarioApply(
+      targetScene.id,
+      result.params,
+      customLabel || rawText.trim().slice(0, 48)
+    );
+    onLaunchScene(targetScene);
+    setNotice(
+      `Loaded "${targetScene.title}" with ${
+        result.matchedCount > 0 ? `${result.matchedCount} detected values` : 'matching defaults'
+      }. Fine-tune values below anytime!`
+    );
+  };
+
+  return (
+    <Card className="space-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Compass className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" aria-hidden="true" />
+          <h2 className="font-display text-sm sm:text-base font-bold text-slate-900 dark:text-neutral-100">
+            Simulate Your Own Real-World Scenario
+          </h2>
+        </div>
+        <span className="text-[11px] font-medium text-slate-500 dark:text-neutral-400">
+          Paste a problem or measurements — or click "+ Add My Data / Scenario" inside any scene
+        </span>
+      </div>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          runScenarioText(scenarioInput);
+        }}
+        className="flex flex-col sm:flex-row gap-2"
+      >
+        <input
+          type="text"
+          value={scenarioInput}
+          onChange={(e) => setScenarioInput(e.target.value)}
+          placeholder="e.g., 1200 kg car at 50 km/h hits a stopped 800 kg van, or 15 m coconut drop..."
+          className="flex-1 min-w-0 min-h-[44px] rounded-xl border border-stone-200 dark:border-neutral-700 bg-[#FAF9F6] dark:bg-neutral-950 px-3.5 text-sm text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+        />
+        <Button
+          type="submit"
+          variant="primary"
+          size="md"
+          icon={<Play className="h-4 w-4" aria-hidden="true" />}
+        >
+          Simulate in 3D
+        </Button>
+      </form>
+
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-neutral-400 mr-1">
+          <Sparkles className="h-3 w-3 text-amber-500" aria-hidden="true" />
+          Try:
+        </span>
+        {SAMPLE_PROMPTS.map((item) => (
+          <button
+            key={item.label}
+            type="button"
+            onClick={() => {
+              setScenarioInput(item.text);
+              runScenarioText(item.text, item.label);
+            }}
+            className="min-h-[30px] px-2.5 rounded-lg border border-stone-200 dark:border-neutral-700 bg-[#FAF9F6] dark:bg-neutral-950 text-[11px] font-semibold text-slate-700 dark:text-neutral-200 hover:border-blue-500 cursor-pointer"
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
+      {notice && (
+        <p className="text-xs font-medium text-blue-700 dark:text-blue-400">{notice}</p>
+      )}
+    </Card>
+  );
+};
+
+const VisualizerPageContent: React.FC = () => {
   const { profile, markCourseVisited } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -102,13 +220,15 @@ export const VisualizerPage: React.FC = () => {
     <div className="space-y-6">
       <PageHeader
         title="3D Physics Visualizer"
-        subtitle="Interactive simulations covering Physics 1, Physics 2, and Physics 3 with live sliders"
+        subtitle="Interactive simulations covering Physics 1, Physics 2, and Physics 3 with custom real-world data"
         action={
           <div className="text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-400 tabular-nums">
             Courses explored: {visitedCourses.length} / 3
           </div>
         }
       />
+
+      <RealScenarioQuickBar onLaunchScene={handleSelectScene} />
 
       {/* Course Selector */}
       <div className="grid grid-cols-3 gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-full liquid-glass">
@@ -233,5 +353,11 @@ export const VisualizerPage: React.FC = () => {
     </div>
   );
 };
+
+export const VisualizerPage: React.FC = () => (
+  <VisualizerScenarioProvider>
+    <VisualizerPageContent />
+  </VisualizerScenarioProvider>
+);
 
 export default VisualizerPage;

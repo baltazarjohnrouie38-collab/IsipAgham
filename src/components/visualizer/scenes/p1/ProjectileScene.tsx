@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -24,8 +24,11 @@ const ProjectileContent: React.FC<{
   const maxRange = vx * totalFlight;
   const maxH = (vy0 * vy0) / (2 * gravity);
 
-  // Scale world coordinates so the full arc fits comfortably in ~9.5 units width
-  const scale = useMemo(() => Math.min(0.45, 9 / Math.max(10, maxRange)), [maxRange]);
+  // Scale world coordinates so the full arc fits comfortably in width (~9u) and height (~4.2u)
+  const scale = useMemo(
+    () => Math.min(0.45, 9 / Math.max(10, maxRange), 4.2 / Math.max(4, maxH)),
+    [maxRange, maxH]
+  );
 
   const ballGroupRef = useRef<THREE.Group>(null);
   const velArrowRef = useRef<THREE.Group>(null);
@@ -262,6 +265,18 @@ export const ProjectileScene: React.FC<SceneComponentProps> = () => {
     setResetSignal((n) => n + 1);
   };
 
+  const paramValues = useMemo(
+    () => ({ angle, speed, gravity }),
+    [angle, speed, gravity]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.angle === 'number' && Number.isFinite(next.angle)) setAngle(next.angle);
+    if (typeof next.speed === 'number' && Number.isFinite(next.speed)) setSpeed(next.speed);
+    if (typeof next.gravity === 'number' && Number.isFinite(next.gravity)) setGravity(next.gravity);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -269,6 +284,9 @@ export const ProjectileScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0, 3.8, 10.5]}
       cameraTarget={[0, 1.4, 0]}
+      sceneId="p1-projectile"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <div className="sm:col-span-2 flex flex-wrap items-center gap-2">
@@ -302,6 +320,8 @@ export const ProjectileScene: React.FC<SceneComponentProps> = () => {
             value={angle}
             min={15}
             max={80}
+            customMin={5}
+            customMax={88}
             step={1}
             unit="°"
             onChange={(v) => {
@@ -314,7 +334,9 @@ export const ProjectileScene: React.FC<SceneComponentProps> = () => {
             value={speed}
             min={5}
             max={25}
-            step={1}
+            customMin={1}
+            customMax={150}
+            step={0.5}
             unit="m/s"
             onChange={(v) => {
               setSpeed(v);
@@ -326,7 +348,9 @@ export const ProjectileScene: React.FC<SceneComponentProps> = () => {
             value={gravity}
             min={1.6}
             max={20}
-            step={0.1}
+            customMin={0.5}
+            customMax={30}
+            step={0.05}
             unit="m/s²"
             onChange={(v) => {
               setGravity(v);

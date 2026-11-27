@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
@@ -19,13 +19,14 @@ const BuoyancyContent: React.FC<{
   const blockGroupRef = useRef<THREE.Group>(null);
   const pinRef = useRef<HTMLDivElement>(null);
 
+  const safeFluidDensity = Math.max(1, fluidDensity);
   const waterSurfaceY = 2.4;
   const tankBottomY = 0.25;
-  const cubeSide = 0.8 + Math.min(0.45, volume * 0.2);
+  const cubeSide = 0.78 + Math.min(0.45, Math.log10(1 + volume) * 0.6);
 
   // Target center Y: if floats, submerged fraction = objDensity / fluidDensity
-  const floats = objDensity <= fluidDensity;
-  const subFrac = Math.min(1, objDensity / fluidDensity);
+  const floats = objDensity <= safeFluidDensity;
+  const subFrac = Math.min(1, objDensity / safeFluidDensity);
   const targetY = floats
     ? waterSurfaceY + cubeSide / 2 - subFrac * cubeSide
     : tankBottomY + cubeSide / 2;
@@ -130,10 +131,29 @@ export const BuoyancyScene: React.FC<SceneComponentProps> = () => {
   const [fluidDensity, setFluidDensity] = useState(1000);
   const [volume, setVolume] = useState(0.5);
 
+  const safeFluidDensity = Math.max(1, fluidDensity);
   const weight = objDensity * volume * G;
-  const maxBuoyant = fluidDensity * volume * G;
-  const floats = objDensity <= fluidDensity;
-  const subPct = Math.min(100, (objDensity / fluidDensity) * 100);
+  const maxBuoyant = safeFluidDensity * volume * G;
+  const floats = objDensity <= safeFluidDensity;
+  const subPct = Math.min(100, (objDensity / safeFluidDensity) * 100);
+
+  const paramValues = useMemo(
+    () => ({ objDensity, fluidDensity, volume }),
+    [objDensity, fluidDensity, volume]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.objDensity === 'number' && Number.isFinite(next.objDensity)) {
+      setObjDensity(next.objDensity);
+    }
+    if (typeof next.fluidDensity === 'number' && Number.isFinite(next.fluidDensity)) {
+      setFluidDensity(Math.max(1, next.fluidDensity));
+    }
+    if (typeof next.volume === 'number' && Number.isFinite(next.volume)) {
+      setVolume(next.volume);
+    }
+    setResetSignal((n) => n + 1);
+  }, []);
 
   return (
     <SceneStage
@@ -142,6 +162,9 @@ export const BuoyancyScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[4.2, 3.6, 6.4]}
       cameraTarget={[0, 1.6, 0]}
+      sceneId="p2-buoyancy"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -149,7 +172,9 @@ export const BuoyancyScene: React.FC<SceneComponentProps> = () => {
             value={objDensity}
             min={200}
             max={2200}
-            step={50}
+            customMin={10}
+            customMax={22000}
+            step={25}
             unit="kg/m³"
             onChange={setObjDensity}
           />
@@ -158,6 +183,8 @@ export const BuoyancyScene: React.FC<SceneComponentProps> = () => {
             value={fluidDensity}
             min={700}
             max={1500}
+            customMin={100}
+            customMax={13600}
             step={25}
             unit="kg/m³"
             onChange={setFluidDensity}
@@ -167,7 +194,9 @@ export const BuoyancyScene: React.FC<SceneComponentProps> = () => {
             value={volume}
             min={0.1}
             max={2.0}
-            step={0.1}
+            customMin={0.001}
+            customMax={500}
+            step={0.05}
             unit="m³"
             onChange={setVolume}
           />

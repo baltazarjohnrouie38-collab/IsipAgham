@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -62,8 +62,11 @@ const OrbitContent: React.FC<{
   const fg = (G_CONST * planetMass * satMass) / (rMeters * rMeters);
   const periodMin = (2 * Math.PI * rMeters) / vOrbit / 60;
 
-  const visualOrbitR = 1.45 + (radiusRe - 1.2) * 1.05;
-  const visualSpeed = (vOrbit / 7900) * 0.9;
+  const visualOrbitR =
+    radiusRe <= 3.5
+      ? Math.max(1.32, 1.45 + (radiusRe - 1.2) * 1.05)
+      : Math.min(4.9, 3.86 + Math.log2(radiusRe / 3.5) * 0.65);
+  const visualSpeed = Math.min(2.2, Math.max(0.18, (vOrbit / 7900) * 0.9));
 
   const orbitPts = useMemo(() => {
     const pts: [number, number, number][] = [];
@@ -215,6 +218,24 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
   const fg = (G_CONST * planetMass * satMass) / (rMeters * rMeters);
   const periodMin = (2 * Math.PI * rMeters) / vOrbit / 60;
 
+  const paramValues = useMemo(
+    () => ({ radiusRe, planetMassMult, satMass }),
+    [radiusRe, planetMassMult, satMass]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.radiusRe === 'number' && Number.isFinite(next.radiusRe)) {
+      setRadiusRe(next.radiusRe);
+    }
+    if (typeof next.planetMassMult === 'number' && Number.isFinite(next.planetMassMult)) {
+      setPlanetMassMult(next.planetMassMult);
+    }
+    if (typeof next.satMass === 'number' && Number.isFinite(next.satMass)) {
+      setSatMass(next.satMass);
+    }
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -223,6 +244,9 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
       showGrid={false}
       cameraPosition={[0, 5.4, 7.8]}
       cameraTarget={[0, 1.5, 0]}
+      sceneId="p2-orbit"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <div className="sm:col-span-2 flex flex-wrap items-center gap-2">
@@ -253,7 +277,9 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
             value={radiusRe}
             min={1.2}
             max={3.5}
-            step={0.1}
+            customMin={1.03}
+            customMax={10}
+            step={0.05}
             unit="$R_E$"
             onChange={setRadiusRe}
           />
@@ -262,7 +288,9 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
             value={planetMassMult}
             min={0.5}
             max={3.0}
-            step={0.1}
+            customMin={0.01}
+            customMax={50}
+            step={0.05}
             unit="$M_E$"
             onChange={setPlanetMassMult}
           />
@@ -271,7 +299,9 @@ export const OrbitScene: React.FC<SceneComponentProps> = () => {
             value={satMass}
             min={100}
             max={2000}
-            step={50}
+            customMin={1}
+            customMax={500000}
+            step={10}
             unit="kg"
             onChange={setSatMass}
           />

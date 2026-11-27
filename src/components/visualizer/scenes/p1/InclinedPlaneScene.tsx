@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
@@ -158,6 +158,18 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
   const friction = mu * normal;
   const accel = Math.max(0, (fParallel - friction) / mass);
 
+  const paramValues = useMemo(
+    () => ({ angle, mu, mass }),
+    [angle, mu, mass]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.angle === 'number' && Number.isFinite(next.angle)) setAngle(next.angle);
+    if (typeof next.mu === 'number' && Number.isFinite(next.mu)) setMu(next.mu);
+    if (typeof next.mass === 'number' && Number.isFinite(next.mass)) setMass(next.mass);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -165,6 +177,9 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[1.5, 4.2, 8.5]}
       cameraTarget={[0, 1.3, 0]}
+      sceneId="p1-incline"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -172,6 +187,8 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
             value={angle}
             min={10}
             max={50}
+            customMin={2}
+            customMax={75}
             step={1}
             unit="°"
             onChange={(v) => {
@@ -184,7 +201,9 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
             value={mu}
             min={0}
             max={0.8}
-            step={0.05}
+            customMin={0}
+            customMax={1.5}
+            step={0.01}
             unit=""
             onChange={(v) => {
               setMu(v);
@@ -196,7 +215,9 @@ export const InclinedPlaneScene: React.FC<SceneComponentProps> = () => {
             value={mass}
             min={1}
             max={20}
-            step={1}
+            customMin={0.1}
+            customMax={5000}
+            step={0.5}
             unit="kg"
             onChange={setMass}
           />

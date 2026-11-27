@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -87,12 +87,14 @@ const CircuitsContent: React.FC<{
   const progressBranchRef = useRef(0);
   const lastResetRef = useRef(resetSignal);
 
-  const req = mode === 'series' ? r1 + r2 : (r1 * r2) / (r1 + r2);
+  const safeR1 = Math.max(0.5, r1);
+  const safeR2 = Math.max(0.5, r2);
+  const req = mode === 'series' ? safeR1 + safeR2 : (safeR1 * safeR2) / (safeR1 + safeR2);
   const iTotal = voltage / req;
-  const i1 = mode === 'series' ? iTotal : voltage / r1;
-  const i2 = mode === 'series' ? iTotal : voltage / r2;
-  const p1 = i1 * i1 * r1;
-  const p2 = i2 * i2 * r2;
+  const i1 = mode === 'series' ? iTotal : voltage / safeR1;
+  const i2 = mode === 'series' ? iTotal : voltage / safeR2;
+  const p1 = i1 * i1 * safeR1;
+  const p2 = i2 * i2 * safeR2;
 
   const loopPts = useMemo<[number, number, number][]>(
     () => [
@@ -122,8 +124,10 @@ const CircuitsContent: React.FC<{
     const dt = Math.min(delta, 0.05);
     if (playing) {
       const mainCurrent = mode === 'series' ? iTotal : i2;
-      progressOuterRef.current = (progressOuterRef.current + dt * (0.14 + mainCurrent * 0.065)) % 1;
-      progressBranchRef.current = (progressBranchRef.current + dt * (0.18 + i1 * 0.08)) % 1;
+      const outerRate = Math.min(0.65, 0.14 + mainCurrent * 0.065);
+      const branchRate = Math.min(0.65, 0.18 + i1 * 0.08);
+      progressOuterRef.current = (progressOuterRef.current + dt * outerRate) % 1;
+      progressBranchRef.current = (progressBranchRef.current + dt * branchRate) % 1;
     }
 
     for (let i = 0; i < OUTER_BEADS; i++) {
@@ -261,12 +265,30 @@ export const CircuitsScene: React.FC<SceneComponentProps> = () => {
   const [r1, setR1] = useState(6);
   const [r2, setR2] = useState(12);
 
-  const req = mode === 'series' ? r1 + r2 : (r1 * r2) / (r1 + r2);
+  const safeR1 = Math.max(0.5, r1);
+  const safeR2 = Math.max(0.5, r2);
+  const req = mode === 'series' ? safeR1 + safeR2 : (safeR1 * safeR2) / (safeR1 + safeR2);
   const iTotal = voltage / req;
   const totalPower = voltage * iTotal;
 
+  const paramValues = useMemo(
+    () => ({ mode, voltage, r1, r2 }),
+    [mode, voltage, r1, r2]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (next.mode === 'series' || next.mode === 'parallel') setMode(next.mode);
+    if (typeof next.voltage === 'number' && Number.isFinite(next.voltage)) setVoltage(next.voltage);
+    if (typeof next.r1 === 'number' && Number.isFinite(next.r1)) setR1(Math.max(0.5, next.r1));
+    if (typeof next.r2 === 'number' && Number.isFinite(next.r2)) setR2(Math.max(0.5, next.r2));
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
+      sceneId="p3-circuits"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       playing={playing}
       onTogglePlay={() => setPlaying((p) => !p)}
       onReset={() => setResetSignal((n) => n + 1)}
@@ -298,6 +320,8 @@ export const CircuitsScene: React.FC<SceneComponentProps> = () => {
             value={voltage}
             min={3}
             max={24}
+            customMin={1}
+            customMax={250}
             step={1}
             unit="V"
             onChange={setVoltage}
@@ -307,7 +331,9 @@ export const CircuitsScene: React.FC<SceneComponentProps> = () => {
             value={r1}
             min={2}
             max={24}
-            step={1}
+            customMin={0.5}
+            customMax={1000}
+            step={0.5}
             unit="Ω"
             onChange={setR1}
           />
@@ -316,7 +342,9 @@ export const CircuitsScene: React.FC<SceneComponentProps> = () => {
             value={r2}
             min={2}
             max={24}
-            step={1}
+            customMin={0.5}
+            customMax={1000}
+            step={0.5}
             unit="Ω"
             onChange={setR2}
           />

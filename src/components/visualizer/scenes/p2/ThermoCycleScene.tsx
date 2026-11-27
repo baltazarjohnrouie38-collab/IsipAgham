@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -336,7 +336,7 @@ export const ThermoCycleScene: React.FC<SceneComponentProps> = () => {
   const [tCold, setTCold] = useState(300);
   const [moles, setMoles] = useState(1.5);
 
-  const safeTCold = Math.min(tCold, tHot - 80);
+  const safeTCold = Math.min(tCold, Math.max(40, tHot - 20));
   const effMax = Math.max(0, 1 - safeTCold / tHot) * 100;
   const pHighKpa = ((moles * R_GAS * tHot) / 1.0 / 1000) * 0.65;
   const pLowKpa = (moles * R_GAS * safeTCold) / 2.2 / 1000;
@@ -345,6 +345,18 @@ export const ThermoCycleScene: React.FC<SceneComponentProps> = () => {
     (moles * 1.5 * R_GAS * Math.max(1, tHot - safeTCold)) / 1000 + pHighKpa * (2.2 - 1.0);
   const actualEfficiencyPct = qInKj > 0 ? Math.min(effMax, (wNetKj / qInKj) * 100) : 0;
 
+  const paramValues = useMemo(
+    () => ({ tHot, tCold: safeTCold, moles }),
+    [tHot, safeTCold, moles]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.tHot === 'number' && Number.isFinite(next.tHot)) setTHot(next.tHot);
+    if (typeof next.tCold === 'number' && Number.isFinite(next.tCold)) setTCold(next.tCold);
+    if (typeof next.moles === 'number' && Number.isFinite(next.moles)) setMoles(next.moles);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -352,6 +364,9 @@ export const ThermoCycleScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0.4, 2.7, 7.8]}
       cameraTarget={[0.5, 1.6, 0]}
+      sceneId="p2-thermo"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -359,7 +374,9 @@ export const ThermoCycleScene: React.FC<SceneComponentProps> = () => {
             value={tHot}
             min={420}
             max={900}
-            step={20}
+            customMin={250}
+            customMax={3000}
+            step={10}
             unit="K"
             onChange={setTHot}
           />
@@ -368,6 +385,8 @@ export const ThermoCycleScene: React.FC<SceneComponentProps> = () => {
             value={safeTCold}
             min={200}
             max={400}
+            customMin={50}
+            customMax={1200}
             step={10}
             unit="K"
             onChange={setTCold}
@@ -377,7 +396,9 @@ export const ThermoCycleScene: React.FC<SceneComponentProps> = () => {
             value={moles}
             min={0.5}
             max={3.0}
-            step={0.25}
+            customMin={0.1}
+            customMax={50}
+            step={0.1}
             unit="mol"
             onChange={setMoles}
           />

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -27,16 +27,17 @@ const PendulumContent: React.FC<{
   const theta0 = (maxAngleDeg * Math.PI) / 180;
   const period = 2 * Math.PI * Math.sqrt(length / gravity);
   const pivotY = 4.35;
+  const visualLen = Math.min(3.4, Math.max(0.65, length));
 
   const sweepPts = useMemo(() => {
     const pts: [number, number, number][] = [];
     const steps = 40;
     for (let i = 0; i <= steps; i++) {
       const a = -theta0 + (i / steps) * (2 * theta0);
-      pts.push([Math.sin(a) * length, pivotY - Math.cos(a) * length, 0]);
+      pts.push([Math.sin(a) * visualLen, pivotY - Math.cos(a) * visualLen, 0]);
     }
     return pts;
-  }, [theta0, length]);
+  }, [theta0, visualLen]);
 
   const protractorPts = useMemo(() => {
     const pts: [number, number, number][] = [];
@@ -160,11 +161,11 @@ const PendulumContent: React.FC<{
 
       {/* Swinging Arm & Composite Bob */}
       <group ref={pivotRef} position={[0, pivotY, 0]}>
-        <mesh position={[0, -length / 2, 0]} castShadow>
-          <cylinderGeometry args={[0.024, 0.024, length, 10]} />
+        <mesh position={[0, -visualLen / 2, 0]} castShadow>
+          <cylinderGeometry args={[0.024, 0.024, visualLen, 10]} />
           <meshStandardMaterial color="#cbd5e1" metalness={0.75} roughness={0.25} />
         </mesh>
-        <group position={[0, -length, 0]}>
+        <group position={[0, -visualLen, 0]}>
           {/* Brass suspension eyelet */}
           <mesh position={[0, 0.28, 0]}>
             <cylinderGeometry args={[0.06, 0.09, 0.12, 14]} />
@@ -209,6 +210,18 @@ export const PendulumScene: React.FC<SceneComponentProps> = () => {
   const frequency = 1 / period;
   const omega = Math.sqrt(gravity / length);
 
+  const paramValues = useMemo(
+    () => ({ length, angle, gravity }),
+    [length, angle, gravity]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.length === 'number' && Number.isFinite(next.length)) setLength(next.length);
+    if (typeof next.angle === 'number' && Number.isFinite(next.angle)) setAngle(next.angle);
+    if (typeof next.gravity === 'number' && Number.isFinite(next.gravity)) setGravity(next.gravity);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -216,6 +229,9 @@ export const PendulumScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0.4, 2.5, 7.8]}
       cameraTarget={[0.4, 2.1, 0]}
+      sceneId="p1-pendulum"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -223,7 +239,9 @@ export const PendulumScene: React.FC<SceneComponentProps> = () => {
             value={length}
             min={0.8}
             max={3.4}
-            step={0.1}
+            customMin={0.1}
+            customMax={50}
+            step={0.05}
             unit="m"
             onChange={setLength}
           />
@@ -232,6 +250,8 @@ export const PendulumScene: React.FC<SceneComponentProps> = () => {
             value={angle}
             min={5}
             max={45}
+            customMin={1}
+            customMax={60}
             step={1}
             unit="°"
             onChange={(v) => {
@@ -244,7 +264,9 @@ export const PendulumScene: React.FC<SceneComponentProps> = () => {
             value={gravity}
             min={1.6}
             max={20}
-            step={0.1}
+            customMin={0.5}
+            customMax={30}
+            step={0.05}
             unit="m/s²"
             onChange={setGravity}
           />

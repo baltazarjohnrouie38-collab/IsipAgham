@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -24,6 +24,7 @@ const MotorGenContent: React.FC<{
   const lastResetRef = useRef(resetSignal);
 
   const omega = mode === 'motor' ? 1.2 + currentOrSpeed * 0.25 : currentOrSpeed;
+  const visualOmega = Math.min(6.5, Math.max(0.2, omega));
 
   const coilLoop = useMemo<[number, number, number][]>(
     () => [
@@ -42,7 +43,7 @@ const MotorGenContent: React.FC<{
       thetaRef.current = 0.4;
     }
     if (playing) {
-      thetaRef.current += omega * Math.min(delta, 0.05);
+      thetaRef.current += visualOmega * Math.min(delta, 0.05);
     }
 
     if (rotorRef.current) {
@@ -117,8 +118,24 @@ export const MotorGeneratorScene: React.FC<SceneComponentProps> = () => {
       ? turns * param * LOOP_AREA * fieldB
       : turns * fieldB * LOOP_AREA * param;
 
+  const paramValues = useMemo(
+    () => ({ mode, fieldB, param, turns }),
+    [mode, fieldB, param, turns]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (next.mode === 'motor' || next.mode === 'generator') setMode(next.mode);
+    if (typeof next.fieldB === 'number' && Number.isFinite(next.fieldB)) setFieldB(next.fieldB);
+    if (typeof next.param === 'number' && Number.isFinite(next.param)) setParam(next.param);
+    if (typeof next.turns === 'number' && Number.isFinite(next.turns)) setTurns(next.turns);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
+      sceneId="p3-motorgen"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       playing={playing}
       onTogglePlay={() => setPlaying((p) => !p)}
       onReset={() => setResetSignal((n) => n + 1)}
@@ -155,7 +172,9 @@ export const MotorGeneratorScene: React.FC<SceneComponentProps> = () => {
             value={fieldB}
             min={0.2}
             max={1.5}
-            step={0.1}
+            customMin={0.05}
+            customMax={10}
+            step={0.05}
             unit="T"
             onChange={setFieldB}
           />
@@ -164,6 +183,8 @@ export const MotorGeneratorScene: React.FC<SceneComponentProps> = () => {
             value={param}
             min={1}
             max={10}
+            customMin={0.2}
+            customMax={120}
             step={0.5}
             unit={mode === 'motor' ? 'A' : 'rad/s'}
             onChange={setParam}
@@ -173,6 +194,8 @@ export const MotorGeneratorScene: React.FC<SceneComponentProps> = () => {
             value={turns}
             min={5}
             max={40}
+            customMin={1}
+            customMax={500}
             step={5}
             unit="turns"
             onChange={setTurns}

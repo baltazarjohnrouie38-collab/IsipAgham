@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
@@ -31,8 +31,10 @@ const CollisionsContent: React.FC<{
   });
   const lastResetRef = useRef(resetSignal);
 
-  const size1 = 0.55 + Math.min(0.45, m1 * 0.045);
-  const size2 = 0.55 + Math.min(0.45, m2 * 0.045);
+  const size1 = 0.55 + Math.min(0.48, Math.log10(1 + m1) * 0.22);
+  const size2 = 0.55 + Math.min(0.48, Math.log10(1 + m2) * 0.22);
+  const maxV = Math.max(1, Math.abs(v1Init), Math.abs(v2Init));
+  const timeScale = maxV > 8 ? 8 / maxV : 1;
 
   const resetCarts = () => {
     stateRef.current = {
@@ -53,7 +55,8 @@ const CollisionsContent: React.FC<{
 
     const st = stateRef.current;
     if (playing) {
-      const dt = Math.min(delta, 0.04) * 0.55;
+      const rawDt = Math.min(delta, 0.04);
+      const dt = rawDt * 0.55 * timeScale;
       st.x1 += st.v1 * dt;
       st.x2 += st.v2 * dt;
 
@@ -77,7 +80,7 @@ const CollisionsContent: React.FC<{
       }
 
       if (Math.abs(st.x1) > 4.8 || Math.abs(st.x2) > 4.8) {
-        st.pauseAfter += dt;
+        st.pauseAfter += rawDt;
         if (st.pauseAfter > 0.6) {
           resetCarts();
         }
@@ -117,7 +120,7 @@ const CollisionsContent: React.FC<{
         <Arrow3D
           origin={[0, size1 / 2 + 0.15, 0]}
           direction={[v1Init >= 0 ? 1 : -1, 0, 0]}
-          length={Math.max(0.4, Math.abs(v1Init) * 0.25)}
+          length={Math.min(1.8, Math.max(0.35, Math.abs(v1Init) * timeScale * 0.25))}
           color="#3b82f6"
         />
         <PhysicsPin
@@ -137,7 +140,7 @@ const CollisionsContent: React.FC<{
         <Arrow3D
           origin={[0, size2 / 2 + 0.15, 0]}
           direction={[v2Init >= 0 ? 1 : -1, 0, 0]}
-          length={Math.max(0.4, Math.abs(v2Init) * 0.25)}
+          length={Math.min(1.8, Math.max(0.35, Math.abs(v2Init) * timeScale * 0.25))}
           color="#fb923c"
         />
         <PhysicsPin
@@ -169,6 +172,28 @@ export const CollisionsScene: React.FC<SceneComponentProps> = () => {
     ? ((m2 - m1) * v2 + 2 * m1 * v1) / (m1 + m2)
     : totalP / (m1 + m2);
 
+  const paramValues = useMemo(
+    () => ({
+      collisionType: elastic ? 'elastic' : 'inelastic',
+      m1,
+      m2,
+      v1,
+      v2,
+    }),
+    [elastic, m1, m2, v1, v2]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.collisionType === 'string') {
+      setElastic(next.collisionType !== 'inelastic');
+    }
+    if (typeof next.m1 === 'number' && Number.isFinite(next.m1)) setM1(next.m1);
+    if (typeof next.m2 === 'number' && Number.isFinite(next.m2)) setM2(next.m2);
+    if (typeof next.v1 === 'number' && Number.isFinite(next.v1)) setV1(next.v1);
+    if (typeof next.v2 === 'number' && Number.isFinite(next.v2)) setV2(next.v2);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -176,6 +201,9 @@ export const CollisionsScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0, 3.2, 8.8]}
       cameraTarget={[0, 0.8, 0]}
+      sceneId="p1-collisions"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <div className="sm:col-span-2 flex flex-wrap items-center gap-2">
@@ -216,7 +244,9 @@ export const CollisionsScene: React.FC<SceneComponentProps> = () => {
             value={m1}
             min={1}
             max={10}
-            step={1}
+            customMin={0.1}
+            customMax={20000}
+            step={0.5}
             unit="kg"
             onChange={(v) => {
               setM1(v);
@@ -228,7 +258,9 @@ export const CollisionsScene: React.FC<SceneComponentProps> = () => {
             value={m2}
             min={1}
             max={10}
-            step={1}
+            customMin={0.1}
+            customMax={20000}
+            step={0.5}
             unit="kg"
             onChange={(v) => {
               setM2(v);
@@ -240,6 +272,8 @@ export const CollisionsScene: React.FC<SceneComponentProps> = () => {
             value={v1}
             min={1}
             max={7}
+            customMin={-50}
+            customMax={80}
             step={0.5}
             unit="m/s"
             onChange={(v) => {
@@ -252,6 +286,8 @@ export const CollisionsScene: React.FC<SceneComponentProps> = () => {
             value={v2}
             min={-7}
             max={0}
+            customMin={-80}
+            customMax={50}
             step={0.5}
             unit="m/s"
             onChange={(v) => {

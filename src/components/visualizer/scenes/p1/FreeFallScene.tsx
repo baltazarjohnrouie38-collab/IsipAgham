@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
@@ -105,6 +105,18 @@ export const FreeFallScene: React.FC<SceneComponentProps> = () => {
   const tImpact = Math.sqrt((2 * height) / gravity);
   const vImpact = gravity * tImpact;
 
+  const paramValues = useMemo(
+    () => ({ height, gravity, mass }),
+    [height, gravity, mass]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.height === 'number' && Number.isFinite(next.height)) setHeight(next.height);
+    if (typeof next.gravity === 'number' && Number.isFinite(next.gravity)) setGravity(next.gravity);
+    if (typeof next.mass === 'number' && Number.isFinite(next.mass)) setMass(next.mass);
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -112,6 +124,9 @@ export const FreeFallScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[2.4, 3.2, 7.5]}
       cameraTarget={[0, 2.2, 0]}
+      sceneId="p1-freefall"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -119,7 +134,9 @@ export const FreeFallScene: React.FC<SceneComponentProps> = () => {
             value={height}
             min={4}
             max={25}
-            step={1}
+            customMin={0.5}
+            customMax={500}
+            step={0.5}
             unit="m"
             onChange={(v) => {
               setHeight(v);
@@ -131,7 +148,9 @@ export const FreeFallScene: React.FC<SceneComponentProps> = () => {
             value={gravity}
             min={1.6}
             max={24.8}
-            step={0.1}
+            customMin={0.5}
+            customMax={30}
+            step={0.05}
             unit="m/s²"
             onChange={(v) => {
               setGravity(v);
@@ -143,7 +162,9 @@ export const FreeFallScene: React.FC<SceneComponentProps> = () => {
             value={mass}
             min={0.5}
             max={10}
-            step={0.5}
+            customMin={0.05}
+            customMax={2000}
+            step={0.25}
             unit="kg"
             onChange={setMass}
           />

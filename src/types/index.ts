@@ -183,3 +183,16 @@ export interface BuiltInLesson {
   checkQuestions: LessonCheckQuestion[];
   suggestedSceneId?: string;
 }
+
+export interface VisualizerScenario {
+  id: string;
+  userId: string;
+  sceneId: string;
+  course: PhysicsCourse;
+  title: string;
+  notes?: string;
+  params: Record<string, number | string>;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+

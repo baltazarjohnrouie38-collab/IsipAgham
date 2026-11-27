@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
@@ -22,7 +22,7 @@ const ThermalContent: React.FC<{
   const alpha = alphaMicro * 1e-6;
   const kThermal = alphaMicro <= 12 ? 50 : alphaMicro <= 18 ? 385 : 205; // Steel, Copper, Aluminum approx W/m·K
   const area = 0.002; // 20 cm² cross-section
-  const baseVisualLen = 3.2 + (l0 - 1) * 0.45;
+  const baseVisualLen = Math.min(4.6, 2.6 + Math.min(l0, 10) * 0.2);
   const leftX = -2.4;
 
   useFrame((_, delta) => {
@@ -40,8 +40,8 @@ const ThermalContent: React.FC<{
     const deltaLMm = alpha * l0 * currentDT * 1000;
     const heatRate = (kThermal * area * currentDT) / l0;
 
-    // Exaggerate visual expansion so Grade 12 students clearly see ΔL
-    const visualExtra = Math.min(1.4, (deltaLMm / 25) * 0.85);
+    // Exaggerate visual expansion cleanly across both small lab rods & long steel bridges
+    const visualExtra = Math.min(1.4, Math.log10(1 + Math.abs(deltaLMm)) * 0.55);
     const totalVisualLen = baseVisualLen + visualExtra;
 
     if (rodRef.current) {
@@ -117,6 +117,20 @@ export const ThermalExpansionScene: React.FC<SceneComponentProps> = () => {
   const kThermal = alphaMicro <= 12 ? 50 : alphaMicro <= 18 ? 385 : 205;
   const heatRate = (kThermal * 0.002 * deltaT) / l0;
 
+  const paramValues = useMemo(
+    () => ({ deltaT, l0, alphaMicro }),
+    [deltaT, l0, alphaMicro]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.deltaT === 'number' && Number.isFinite(next.deltaT)) setDeltaT(next.deltaT);
+    if (typeof next.l0 === 'number' && Number.isFinite(next.l0)) setL0(Math.max(0.1, next.l0));
+    if (typeof next.alphaMicro === 'number' && Number.isFinite(next.alphaMicro)) {
+      setAlphaMicro(next.alphaMicro);
+    }
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -124,6 +138,9 @@ export const ThermalExpansionScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0.4, 2.8, 7.6]}
       cameraTarget={[0.2, 1.3, 0]}
+      sceneId="p2-thermal"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -131,7 +148,9 @@ export const ThermalExpansionScene: React.FC<SceneComponentProps> = () => {
             value={deltaT}
             min={0}
             max={400}
-            step={10}
+            customMin={0}
+            customMax={1500}
+            step={5}
             unit="°C"
             onChange={(v) => {
               setDeltaT(v);
@@ -143,6 +162,8 @@ export const ThermalExpansionScene: React.FC<SceneComponentProps> = () => {
             value={l0}
             min={1}
             max={5}
+            customMin={0.1}
+            customMax={1000}
             step={0.5}
             unit="m"
             onChange={setL0}
@@ -152,7 +173,9 @@ export const ThermalExpansionScene: React.FC<SceneComponentProps> = () => {
             value={alphaMicro}
             min={11}
             max={24}
-            step={1}
+            customMin={1}
+            customMax={100}
+            step={0.5}
             unit="K⁻¹"
             onChange={setAlphaMicro}
           />

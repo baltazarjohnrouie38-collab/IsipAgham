@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SceneStage, SliderControl } from '../../SceneStage';
@@ -20,10 +20,12 @@ const HydraulicContent: React.FC<{
   const phaseRef = useRef(0);
   const lastResetRef = useRef(resetSignal);
 
-  const pressurePa = f1 / a1;
-  const f2 = f1 * (a2 / a1);
-  const r1 = Math.sqrt(a1 / Math.PI) * 1.6;
-  const r2 = Math.sqrt(a2 / Math.PI) * 1.05;
+  const safeA1 = Math.max(0.0001, a1);
+  const safeA2 = Math.max(0.0001, a2);
+  const pressurePa = f1 / safeA1;
+  const f2 = f1 * (safeA2 / safeA1);
+  const r1 = THREE.MathUtils.clamp(Math.sqrt(safeA1 / Math.PI) * 1.6, 0.22, 0.95);
+  const r2 = THREE.MathUtils.clamp(Math.sqrt(safeA2 / Math.PI) * 1.05, 0.35, 1.35);
 
   useFrame((_, delta) => {
     if (lastResetRef.current !== resetSignal) {
@@ -35,7 +37,7 @@ const HydraulicContent: React.FC<{
     }
 
     const d1 = 0.35 * Math.sin(phaseRef.current);
-    const d2 = d1 * (a1 / a2);
+    const d2 = THREE.MathUtils.clamp(d1 * (safeA1 / safeA2), -0.45, 0.45);
 
     if (leftPistonRef.current) {
       leftPistonRef.current.position.y = 2.0 - d1;
@@ -113,6 +115,18 @@ export const HydraulicScene: React.FC<SceneComponentProps> = () => {
   const f2 = f1 * (a2 / a1);
   const gain = a2 / a1;
 
+  const paramValues = useMemo(
+    () => ({ f1, a1, a2 }),
+    [f1, a1, a2]
+  );
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.f1 === 'number' && Number.isFinite(next.f1)) setF1(next.f1);
+    if (typeof next.a1 === 'number' && Number.isFinite(next.a1)) setA1(Math.max(0.0005, next.a1));
+    if (typeof next.a2 === 'number' && Number.isFinite(next.a2)) setA2(Math.max(0.01, next.a2));
+    setResetSignal((n) => n + 1);
+  }, []);
+
   return (
     <SceneStage
       playing={playing}
@@ -120,6 +134,9 @@ export const HydraulicScene: React.FC<SceneComponentProps> = () => {
       onReset={() => setResetSignal((n) => n + 1)}
       cameraPosition={[0, 3.2, 8.2]}
       cameraTarget={[0, 1.5, 0]}
+      sceneId="p2-hydraulics"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       controls={
         <>
           <SliderControl
@@ -127,7 +144,9 @@ export const HydraulicScene: React.FC<SceneComponentProps> = () => {
             value={f1}
             min={20}
             max={400}
-            step={10}
+            customMin={1}
+            customMax={5000}
+            step={5}
             unit="N"
             onChange={setF1}
           />
@@ -136,7 +155,9 @@ export const HydraulicScene: React.FC<SceneComponentProps> = () => {
             value={a1}
             min={0.02}
             max={0.15}
-            step={0.01}
+            customMin={0.0005}
+            customMax={1.0}
+            step={0.005}
             unit="m²"
             onChange={setA1}
           />
@@ -145,7 +166,9 @@ export const HydraulicScene: React.FC<SceneComponentProps> = () => {
             value={a2}
             min={0.2}
             max={1.0}
-            step={0.05}
+            customMin={0.01}
+            customMax={5.0}
+            step={0.02}
             unit="m²"
             onChange={setA2}
           />

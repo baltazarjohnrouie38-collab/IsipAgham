@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -23,12 +23,13 @@ const CoulombContent: React.FC<{
   const tRef = useRef(0);
   const lastResetRef = useRef(resetSignal);
 
+  const safeDist = Math.max(0.05, dist);
   const q1 = q1Micro * 1e-6;
   const q2 = q2Micro * 1e-6;
-  const forceN = (K_COULOMB * Math.abs(q1 * q2)) / (dist * dist);
+  const forceN = (K_COULOMB * Math.abs(q1 * q2)) / (safeDist * safeDist);
   const attractive = q1Micro * q2Micro < 0;
 
-  const halfSep = 0.6 + dist * 0.75;
+  const halfSep = 0.6 + Math.min(2.6, safeDist * 0.75);
   const x1 = -halfSep;
   const x2 = halfSep;
 
@@ -101,7 +102,7 @@ const CoulombContent: React.FC<{
     }
 
     // Approximate E-field at test probe (treating visual separation linearly mapped to r)
-    const scaleM = dist / (x2 - x1);
+    const scaleM = safeDist / (x2 - x1);
     const rx1 = (px - x1) * scaleM;
     const ry1 = (py - 1.5) * scaleM;
     const r1 = Math.max(0.25, Math.hypot(rx1, ry1));
@@ -193,11 +194,24 @@ export const CoulombScene: React.FC<SceneComponentProps> = () => {
   const [q2, setQ2] = useState(-3);
   const [dist, setDist] = useState(1.2);
 
-  const forceN = (K_COULOMB * Math.abs(q1 * 1e-6 * (q2 * 1e-6))) / (dist * dist);
-  const eAtQ2 = (K_COULOMB * Math.abs(q1 * 1e-6)) / (dist * dist);
+  const safeDist = Math.max(0.05, dist);
+  const forceN = (K_COULOMB * Math.abs(q1 * 1e-6 * (q2 * 1e-6))) / (safeDist * safeDist);
+  const eAtQ2 = (K_COULOMB * Math.abs(q1 * 1e-6)) / (safeDist * safeDist);
+
+  const paramValues = useMemo(() => ({ q1, q2, dist }), [q1, q2, dist]);
+
+  const handleApplyParams = useCallback((next: Record<string, number | string>) => {
+    if (typeof next.q1 === 'number' && Number.isFinite(next.q1)) setQ1(next.q1);
+    if (typeof next.q2 === 'number' && Number.isFinite(next.q2)) setQ2(next.q2);
+    if (typeof next.dist === 'number' && Number.isFinite(next.dist)) setDist(Math.max(0.05, next.dist));
+    setResetSignal((n) => n + 1);
+  }, []);
 
   return (
     <SceneStage
+      sceneId="p3-coulomb"
+      paramValues={paramValues}
+      onApplyParams={handleApplyParams}
       playing={playing}
       onTogglePlay={() => setPlaying((p) => !p)}
       onReset={() => setResetSignal((n) => n + 1)}
@@ -210,7 +224,9 @@ export const CoulombScene: React.FC<SceneComponentProps> = () => {
             value={q1}
             min={-6}
             max={6}
-            step={1}
+            customMin={-500}
+            customMax={500}
+            step={0.5}
             unit="μC"
             onChange={setQ1}
           />
@@ -219,7 +235,9 @@ export const CoulombScene: React.FC<SceneComponentProps> = () => {
             value={q2}
             min={-6}
             max={6}
-            step={1}
+            customMin={-500}
+            customMax={500}
+            step={0.5}
             unit="μC"
             onChange={setQ2}
           />
@@ -228,7 +246,9 @@ export const CoulombScene: React.FC<SceneComponentProps> = () => {
             value={dist}
             min={0.5}
             max={3.0}
-            step={0.1}
+            customMin={0.05}
+            customMax={20}
+            step={0.05}
             unit="m"
             onChange={setDist}
           />
