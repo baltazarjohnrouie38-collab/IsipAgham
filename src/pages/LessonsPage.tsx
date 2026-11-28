@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Circle,
   Search,
+  Sigma,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { ALL_LESSONS, COURSES_META, getLessonsByCourse } from '../data/lessons';
@@ -49,8 +50,15 @@ export const LessonsPage: React.FC = () => {
         title="Built-in Physics Lessons"
         subtitle={`${ALL_LESSONS.length} step-by-step Grade 12 Academic Track lessons across Physics 1, Physics 2, and Physics 3`}
         action={
-          <div className="text-sm font-bold text-blue-700 dark:text-blue-400 tabular-nums">
-            {totalCompleted} / {ALL_LESSONS.length} completed ({totalPct}%)
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="text-sm font-bold text-blue-700 dark:text-blue-400 tabular-nums">
+              {totalCompleted} / {ALL_LESSONS.length} completed ({totalPct}%)
+            </div>
+            <Link to="/formulas">
+              <Button variant="outline" size="sm" icon={<Sigma className="h-4 w-4" />}>
+                Quick Formulas
+              </Button>
+            </Link>
           </div>
         }
       />

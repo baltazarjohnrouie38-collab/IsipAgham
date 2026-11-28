@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
+  BookOpen,
   Check,
   Eye,
   EyeOff,
@@ -12,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { triggerIosIsland } from '../lib/iosEffects';
 import {
   evaluatePasswordStrength,
@@ -58,6 +61,8 @@ export const AuthPage: React.FC = () => {
     clearAccountDeletedNotice,
   } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
+  const isOnline = useOnlineStatus();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'signup' | 'login'>('login');
   const [showCredentialsForm, setShowCredentialsForm] = useState(false);
 
@@ -188,7 +193,7 @@ export const AuthPage: React.FC = () => {
         aria-hidden="true"
       />
 
-      <OfflineBanner />
+      <OfflineBanner onBrowseOffline={() => navigate('/lessons')} />
 
       <div className="relative z-10 flex items-center justify-end gap-2 px-4 sm:px-8 pt-[max(1rem,env(safe-area-inset-top))] w-full max-w-6xl mx-auto">
         <PWAInstallButton compact />
@@ -325,6 +330,17 @@ export const AuthPage: React.FC = () => {
                     : 'Sign up with Email & Username'}
                 </span>
               </button>
+
+              {!isOnline && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/lessons')}
+                  className="liquid-btn-outline w-full min-h-[48px] px-5 rounded-full text-sm font-semibold flex items-center justify-center gap-2.5 transition-all duration-200 active:scale-[0.97] cursor-pointer"
+                >
+                  <BookOpen className="h-4 w-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                  <span>Review Cached Physics Lessons Offline</span>
+                </button>
+              )}
             </div>
           ) : (
             <div key={`form-${mode}`} className="animate-enter space-y-4">

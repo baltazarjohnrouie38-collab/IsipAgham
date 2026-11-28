@@ -403,3 +403,41 @@ export const TrophyGraphicIcon: React.FC<GraphicIconProps> = ({ className = 'h-5
     </svg>
   );
 };
+
+export const FormulasGraphicIcon: React.FC<GraphicIconProps> = ({ className = 'h-6 w-6' }) => {
+  const uid = useId();
+  return (
+    <svg viewBox="0 0 32 32" fill="none" className={className} aria-hidden="true">
+      <defs>
+        <linearGradient id={`${uid}-plate`} x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#38BDF8" />
+          <stop offset="55%" stopColor="#2563EB" />
+          <stop offset="100%" stopColor="#1E3A8A" />
+        </linearGradient>
+        <linearGradient id={`${uid}-sigma`} x1="10" y1="9" x2="22" y2="23" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FEF08A" />
+          <stop offset="100%" stopColor="#F59E0B" />
+        </linearGradient>
+      </defs>
+      <rect x="4.5" y="4.5" width="23" height="23" rx="6" fill={`url(#${uid}-plate)`} />
+      <rect
+        x="6.2"
+        y="6.2"
+        width="19.6"
+        height="19.6"
+        rx="4.4"
+        stroke="#BAE6FD"
+        strokeOpacity="0.4"
+        strokeWidth="1"
+      />
+      <path
+        d="M20.5 10.5H11.5L16.8 16L11.5 21.5H20.5"
+        stroke={`url(#${uid}-sigma)`}
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Check, ShieldCheck, Trophy, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { AlertBanner } from '../ui/AlertBanner';
@@ -32,7 +33,7 @@ export const JoinLeaderboardModal: React.FC<JoinLeaderboardModalProps> = ({
     }
   }, [open, profile?.nickname, profile?.username]);
 
-  if (!open) return null;
+  if (!open || typeof document === 'undefined') return null;
 
   const trimmed = nickname.trim();
   const isNameValid = trimmed.length >= 2 && trimmed.length <= 24;
@@ -60,9 +61,9 @@ export const JoinLeaderboardModal: React.FC<JoinLeaderboardModalProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/55 backdrop-blur-md pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-950/55 backdrop-blur-md pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="join-leaderboard-modal-title"
@@ -183,6 +184,7 @@ export const JoinLeaderboardModal: React.FC<JoinLeaderboardModalProps> = ({
           </div>
         </form>
       </Card>
-    </div>
+    </div>,
+    document.body
   );
 };

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -995,14 +996,16 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* Multi-step Permanent Account Deletion Confirmation Modal */}
-      {deleteModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/55 backdrop-blur-md pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="delete-account-modal-title"
-          onClick={closeDeleteModal}
-        >
+      {deleteModalOpen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-950/55 backdrop-blur-md pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-modal-title"
+            onClick={closeDeleteModal}
+          >
           <Card
             padding="md"
             className="animate-pop w-full max-w-md max-h-[88dvh] overflow-y-auto space-y-5 shadow-2xl"
@@ -1211,8 +1214,9 @@ export const ProfilePage: React.FC = () => {
               </form>
             )}
           </Card>
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
       <JoinLeaderboardModal
         open={joinLeaderboardOpen}
         onClose={() => setJoinLeaderboardOpen(false)}

@@ -9,6 +9,7 @@ export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isInAppBrowser, setIsInAppBrowser] = useState(false);
 
   useEffect(() => {
     const isStandalone =
@@ -18,6 +19,9 @@ export function usePWAInstall() {
 
     const userAgent = window.navigator.userAgent.toLowerCase();
     setIsIOS(/iphone|ipad|ipod/.test(userAgent));
+    setIsInAppBrowser(
+      /fban|fbav|fb_iab|messenger|instagram|line\/|bytedance|tiktok/.test(userAgent)
+    );
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -54,6 +58,7 @@ export function usePWAInstall() {
     isInstallable: !!deferredPrompt,
     isInstalled,
     isIOS,
+    isInAppBrowser,
     install,
   };
 }

@@ -11,6 +11,7 @@ import {
   Plus,
   Search,
   Settings,
+  Sigma,
   Sun,
   Trophy,
   User,
@@ -26,6 +27,7 @@ import { Logo } from '../ui/Logo';
 import { OfflineBanner } from '../ui/OfflineBanner';
 import {
   ChecklistGraphicIcon,
+  FormulasGraphicIcon,
   HomeGraphicIcon,
   LessonsGraphicIcon,
   ProfileGraphicIcon,
@@ -35,6 +37,7 @@ import {
 } from '../ui/PhysicsIcons';
 import { PWAInstallButton } from '../ui/PWAInstallButton';
 import { UserAvatar } from '../ui/UserAvatar';
+import { QuickFormulasOverlay } from '../study/QuickFormulasOverlay';
 import sidebarLogoUrl from '../../assets/images/isipagham_blue_logo_1795790996722.jpg';
 
 interface NavItem {
@@ -55,6 +58,7 @@ const MOBILE_NAV: NavItem[] = [
 
 const SIDEBAR_NAV: NavItem[] = [
   ...MOBILE_NAV,
+  { to: '/formulas', label: 'Quick Formulas', mobileLabel: 'Formulas', icon: FormulasGraphicIcon },
   { to: '/profile', label: 'Profile', mobileLabel: 'Profile', icon: ProfileGraphicIcon },
   { to: '/checklist', label: 'Study Week', mobileLabel: 'Checklist', icon: ChecklistGraphicIcon },
 ];
@@ -83,6 +87,7 @@ export const AppShell: React.FC = () => {
   const [showDeckSearch, setShowDeckSearch] = useState(false);
   const [deckQuery, setDeckQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [formulasOpen, setFormulasOpen] = useState(false);
 
   const menuContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -185,7 +190,7 @@ export const AppShell: React.FC = () => {
         aria-hidden="true"
       />
 
-      <OfflineBanner />
+      <OfflineBanner className="lg:hidden" />
 
       {/* Desktop Floating Liquid Glass Left Sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-68 lg:fixed lg:inset-y-4 lg:left-4 liquid-glass-strong rounded-[28px] z-30 overflow-hidden">
@@ -373,6 +378,19 @@ export const AppShell: React.FC = () => {
           </div>
           <button
             type="button"
+            onClick={() => setFormulasOpen(true)}
+            aria-label="Open Quick Formulas"
+            title="Quick Formulas"
+            className={`h-9 w-9 sm:h-10 sm:w-10 inline-flex items-center justify-center rounded-full border transition-all cursor-pointer shrink-0 ${
+              formulasOpen || location.pathname === '/formulas'
+                ? 'liquid-lens-active'
+                : 'bg-white/60 dark:bg-white/10 border-white/70 dark:border-white/15 text-slate-700 dark:text-slate-200'
+            }`}
+          >
+            <Sigma className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
             onClick={handleOpenNotificationsTab}
             aria-label={`Notifications (${unreadCount} unread)`}
             className={`relative h-9 w-9 sm:h-10 sm:w-10 inline-flex items-center justify-center rounded-full border transition-all cursor-pointer shrink-0 ${
@@ -415,6 +433,7 @@ export const AppShell: React.FC = () => {
 
       {/* Right Workspace Column */}
       <div className="relative z-10 flex-1 lg:pl-76 flex flex-col min-w-0">
+        <OfflineBanner className="hidden lg:block" />
         {/* Desktop Floating Liquid Glass Utility Strip */}
         <header className="hidden lg:flex items-center justify-end gap-2.5 px-8 pt-4 pb-1">
           <Link
@@ -441,6 +460,21 @@ export const AppShell: React.FC = () => {
             <Trophy className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
             <span>{profile?.xp ?? 0} XP</span>
           </Link>
+
+          <button
+            type="button"
+            onClick={() => setFormulasOpen(true)}
+            aria-label="Open Quick Formulas overlay"
+            title="Quick Formulas reference (Physics 1, 2 & 3)"
+            className={`h-10 px-3.5 rounded-full inline-flex items-center gap-1.5 text-xs font-bold hover:-translate-y-0.5 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              formulasOpen || location.pathname === '/formulas'
+                ? 'liquid-lens-active'
+                : 'liquid-glass text-slate-800 dark:text-slate-100'
+            }`}
+          >
+            <Sigma className="h-3.5 w-3.5 text-[#007AFF] dark:text-sky-400" aria-hidden="true" />
+            <span>Quick Formulas</span>
+          </button>
 
           <button
             type="button"
@@ -610,6 +644,10 @@ export const AppShell: React.FC = () => {
           ))}
         </div>
       </nav>
+      <QuickFormulasOverlay
+        open={formulasOpen}
+        onClose={() => setFormulasOpen(false)}
+      />
     </div>
   );
 };

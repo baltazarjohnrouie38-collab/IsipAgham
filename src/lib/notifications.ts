@@ -34,7 +34,10 @@ export async function registerStudyNotifications(): Promise<{
   try {
     const messagingSupported = await isSupported();
     if (messagingSupported && 'serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      const existingReg = await navigator.serviceWorker.getRegistration('/');
+      const registration =
+        existingReg ||
+        (await navigator.serviceWorker.register('/firebase-messaging-sw.js'));
       const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined;
       if (vapidKey && vapidKey.trim()) {
         const messaging = getMessaging(getApp());

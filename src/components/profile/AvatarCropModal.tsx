@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Check,
   Move,
@@ -121,7 +122,7 @@ export const AvatarCropModal: React.FC<AvatarCropModalProps> = ({
     });
   }, [imageEl, zoom, offsetX, offsetY, rotationDeg]);
 
-  if (!file) return null;
+  if (!file || typeof document === 'undefined') return null;
 
   const updateZoom = (nextZoomRaw: number) => {
     const nextZoom = Math.min(3.5, Math.max(1, Number(nextZoomRaw.toFixed(2))));
@@ -226,9 +227,9 @@ export const AvatarCropModal: React.FC<AvatarCropModalProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="avatar-crop-modal-title"
@@ -410,6 +411,7 @@ export const AvatarCropModal: React.FC<AvatarCropModalProps> = ({
           </Button>
         </div>
       </Card>
-    </div>
+    </div>,
+    document.body
   );
 };

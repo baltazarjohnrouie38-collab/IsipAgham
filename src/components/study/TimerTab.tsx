@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   CheckCircle2,
   Clock,
@@ -185,13 +186,15 @@ export const TimerTab: React.FC<TimerTabProps> = ({ sessions = [] }) => {
   return (
     <div className="space-y-6">
       {/* Calm Full-Screen Focus Overlay */}
-      {calmFullscreen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Calm focus timer screen"
-          className="fixed inset-0 z-50 min-h-dvh overflow-y-auto bg-[#EEF3FA]/95 dark:bg-[#060913]/95 backdrop-blur-3xl text-slate-950 dark:text-slate-50 flex flex-col items-center justify-between gap-4 p-4 sm:p-10 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]"
-        >
+      {calmFullscreen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Calm focus timer screen"
+            className="fixed inset-0 z-[90] min-h-dvh overflow-y-auto bg-[#EEF3FA]/95 dark:bg-[#060913]/95 backdrop-blur-3xl text-slate-950 dark:text-slate-50 flex flex-col items-center justify-between gap-4 p-4 sm:p-10 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+          >
           <div className="w-full max-w-2xl flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">
               {mode === 'focus' ? 'Calm Focus Session' : 'Recharge Break'}
@@ -263,8 +266,9 @@ export const TimerTab: React.FC<TimerTabProps> = ({ sessions = [] }) => {
           <p className="text-sm text-slate-500 dark:text-neutral-400 text-center max-w-md">
             Put your phone face down or keep this calm ring open. Completed focus sessions earn XP automatically.
           </p>
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
